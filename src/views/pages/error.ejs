@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titulo %> — Equipo de Seis Integrantes</title>
+    <link rel="stylesheet" href="/vendor/bootstrap.min.css">
+</head>
+<body class="bg-light text-dark">
+    <main class="container py-5">
+        <div class="p-4 bg-white rounded-3 shadow-sm border">
+            <h1 class="h3 fw-bold text-danger mb-3"><%= titulo %></h1>
+            <p class="mb-3"><%= mensaje %></p>
+            <p class="small text-muted mb-4">Código de seguimiento (requestId): <code><%= requestId %></code></p>
+            <a href="/" class="btn btn-primary">Volver al inicio</a>
+        </div>
+    </main>
+</body>
+</html>
