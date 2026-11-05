@@ -3,6 +3,52 @@ import { buffer } from "node:stream/consumers";
 import { promisify } from "node:util";
 
 const scryptAsync = promisify(scrypt);
+export const HASH_FICTICIO =
+  "scrypt$32768$8$3$5a611f3a0092fd460dbd3a479928c5dd$" +
+  "160eb4835f1ad1e6b2727b598f89a7ce5271e743d9cb2eabf8507bc38794e030d34bcd77b48c80a445ad526b53fc86536fa99c46caa849dd1dcc17d55c06ee20";
+
+const MAX_CALCULOS_SIMULTANEOS = 2;
+const MAX_CALCULOS_EN_ESPERA = 8;
+
+let calculosActivos = 0;
+const colaDeEspera = [];
+
+async function calcularScrypt(password, salt) {
+  if (calculosActivos < MAX_CALCULOS_SIMULTANEOS) {
+    calculosActivos++;
+  } else {
+    if (colaDeEspera.length >= MAX_CALCULOS_EN_ESPERA) {
+      const error = new Error("Capacidad temporal de hash agotada.");
+
+      error.code = "SERVICIO_NO_DISPONIBLE";
+      error.status = 503;
+      error.retryAfter = 2;
+
+      throw error;
+    }
+
+    await new Promise((resolve) => {
+      colaDeEspera.push(resolve);
+    });
+  }
+
+  try {
+    return await scryptAsync(password, salt, 64, {
+      N: 32768,
+      r: 8,
+      p: 3,
+      maxmem: 67108864,
+    });
+  } finally {
+    const siguiente = colaDeEspera.shift();
+
+    if (siguiente) {
+      siguiente();
+    } else {
+      calculosActivos--;
+    }
+  }
+}
 
 export async function verificarContrasena(password, hashGuardado) {
   if (typeof password !== "string" || typeof hashGuardado !== "string") {
@@ -44,12 +90,7 @@ export async function verificarContrasena(password, hashGuardado) {
     return false;
   }
 
-  const hashCalculado = await scryptAsync(password, salt, 64, {
-    N: 32768,
-    r: 8,
-    p: 3,
-    maxmem: 67108864,
-  });
+  const hashCalculado = await calcularScrypt(password, salt);
 
   return timingSafeEqual(hashCalculado, hashEsperado);
 }
@@ -70,12 +111,7 @@ export async function generarHash(password) {
 
   const salt = randomBytes(16);
 
-  const hash = await scryptAsync(password, salt, 64, {
-    N: 32768,
-    r: 8,
-    p: 3,
-    maxmem: 67108864,
-  });
+  const hash = await calcularScrypt(password, salt);
 
   return `scrypt$32768$8$3$${salt.toString("hex")}$${hash.toString("hex")}`;
 }
