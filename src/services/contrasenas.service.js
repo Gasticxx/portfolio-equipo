@@ -1,14 +1,16 @@
 import { randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { buffer } from "node:stream/consumers";
 import { promisify } from "node:util";
+import {
+  MAX_CALCULOS_SIMULTANEOS,
+  MAX_CALCULOS_EN_ESPERA,
+  REINTENTO_HASH_SEGUNDOS,
+} from "../config/constants.js";
 
 const scryptAsync = promisify(scrypt);
 export const HASH_FICTICIO =
   "scrypt$32768$8$3$5a611f3a0092fd460dbd3a479928c5dd$" +
   "160eb4835f1ad1e6b2727b598f89a7ce5271e743d9cb2eabf8507bc38794e030d34bcd77b48c80a445ad526b53fc86536fa99c46caa849dd1dcc17d55c06ee20";
-
-const MAX_CALCULOS_SIMULTANEOS = 2;
-const MAX_CALCULOS_EN_ESPERA = 8;
 
 let calculosActivos = 0;
 const colaDeEspera = [];
@@ -22,7 +24,7 @@ async function calcularScrypt(password, salt) {
 
       error.code = "SERVICIO_NO_DISPONIBLE";
       error.status = 503;
-      error.retryAfter = 2;
+      error.retryAfter = REINTENTO_HASH_SEGUNDOS;
 
       throw error;
     }
