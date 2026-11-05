@@ -27,7 +27,7 @@ Formación académica en curso.
 - **GitHub:** 
 - **LinkedIn:** 
 
-## Aportes al proyecto (Portfolio del equipo Equipo Seis)
+## Aportes al proyecto (Portfolio del Equipo de Seis Integrantes)
 
 | Tarea / Tarjeta | Descripción | Estado (asignado / desarrollo / comprobado) | Tecnologías utilizadas | Evidencia (URL de PR o tarjeta) |
 | :--- | :--- | :--- | :--- | :--- |
