@@ -1,21 +1,19 @@
 // Funcion que inserta una cuenta en PostgreSQL
-
 export async function crearUsuarioRegistrado(
   pool,
   { nombre, email, passwordHash },
 ) {
-  // El registro público siempre crea cuentas con el rol registrado.
+  // El índice único sobre lower(email) decide si el email ya existe.
   const consulta = `
     INSERT INTO app.usuarios (nombre, email, password_hash, rol)
     VALUES ($1, $2, $3, 'registrado')
+    ON CONFLICT ((lower(email))) DO NOTHING
     RETURNING id, nombre, email, rol;
   `;
 
-  // Enviamos los valores por separado para que PostgreSQL los trate como datos.
   const valores = [nombre, email, passwordHash];
-
-  // Esperamos la inserción y obtenemos la cuenta que acaba de crearse.
   const resultado = await pool.query(consulta, valores);
 
-  return resultado.rows[0];
+  // Si hubo un conflicto de email, PostgreSQL no devuelve una fila.
+  return resultado.rows[0] ?? null;
 }
