@@ -1,3 +1,10 @@
+// Capacidad compartida por la generación y la verificación de hashes.
+export const MAX_CALCULOS_SIMULTANEOS = 2;
+export const MAX_CALCULOS_EN_ESPERA = 8;
+
+// Tiempo que indicará el servidor cuando la cola esté llena.
+export const REINTENTO_HASH_SEGUNDOS = 2;
+
 export const CONSTANTS = Object.freeze({
     JSON_BODY_LIMIT: '32kb',
     REQUEST_TIMEOUT_MS: 30_000,
@@ -27,7 +34,7 @@ export const CONSTANTS = Object.freeze({
         MAX_PAGE: 100_000,
         DEFAULT_PAGE_SIZE: 10,
         MAX_PAGE_SIZE: 50,
-}),
+    }),
 
     ROLES: Object.freeze({
         REGISTRADO: 'registrado',
