@@ -1,0 +1,10 @@
+<article class="glass tarjeta-perfil revelar">
+  <div class="perfil-foto">
+    <% if (integrante.foto) { %><img src="<%= integrante.foto %>" alt="Retrato de <%= integrante.nombre %>" width="400" height="400" loading="lazy"><% } %>
+    <div class="avatar <%= integrante.foto ? 'oculto' : '' %>" aria-label="Foto pendiente de <%= integrante.nombre %>"><span><%= integrante.codigo %></span><small>Espacio para tu foto</small></div>
+    <span class="codigo"><%= integrante.codigo %></span>
+  </div>
+  <div class="perfil-texto"><p class="eyebrow"><%= integrante.especialidad %></p><h3><%= integrante.nombre %></h3><p><%= integrante.presentacion %></p>
+    <a class="enlace-flecha" href="/i3/equipo/<%= integrante.codigo %>">Conocer perfil <span aria-hidden="true">↗</span></a>
+  </div>
+</article>
