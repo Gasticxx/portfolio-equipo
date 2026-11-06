@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sistema visual del portfolio colectivo Equipo Seis.">
+  <title><%= titulo %> · Equipo Seis</title>
+  <link rel="stylesheet" href="/vendor/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/app.css">
+  <script src="/js/ui.js" defer></script>
+</head>
+<body>
+  <a class="saltar" href="#contenido">Saltar al contenido</a>
+  <div class="ambiente" aria-hidden="true"></div>
+  <header class="cabecera">
+    <div class="contenedor barra">
+      <a class="marca" href="/i3"><span class="marca-icono" aria-hidden="true">6</span> equipo<span class="marca-seis">seis</span><span class="marca-punto">.</span></a>
+      <button class="menu-boton btn btn-outline-primary" aria-expanded="false" aria-controls="navegacion">Menú <span aria-hidden="true">☰</span></button>
+      <nav id="navegacion" class="navegacion" aria-label="Navegación principal">
+        <% for (const [ruta, etiqueta] of [['/i3','Inicio'],['/i3/equipo','Equipo'],['/i3/servicios','Servicios'],['/i3/proyectos','Proyectos'],['/i3/contacto','Contacto']]) { %>
+          <a href="<%= ruta %>" <%- ruta === rutaActual ? 'aria-current="page"' : '' %>><%= etiqueta %></a>
+        <% } %>
+        <% if (!usuarioActual) { %>
+          <a class="acceso" href="/i3/login">Ingresar <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-primary" href="/i3/registro">Registrarse</a>
+        <% } else { %>
+          <a href="/mi-cuenta">Mi cuenta</a>
+          <% if (['operador','administrador'].includes(usuarioActual.rol)) { %><a href="/operador/consultas">Consultas</a><% } %>
+          <% if (usuarioActual.rol === 'administrador') { %><a href="/admin">Administración</a><% } %>
+          <button class="btn btn-outline-primary" type="button" data-salir>Salir</button>
+        <% } %>
+      </nav>
+    </div>
+  </header>
+  <main id="contenido" tabindex="-1" class="contenedor">

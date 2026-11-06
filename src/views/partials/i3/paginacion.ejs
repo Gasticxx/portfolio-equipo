@@ -1,0 +1,1 @@
+<nav aria-label="Páginas de resultados"><ul class="pagination"><% for(let p = 1; p <= paginas; p++) { %><li class="page-item <%= p === pagina ? 'active' : '' %>"><a class="page-link" href="<%= base %>?pagina=<%= p %>" <%- p === pagina ? 'aria-current="page"' : '' %>><%= p %></a></li><% } %></ul></nav>
