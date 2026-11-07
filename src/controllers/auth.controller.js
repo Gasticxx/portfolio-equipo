@@ -1,8 +1,14 @@
 import { ZodError } from "zod";
 import { pool } from "../config/db.js";
 import { AppError } from "../middlewares/errors.js";
-import { registrarUsuario } from "../services/auth.service.js";
+import {
+  registrarUsuario,
+  autenticarUsuario,
+} from "../services/auth.service.js";
 import { obtenerTokenCsrf } from "../middlewares/csrf.js";
+import { env } from "../config/env.js";
+import { CONSTANTS } from "../config/constants.js";
+import { logoutSchema } from "../validators/auth.validator.js";
 
 function obtenerErroresPorCampo(error) {
   // Guardamos un mensaje por campo en un objeto sin claves heredadas.
@@ -98,4 +104,143 @@ export async function obtenerCsrf(req, res) {
     ok: true,
     data: { csrfToken },
   });
+}
+// Verifica las credenciales y crea una sesión autenticada nueva.
+export async function iniciarSesion(req, res, next) {
+  try {
+    const usuario = await autenticarUsuario(pool, req.body);
+
+    if (usuario === null) {
+      return next(
+        new AppError(
+          401,
+          "CREDENCIALES_INVALIDAS",
+          "Email o contraseña incorrectos, o cuenta no habilitada.",
+        ),
+      );
+    }
+
+    // Preparamos los datos de esta petición para el cambio de sesión.
+    req.user = null;
+    res.locals.usuarioActual = null;
+
+    // Esperamos a tener un identificador de sesión nuevo.
+    await new Promise((resolve, reject) => {
+      req.session.regenerate((error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve();
+      });
+    });
+
+    try {
+      // Guardamos los datos que comprobará cargarUsuarioActual.
+      req.session.usuarioId = usuario.id;
+      req.session.versionSesion = usuario.versionSesion;
+      req.session.autenticadoEn = Date.now();
+
+      // La sesión nueva recibe un token CSRF nuevo.
+      obtenerTokenCsrf(req.session);
+
+      // Confirmamos el guardado antes de responder que el login fue correcto.
+      await new Promise((resolve, reject) => {
+        req.session.save((error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve();
+        });
+      });
+    } catch (error) {
+      // Ante un fallo, descartamos los datos locales para evitar otro guardado al responder.
+      req.session = null;
+      throw error;
+    }
+
+    // Separamos los campos públicos de la versión interna de sesión.
+    const { id, nombre, email, rol } = usuario;
+    const usuarioPublico = { id, nombre, email, rol };
+
+    req.user = usuarioPublico;
+    res.locals.usuarioActual = usuarioPublico;
+    res.setHeader("Cache-Control", "no-store");
+
+    return res.status(200).json({
+      ok: true,
+      data: {
+        usuario: usuarioPublico,
+        csrfToken: req.session.csrfToken,
+      },
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return next(
+        new AppError(
+          422,
+          "VALIDACION",
+          "Revisá los campos indicados.",
+          obtenerErroresPorCampo(error),
+        ),
+      );
+    }
+
+    return next(error);
+  }
+}
+
+// Destruye la sesión actual y elimina su cookie del navegador.
+export async function cerrarSesion(req, res, next) {
+  try {
+    // El contrato del logout admite únicamente un objeto vacío.
+    logoutSchema.parse(req.body);
+
+    // Esperamos la confirmación del almacén antes de responder.
+    await new Promise((resolve, reject) => {
+      req.session.destroy((error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve();
+      });
+    });
+
+    // Esta petición termina sin un usuario autenticado.
+    req.user = null;
+    res.locals.usuarioActual = null;
+
+    // Usamos las mismas opciones con las que creamos la cookie de sesión.
+    res.clearCookie(CONSTANTS.SESSION.COOKIE_NAME, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: env.IS_PROD,
+      path: "/",
+    });
+
+    res.setHeader("Cache-Control", "no-store");
+
+    return res.status(200).json({
+      ok: true,
+      data: { cerrada: true },
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return next(
+        new AppError(
+          422,
+          "VALIDACION",
+          "Revisá los campos indicados.",
+          obtenerErroresPorCampo(error),
+        ),
+      );
+    }
+
+    return next(error);
+  }
 }

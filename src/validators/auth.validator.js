@@ -67,3 +67,12 @@ export const registroSchema = z
     path: ["passwordConfirm"],
     error: "Las contraseñas deben coincidir.",
   });
+
+// El login recibe únicamente email y contraseña.
+export const loginSchema = z.strictObject({
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+// El logout recibe un objeto vacío y rechaza campos adicionales.
+export const logoutSchema = z.strictObject({});

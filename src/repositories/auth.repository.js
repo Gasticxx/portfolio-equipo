@@ -39,3 +39,24 @@ export async function buscarUsuarioParaSesion(pool, usuarioId) {
   // Devolvemos el usuario encontrado o null si ya no existe.
   return resultado.rows[0] ?? null;
 }
+
+// Recibe el email ya normalizado por el validador del login.
+export async function buscarUsuarioPorEmail(pool, email) {
+  const consulta = `
+    SELECT
+      id,
+      nombre,
+      email,
+      password_hash,
+      rol,
+      activo,
+      version_sesion
+    FROM app.usuarios
+    WHERE lower(email) = $1;
+  `;
+
+  // Usamos la expresión del índice único y un parámetro separado.
+  const resultado = await pool.query(consulta, [email]);
+
+  return resultado.rows[0] ?? null;
+}
