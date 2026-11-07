@@ -17,3 +17,25 @@ export async function crearUsuarioRegistrado(
   // Si hubo un conflicto de email, PostgreSQL no devuelve una fila.
   return resultado.rows[0] ?? null;
 }
+
+// Busca los datos necesarios para comprobar una sesión autenticada.
+export async function buscarUsuarioParaSesion(pool, usuarioId) {
+  // Consultamos el estado y el rol actuales del usuario.
+  const consulta = `
+    SELECT
+      id,
+      nombre,
+      email,
+      rol,
+      activo,
+      version_sesion
+    FROM app.usuarios
+    WHERE id = $1;
+  `;
+
+  // PostgreSQL recibe el identificador separado del texto SQL.
+  const resultado = await pool.query(consulta, [usuarioId]);
+
+  // Devolvemos el usuario encontrado o null si ya no existe.
+  return resultado.rows[0] ?? null;
+}

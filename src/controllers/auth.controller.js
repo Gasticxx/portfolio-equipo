@@ -2,6 +2,7 @@ import { ZodError } from "zod";
 import { pool } from "../config/db.js";
 import { AppError } from "../middlewares/errors.js";
 import { registrarUsuario } from "../services/auth.service.js";
+import { obtenerTokenCsrf } from "../middlewares/csrf.js";
 
 function obtenerErroresPorCampo(error) {
   // Guardamos un mensaje por campo en un objeto sin claves heredadas.
@@ -58,4 +59,43 @@ export async function registrar(req, res, next) {
     // El middleware común responde a los demás errores.
     return next(error);
   }
+}
+
+// Devuelve los datos públicos del usuario autenticado en esta petición.
+export function obtenerUsuarioActual(req, res) {
+  // El middleware de autenticación garantiza que req.user esté disponible.
+  const { id, nombre, email, rol } = req.user;
+
+  // Indicamos que esta respuesta personal no debe almacenarse en caché.
+  res.setHeader("Cache-Control", "no-store");
+
+  return res.status(200).json({
+    ok: true,
+    data: { id, nombre, email, rol },
+  });
+}
+
+// Entrega un token CSRF asociado a la sesión del navegador.
+export async function obtenerCsrf(req, res) {
+  const csrfToken = obtenerTokenCsrf(req.session);
+
+  // Esperamos a que el almacén confirme que guardó la sesión con su token.
+  await new Promise((resolve, reject) => {
+    req.session.save((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+
+  // El navegador debe consultar este dato al servidor.
+  res.setHeader("Cache-Control", "no-store");
+
+  return res.status(200).json({
+    ok: true,
+    data: { csrfToken },
+  });
 }

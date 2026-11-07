@@ -13,6 +13,8 @@ import {
   notFoundHandler,
   errorHandler,
 } from "./middlewares/errors.js";
+import { cargarUsuarioActual } from "./middlewares/auth.js";
+import { obtenerCsrf } from "./controllers/auth.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,15 +65,14 @@ app.use(
   express.urlencoded({ extended: false, limit: CONSTANTS.JSON_BODY_LIMIT }),
 );
 
-// Paso 5: Cookie-parser firmado con VISIT_SECRET
+// Paso 5: Cookie-parser firmado con VISIT_SECRET.
 app.use(cookieParser(env.VISIT_SECRET));
-// Paso 6: Cargamos la sesión antes de buscar al usuario.
+
+// Paso 6: Recuperamos la sesión desde PostgreSQL.
 app.use(sessionMiddleware);
-// Paso 6 y 7: Sesión PostgreSQL y carga de usuario vigente (Puntos de enganche para I4)
-app.use((req, res, next) => {
-  res.locals.usuarioActual = req.user || null;
-  next();
-});
+
+// Paso 7: Comprobamos la sesión y cargamos el usuario vigente.
+app.use(cargarUsuarioActual);
 
 // Paso 8: Límites y timeout de petición entrante (30s)
 app.use((req, res, next) => {
@@ -81,6 +82,8 @@ app.use((req, res, next) => {
 });
 
 // Paso 9: Rutas base (Inicio y /health del Apartado 21)
+// Entregamos el token también a visitantes que todavía no iniciaron sesión.
+app.get("/api/csrf", obtenerCsrf);
 app.get("/health", async (_req, res) => {
   try {
     const dbOk = await checkDbHealth();
