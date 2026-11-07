@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Node 24 + PostgreSQL 17
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_ci_password
+          POSTGRES_DB: portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d portfolio_test"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      NODE_ENV: test
+      PORT: 3000
+      APP_ORIGIN: http://localhost:3000
+      DATABASE_URL: postgresql://postgres:postgres_ci_password@localhost:5432/portfolio_test
+      DB_SSL: 'false'
+      DB_CA_CERT_BASE64: ''
+      MIGRATION_DATABASE_URL: postgresql://postgres:postgres_ci_password@localhost:5432/portfolio_test
+      TEST_DATABASE_URL: postgresql://postgres:postgres_ci_password@localhost:5432/portfolio_test
+      SESSION_SECRET: ci_session_secret_0123456789abcdef0123456789abcdef0123456789abcdef
+      VISIT_SECRET: ci_visit_secret_fedcba9876543210fedcba9876543210fedcba9876543210
+      SUPABASE_URL: https://example.supabase.co
+      SUPABASE_SERVICE_ROLE_KEY: ci_dummy_service_role_key
+      SUPABASE_STORAGE_BUCKET: portfolio-media
+      BREVO_API_KEY: ci_dummy_brevo_api_key
+      MAIL_FROM_EMAIL: no-reply@example.com
+      MAIL_FROM_NAME: Equipo Seis
+      CONTACT_TO_EMAIL: equipo@example.com
+
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 24 desde .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Instalar dependencias exactas (lockfile)
+        run: npm ci
+
+      - name: Copiar librerias locales (Bootstrap y Chart.js)
+        run: npm run assets
+
+      - name: Crear archivo .env.test temporal para el script npm test
+        run: |
+          cat << 'EOF' > .env.test
+          NODE_ENV=${NODE_ENV}
+          PORT=${PORT}
+          APP_ORIGIN=${APP_ORIGIN}
+          DATABASE_URL=${DATABASE_URL}
+          DB_SSL=${DB_SSL}
+          DB_CA_CERT_BASE64=${DB_CA_CERT_BASE64}
+          MIGRATION_DATABASE_URL=${MIGRATION_DATABASE_URL}
+          TEST_DATABASE_URL=${TEST_DATABASE_URL}
+          SESSION_SECRET=${SESSION_SECRET}
+          VISIT_SECRET=${VISIT_SECRET}
+          SUPABASE_URL=${SUPABASE_URL}
+          SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+          SUPABASE_STORAGE_BUCKET=${SUPABASE_STORAGE_BUCKET}
+          BREVO_API_KEY=${BREVO_API_KEY}
+          MAIL_FROM_EMAIL=${MAIL_FROM_EMAIL}
+          MAIL_FROM_NAME=${MAIL_FROM_NAME}
+          CONTACT_TO_EMAIL=${CONTACT_TO_EMAIL}
+          EOF
+
+      - name: Ejecutar pruebas unitarias y de integracion
+        run: npm test

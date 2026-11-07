@@ -15,7 +15,7 @@
     "db:seed": "node --env-file=.env scripts/seed.js",
     "assets": "node scripts/vendor.js",
     "test": "node --env-file=.env.test --test --test-concurrency=1",
-    "test:unit": "node --test tests/unit",
+    "test:unit": "node --test tests/unit/*.test.js",
     "cuenta:crear": "node --env-file=.env scripts/crear-cuenta.js",
     "cuenta:recuperar": "node --env-file=.env scripts/recuperar-cuenta.js",
     "db:limpiar": "node --env-file=.env scripts/limpiar.js"

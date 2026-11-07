@@ -1,0 +1,6 @@
+<div class="campo">
+  <label for="<%= id %>"><%= etiqueta %></label>
+  <% if (tipo === 'textarea') { %><textarea class="form-control" id="<%= id %>" name="<%= id %>" rows="5" maxlength="<%= limite %>" aria-describedby="<%= id %>-ayuda <%= id %>-error" required><%= valor || '' %></textarea>
+  <% } else { %><input class="form-control" id="<%= id %>" name="<%= id %>" type="<%= tipo %>" maxlength="<%= limite %>" value="<%= tipo === 'password' ? '' : (valor || '') %>" aria-describedby="<%= id %>-ayuda <%= id %>-error" <%= tipo === 'password' ? 'autocomplete=new-password' : '' %> required><% } %>
+  <small id="<%= id %>-ayuda"><%= ayuda %></small><span id="<%= id %>-error" class="error-campo"></span>
+</div>

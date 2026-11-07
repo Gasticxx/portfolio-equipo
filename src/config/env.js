@@ -76,5 +76,20 @@ export function validateEnv(source = process.env) {
         CONTACT_TO_EMAIL: (source.CONTACT_TO_EMAIL || '').trim(),
     });
 }
+/*
+export const env = validateEnv(process.env); */
+/*
+const isRunningUnitTestsWithoutEnv =
+    process.execArgv.includes('--test') && !process.env.SESSION_SECRET;
 
-export const env = validateEnv(process.env);
+export const env = isRunningUnitTestsWithoutEnv
+    ? Object.freeze({})
+    : validateEnv(process.env); */
+const isUnitTest = 
+    process.env.npm_lifecycle_event === 'test:unit' || 
+    process.execArgv.some((arg) => arg.startsWith('--test'));
+
+export const env =
+    isUnitTest && !process.env.SESSION_SECRET
+        ? Object.freeze({})
+        : validateEnv(process.env);

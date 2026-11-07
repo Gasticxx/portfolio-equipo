@@ -43,3 +43,13 @@ Cada integrante debe:
    - I2 revisa a I4
    - I4 revisa a I5 e I6
    - I5 revisa a I2
+
+## Instalación y puesta en marcha local (Para los 5 integrantes)
+
+Una vez clonado el repositorio con GitHub Desktop, abrí la carpeta en Visual Studio Code y ejecutá estos pasos en la terminal (`Ctrl + Ñ`):
+
+### 1. Crear tus archivos de variables de entorno locales
+En PowerShell (Windows):
+```powershell
+Copy-Item .env.example .env
+Copy-Item .env.example .env.test
