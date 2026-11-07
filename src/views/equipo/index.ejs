@@ -1,0 +1,57 @@
+<%- include('../partials/header', { tituloPagina }) %>
+
+<main class="container py-4">
+  <header class="mb-4">
+    <h1 class="fw-bold">Nuestro Equipo</h1>
+    <p class="text-secondary mb-0">
+      Conocé las especialidades, tecnologías y aportes reales verificados de los seis integrantes.
+    </p>
+  </header>
+
+  <% if (!miembros || miembros.length === 0) { %>
+    <div class="alert alert-secondary" role="status">
+      No hay integrantes registrados actualmente.
+    </div>
+  <% } else { %>
+    <div class="row g-4">
+      <% miembros.forEach((m) => { %>
+        <div class="col-12 col-md-6 col-lg-4">
+          <article class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <img
+                  src="<%= m.avatarUrl %>"
+                  alt="Avatar de <%= m.nombre %>"
+                  width="64"
+                  height="64"
+                  class="rounded-circle object-fit-cover border"
+                />
+                <div>
+                  <h2 class="h5 fw-bold mb-1"><%= m.nombre %></h2>
+                  <p class="text-secondary small mb-0"><%= m.especialidad %></p>
+                </div>
+              </div>
+
+              <p class="card-text text-secondary flex-grow-1"><%= m.presentacion %></p>
+
+              <div class="mb-3">
+                <span class="d-block small fw-semibold mb-1">Tecnologías:</span>
+                <div class="d-flex flex-wrap gap-1">
+                  <% m.tecnologias.forEach((t) => { %>
+                    <span class="badge text-bg-light border"><%= t.nombre %></span>
+                  <% }) %>
+                </div>
+              </div>
+
+              <a href="/equipo/<%= m.slug %>" class="btn btn-primary w-100 mt-auto">
+                Ver perfil completo
+              </a>
+            </div>
+          </article>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</main>
+
+<%- include('../partials/footer') %>
