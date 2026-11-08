@@ -24,3 +24,16 @@ Este documento registra los acuerdos operativos y las decisiones técnicas del *
    - I5 revisa a I2 (servidor, configuración, eventos y métricas) y persistencia SQL de todos.
 5. **Conversaciones y CI en verde:** Antes de integrar, todos los comentarios de revisión deben estar resueltos y el workflow de GitHub Actions (`CI`) debe estar en estado exitoso (verde).
 6. **Integración por Squash:** El repositorio tiene habilitado exclusivamente **Squash and merge** y el borrado automático de la rama tras fusionar.
+
+@'
+
+## Actualización de sharp a 0.35.5
+
+- Se actualiza sharp de 0.34.5 a 0.35.5 para corregir las vulnerabilidades informadas por npm audit.
+- Se modifican package.json y package-lock.json.
+- El cambio afecta al procesamiento de imágenes del módulo de I5.
+- Se comprobó npm audit con cero vulnerabilidades informadas.
+- Se probaron entradas PNG, JPEG y WebP, convertidas a WebP de 4 por 4 píxeles.
+- Queda pendiente revisar el cambio con I5 y comprobar su integración con las cargas de imágenes.
+
+'@ | Add-Content -Path docs/decisiones.md -Encoding UTF8
