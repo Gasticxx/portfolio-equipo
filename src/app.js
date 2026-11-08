@@ -14,6 +14,7 @@ import {
   errorHandler,
 } from "./middlewares/errors.js";
 import { cargarUsuarioActual } from "./middlewares/auth.js";
+import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { obtenerCsrf } from "./controllers/auth.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -74,12 +75,13 @@ app.use(sessionMiddleware);
 // Paso 7: Comprobamos la sesión y cargamos el usuario vigente.
 app.use(cargarUsuarioActual);
 
-// Paso 8: Límites y timeout de petición entrante (30s)
+// Paso 8: Límites y timeout de petición entrante (30s) + Analítica de visitas (I2 04)
 app.use((req, res, next) => {
   req.setTimeout(CONSTANTS.REQUEST_TIMEOUT_MS);
   res.setTimeout(CONSTANTS.REQUEST_TIMEOUT_MS);
   next();
 });
+app.use(analyticsMiddleware);
 
 // Paso 9: Rutas base (Inicio y /health del Apartado 21)
 // Entregamos el token también a visitantes que todavía no iniciaron sesión.
