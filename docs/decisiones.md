@@ -27,11 +27,23 @@ Este documento registra los acuerdos operativos y las decisiones técnicas del *
 
 ---
 
-## DEC-00N: Migración 002 y convención de nombres de índices
+## DEC-002 — Migración 002 y convención de nombres de índices
 
-- **Fecha:** 2026-11-07
-- **Responsable:** I5 (Datos y proyectos)
-- **Consumidores afectados:** I2 (visitas, accesos, límites y migrate.js), I4 (sesiones)
-- **Motivo:** `001_base.sql` ya está integrada y no se edita. Las tablas `app.sesiones`, `app.visitas`, `app.accesos` y `app.limites` (apartados 10.3 y 10.5) se agregan en `002_sesiones_visitas_limites.sql`. La migración de contenido (miembros, proyectos, aportes, demos) pasa a numerarse `003`. `migrate.js` ordena por nombre, por lo que no requiere cambios.
-- **Nombres de índices:** las tablas nuevas usan el estilo `idx_<tabla>_<campo>` documentado por I2 en `docs/api.md`. Los índices de `app.usuarios` conservan su nombre (`usuarios_email_lower_uk`, `usuarios_created_at_idx`) porque ya están integrados.
-- **Verificación:** migración aplicada en `portfolio_dev` y `portfolio_test` (PostgreSQL 17.11) y probada con transacciones de prueba (sesión válida y nula, UPSERT de límites, contador en cero y acceso repetido).
+- **Fecha** 2026-11-07.
+- **Responsable** I5, Datos y proyectos.
+- **Consumidores afectados** I2 para visitas, accesos, límites y migrate.js. I4 para sesiones.
+- **Motivo** Se conserva la migración integrada `001_base.sql` y se agregan las tablas `app.sesiones`, `app.visitas`, `app.accesos` y `app.limites` mediante `002_sesiones_visitas_limites.sql`, según los apartados 10.3 y 10.5.
+- **Numeración** La migración de contenido pasa a numerarse `003`. El ejecutor ordena las migraciones por nombre.
+- **Nombres de índices** Las tablas nuevas usan el estilo `idx_<tabla>_<campo>` documentado por I2 en `docs/api.md`. Los índices existentes de usuarios conservan los nombres `usuarios_email_lower_uk` y `usuarios_created_at_idx`.
+- **Verificación informada por I5** Migración aplicada en `portfolio_dev` y `portfolio_test` con PostgreSQL 17.11. Se probaron sesiones válidas e inválidas, UPSERT de límites, rechazo del contador en cero y rechazo de accesos repetidos.
+
+---
+
+## DEC-003 — Actualización de sharp a 0.35.5
+
+- **Responsable** I4, con revisión de I5 y coordinación con I2.
+- **Consumidores afectados** I5 para procesamiento de imágenes e I2 para dependencias compartidas.
+- **Motivo** Corregir las vulnerabilidades informadas por npm audit.
+- **Decisión** Actualizar sharp de 0.34.5 a 0.35.5, fijando la versión en `package.json` y actualizando `package-lock.json`.
+- **Verificación** npm audit informó cero vulnerabilidades. Se probaron entradas PNG, JPEG y WebP convertidas a WebP de 4 por 4 píxeles.
+- **Pendiente** Revisar el cambio con I5 y comprobar su integración con las cargas de imágenes.
