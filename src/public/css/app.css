@@ -498,8 +498,9 @@ h1>span,h2>span{
   font-size:14px
 }
 .perfil-texto>.enlace-flecha{
+  justify-content:center;
   border-top:1px solid #cbd5e18c;
-  padding-top:16px;
+  padding-block:16px;
   margin-top:24px
 }
 .proyecto-inicio{
