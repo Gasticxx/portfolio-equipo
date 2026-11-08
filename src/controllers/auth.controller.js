@@ -244,3 +244,14 @@ export async function cerrarSesion(req, res, next) {
     return next(error);
   }
 }
+
+// Renderiza la página pública de registro con los parciales de I3.
+export function mostrarRegistro(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
+  return res.render("auth/registro", {
+    titulo: "Crear cuenta",
+    rutaActual: "/registro",
+    usuarioActual: req.user ?? null,
+  });
+}

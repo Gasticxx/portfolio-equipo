@@ -14,8 +14,7 @@ import {
   errorHandler,
 } from "./middlewares/errors.js";
 import { cargarUsuarioActual } from "./middlewares/auth.js";
-import { obtenerCsrf } from "./controllers/auth.controller.js";
-
+import { obtenerCsrf, mostrarRegistro } from "./controllers/auth.controller.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -84,6 +83,10 @@ app.use((req, res, next) => {
 // Paso 9: Rutas base (Inicio y /health del Apartado 21)
 // Entregamos el token también a visitantes que todavía no iniciaron sesión.
 app.get("/api/csrf", obtenerCsrf);
+
+// Muestra el formulario público de registro.
+app.get("/registro", mostrarRegistro);
+
 app.get("/health", async (_req, res) => {
   try {
     const dbOk = await checkDbHealth();
