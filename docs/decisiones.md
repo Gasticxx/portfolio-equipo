@@ -24,3 +24,14 @@ Este documento registra los acuerdos operativos y las decisiones técnicas del *
    - I5 revisa a I2 (servidor, configuración, eventos y métricas) y persistencia SQL de todos.
 5. **Conversaciones y CI en verde:** Antes de integrar, todos los comentarios de revisión deben estar resueltos y el workflow de GitHub Actions (`CI`) debe estar en estado exitoso (verde).
 6. **Integración por Squash:** El repositorio tiene habilitado exclusivamente **Squash and merge** y el borrado automático de la rama tras fusionar.
+
+---
+
+## DEC-00N: Migración 002 y convención de nombres de índices
+
+- **Fecha:** 2026-11-07
+- **Responsable:** I5 (Datos y proyectos)
+- **Consumidores afectados:** I2 (visitas, accesos, límites y migrate.js), I4 (sesiones)
+- **Motivo:** `001_base.sql` ya está integrada y no se edita. Las tablas `app.sesiones`, `app.visitas`, `app.accesos` y `app.limites` (apartados 10.3 y 10.5) se agregan en `002_sesiones_visitas_limites.sql`. La migración de contenido (miembros, proyectos, aportes, demos) pasa a numerarse `003`. `migrate.js` ordena por nombre, por lo que no requiere cambios.
+- **Nombres de índices:** las tablas nuevas usan el estilo `idx_<tabla>_<campo>` documentado por I2 en `docs/api.md`. Los índices de `app.usuarios` conservan su nombre (`usuarios_email_lower_uk`, `usuarios_created_at_idx`) porque ya están integrados.
+- **Verificación:** migración aplicada en `portfolio_dev` y `portfolio_test` (PostgreSQL 17.11) y probada con transacciones de prueba (sesión válida y nula, UPSERT de límites, contador en cero y acceso repetido).
