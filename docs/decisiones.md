@@ -25,15 +25,25 @@ Este documento registra los acuerdos operativos y las decisiones técnicas del *
 5. **Conversaciones y CI en verde:** Antes de integrar, todos los comentarios de revisión deben estar resueltos y el workflow de GitHub Actions (`CI`) debe estar en estado exitoso (verde).
 6. **Integración por Squash:** El repositorio tiene habilitado exclusivamente **Squash and merge** y el borrado automático de la rama tras fusionar.
 
-@'
+---
 
-## Actualización de sharp a 0.35.5
+## DEC-002 — Migración 002 y convención de nombres de índices
 
-- Se actualiza sharp de 0.34.5 a 0.35.5 para corregir las vulnerabilidades informadas por npm audit.
-- Se modifican package.json y package-lock.json.
-- El cambio afecta al procesamiento de imágenes del módulo de I5.
-- Se comprobó npm audit con cero vulnerabilidades informadas.
-- Se probaron entradas PNG, JPEG y WebP, convertidas a WebP de 4 por 4 píxeles.
-- Queda pendiente revisar el cambio con I5 y comprobar su integración con las cargas de imágenes.
+- **Fecha** 2026-11-07.
+- **Responsable** I5, Datos y proyectos.
+- **Consumidores afectados** I2 para visitas, accesos, límites y migrate.js. I4 para sesiones.
+- **Motivo** Se conserva la migración integrada `001_base.sql` y se agregan las tablas `app.sesiones`, `app.visitas`, `app.accesos` y `app.limites` mediante `002_sesiones_visitas_limites.sql`, según los apartados 10.3 y 10.5.
+- **Numeración** La migración de contenido pasa a numerarse `003`. El ejecutor ordena las migraciones por nombre.
+- **Nombres de índices** Las tablas nuevas usan el estilo `idx_<tabla>_<campo>` documentado por I2 en `docs/api.md`. Los índices existentes de usuarios conservan los nombres `usuarios_email_lower_uk` y `usuarios_created_at_idx`.
+- **Verificación informada por I5** Migración aplicada en `portfolio_dev` y `portfolio_test` con PostgreSQL 17.11. Se probaron sesiones válidas e inválidas, UPSERT de límites, rechazo del contador en cero y rechazo de accesos repetidos.
 
-'@ | Add-Content -Path docs/decisiones.md -Encoding UTF8
+---
+
+## DEC-003 — Actualización de sharp a 0.35.5
+
+- **Responsable** I4, con revisión de I5 y coordinación con I2.
+- **Consumidores afectados** I5 para procesamiento de imágenes e I2 para dependencias compartidas.
+- **Motivo** Corregir las vulnerabilidades informadas por npm audit.
+- **Decisión** Actualizar sharp de 0.34.5 a 0.35.5, fijando la versión en `package.json` y actualizando `package-lock.json`.
+- **Verificación** npm audit informó cero vulnerabilidades. Se probaron entradas PNG, JPEG y WebP convertidas a WebP de 4 por 4 píxeles.
+- **Pendiente** Revisar el cambio con I5 y comprobar su integración con las cargas de imágenes.
