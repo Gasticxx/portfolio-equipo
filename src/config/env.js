@@ -76,20 +76,44 @@ export function validateEnv(source = process.env) {
         CONTACT_TO_EMAIL: (source.CONTACT_TO_EMAIL || '').trim(),
     });
 }
-/*
-export const env = validateEnv(process.env); */
-/*
-const isRunningUnitTestsWithoutEnv =
-    process.execArgv.includes('--test') && !process.env.SESSION_SECRET;
+const DEV_SESSION_SECRET = 'dev-session-secret-para-local-123456789';
+const DEV_VISIT_SECRET = 'dev-visit-secret-para-local-987654321';
+const TEST_SESSION_SECRET = 'test-session-secret-para-integracion-123456789';
+const TEST_VISIT_SECRET = 'test-visit-secret-para-integracion-987654321';
 
-export const env = isRunningUnitTestsWithoutEnv
-    ? Object.freeze({})
-    : validateEnv(process.env); */
-const isUnitTest = 
-    process.env.npm_lifecycle_event === 'test:unit' || 
+function applyLocalDefaults(source = process.env) {
+    const normalized = { ...source };
+    const nodeEnv = (normalized.NODE_ENV || 'development').trim();
+
+    if (!normalized.NODE_ENV) normalized.NODE_ENV = nodeEnv;
+    if (!normalized.PORT) normalized.PORT = '3000';
+    if (!normalized.APP_ORIGIN) normalized.APP_ORIGIN = 'http://localhost:3000';
+    if (!normalized.DATABASE_URL) {
+        normalized.DATABASE_URL =
+            nodeEnv === 'test'
+                ? 'postgresql://localhost:5432/portfolio_test'
+                : 'postgresql://localhost:5432/portfolio_dev';
+    }
+    if (!normalized.DB_SSL) normalized.DB_SSL = 'false';
+
+    if (nodeEnv !== 'production') {
+        if (!normalized.SESSION_SECRET) {
+            normalized.SESSION_SECRET =
+                nodeEnv === 'test' ? TEST_SESSION_SECRET : DEV_SESSION_SECRET;
+        }
+        if (!normalized.VISIT_SECRET) {
+            normalized.VISIT_SECRET =
+                nodeEnv === 'test' ? TEST_VISIT_SECRET : DEV_VISIT_SECRET;
+        }
+    }
+
+    return normalized;
+}
+
+const isUnitTest =
+    process.env.npm_lifecycle_event === 'test:unit' ||
     process.execArgv.some((arg) => arg.startsWith('--test'));
 
-export const env =
-    isUnitTest && !process.env.SESSION_SECRET
-        ? Object.freeze({})
-        : validateEnv(process.env);
+const envSource = isUnitTest ? applyLocalDefaults(process.env) : applyLocalDefaults(process.env);
+
+export const env = validateEnv(envSource);

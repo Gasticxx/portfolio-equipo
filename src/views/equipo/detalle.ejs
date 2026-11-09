@@ -1,0 +1,104 @@
+<%- include('../partials/header', { tituloPagina }) %>
+
+<main class="container py-4">
+  <nav aria-label="Ruta de navegación" class="mb-3">
+    <a href="/equipo" class="btn btn-sm btn-outline-secondary">&larr; Volver al equipo</a>
+  </nav>
+
+  <section class="card shadow-sm mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex flex-column flex-md-row align-items-md-center gap-4">
+        <img
+          src="<%= miembro.avatarUrl %>"
+          alt="Avatar de <%= miembro.nombre %>"
+          width="96"
+          height="96"
+          class="rounded-circle object-fit-cover border"
+        />
+        <div class="flex-grow-1">
+          <h1 class="h2 fw-bold mb-1"><%= miembro.nombre %></h1>
+          <p class="text-primary fw-semibold mb-2"><%= miembro.especialidad %></p>
+          <p class="text-secondary mb-3"><%= miembro.presentacion %></p>
+
+          <div class="d-flex flex-wrap gap-2">
+            <% if (miembro.githubUrl) { %>
+              <a
+                href="<%= miembro.githubUrl %>"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-sm btn-outline-dark"
+              >
+                GitHub
+              </a>
+            <% } %>
+            <% if (miembro.linkedinUrl) { %>
+              <a
+                href="<%= miembro.linkedinUrl %>"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-sm btn-outline-primary"
+              >
+                LinkedIn
+              </a>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="row g-4">
+    <div class="col-12 col-lg-5">
+      <section class="card shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h5 fw-bold mb-3">Formación académica</h2>
+          <p class="text-secondary mb-4"><%= miembro.formacion %></p>
+
+          <h2 class="h5 fw-bold mb-3">Stack y tecnologías</h2>
+          <div class="d-flex flex-wrap gap-2">
+            <% miembro.tecnologias.forEach((t) => { %>
+              <span class="badge text-bg-light border px-3 py-2"><%= t.nombre %></span>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="col-12 col-lg-7">
+      <section class="card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 fw-bold mb-0">Aportes comprobados en proyectos</h2>
+            <a href="/proyectos" class="btn btn-sm btn-outline-primary">Ver proyectos</a>
+          </div>
+
+          <% if (!miembro.aportes || miembro.aportes.length === 0) { %>
+            <p class="text-secondary mb-0">
+              Aún no se registran aportes en estado comprobado en proyectos publicados.
+            </p>
+          <% } else { %>
+            <div class="list-group list-group-flush">
+              <% miembro.aportes.forEach((a) => { %>
+                <div class="list-group-item px-0 py-3">
+                  <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                    <h3 class="h6 fw-bold mb-0"><%= a.titulo %></h3>
+                    <a href="/proyectos/<%= a.proyectoSlug %>" class="small text-decoration-none">
+                      Proyecto: <%= a.proyectoSlug %>
+                    </a>
+                  </div>
+                  <div class="d-flex flex-wrap gap-1">
+                    <% a.tecnologias.forEach((t) => { %>
+                      <span class="badge text-bg-secondary"><%= t.nombre %></span>
+                    <% }) %>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } %>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
