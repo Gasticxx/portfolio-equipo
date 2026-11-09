@@ -1,7 +1,12 @@
-import test from 'node:test';
+import test, { after } from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
 import { app } from '../../src/app.js';
+import { pool } from '../../src/config/db.js';
+
+after(async () => {
+    await pool.end();
+});
 
 test('Seguridad base: GET / devuelve 200, X-Request-Id, CSP estricta y oculta X-Powered-By', async () => {
     const res = await request(app).get('/');
@@ -46,5 +51,17 @@ test('Limite de parser JSON: rechaza cuerpos mayores a 32 KiB con 413 ARCHIVO_GR
     assert.equal(res.status, 413);
     assert.equal(res.body.ok, false);
     assert.equal(res.body.error.code, 'ARCHIVO_GRANDE');
+    assert.ok(res.body.error.requestId);
+});
+
+test('Proteccion de metricas (I2 07): GET /api/admin/metricas sin sesion devuelve 401 NO_AUTENTICADO y Cache-Control no-store', async () => {
+    const res = await request(app)
+        .get('/api/admin/metricas')
+        .set('Accept', 'application/json');
+
+    assert.equal(res.status, 401);
+    assert.equal(res.headers['cache-control'], 'no-store');
+    assert.equal(res.body.ok, false);
+    assert.equal(res.body.error.code, 'NO_AUTENTICADO');
     assert.ok(res.body.error.requestId);
 });

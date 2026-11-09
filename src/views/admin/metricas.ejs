@@ -1,0 +1,100 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/consultas.css">
+
+<section class="encabezado-pagina">
+  <p class="eyebrow">ADMINISTRACIÓN</p>
+  <h1>Métricas<span>.</span></h1>
+  <p>Cifras calculadas por el servidor con la zona horaria de Argentina. Las visitas son tráfico de navegador: pueden incluir bots y no representan personas únicas.</p>
+</section>
+
+<section class="seccion-i6">
+  <form id="filtros-metricas" class="glass formulario filtros-i6 filtros-metricas-i6" novalidate aria-label="Filtros de métricas">
+    <div class="campo">
+      <label for="m-rango">Rango</label>
+      <select id="m-rango" name="rango" class="form-select">
+        <option value="7">Últimos 7 días</option>
+        <option value="30">Últimos 30 días</option>
+        <option value="personalizado">Personalizado</option>
+      </select>
+    </div>
+    <div class="campo" data-personalizado hidden>
+      <label for="m-desde">Desde</label>
+      <input id="m-desde" name="desde" type="date" class="form-control" aria-describedby="desde-error">
+      <span id="desde-error" class="error-campo"></span>
+    </div>
+    <div class="campo" data-personalizado hidden>
+      <label for="m-hasta">Hasta</label>
+      <input id="m-hasta" name="hasta" type="date" class="form-control" aria-describedby="hasta-ayuda hasta-error">
+      <small id="hasta-ayuda">El día final se incluye completo.</small><span id="hasta-error" class="error-campo"></span>
+    </div>
+    <div class="campo">
+      <label for="m-tipo">Tipo de consulta</label>
+      <select id="m-tipo" name="tipo" class="form-select" aria-describedby="tipo-ayuda">
+        <option value="">Todos los tipos</option>
+        <option value="general">General</option>
+        <option value="cotizacion">Cotización</option>
+        <option value="asesoria">Asesoría</option>
+      </select>
+      <small id="tipo-ayuda">Filtra solo las consultas; visitas, accesos y cuentas conservan su cifra.</small>
+    </div>
+    <div class="acciones"><button id="m-aplicar" type="submit" class="btn btn-primary">Aplicar</button></div>
+  </form>
+
+  <div id="metricas-estado" class="alerta" role="status" aria-live="polite" hidden></div>
+  <p id="metricas-rango" class="rango-i6" aria-live="polite"></p>
+  <div id="metricas-prueba" hidden>
+    <%- include('../partials/i3/alerta', { tipo: 'aviso', tituloAlerta: 'Datos de prueba', mensaje: 'Este rango incluye visitas marcadas como prueba; no representan tráfico real.' }) %>
+  </div>
+
+  <div class="totales-i6" aria-label="Totales del rango">
+    <div class="glass panel-i6"><p class="nota-i6">Visitas</p><p class="cifra" data-total="visitas">—</p></div>
+    <div class="glass panel-i6"><p class="nota-i6">Accesos autenticados</p><p class="cifra" data-total="accesosAutenticados">—</p></div>
+    <div class="glass panel-i6"><p class="nota-i6">Cuentas creadas</p><p class="cifra" data-total="cuentasCreadas">—</p></div>
+    <div class="glass panel-i6"><p class="nota-i6">Consultas <span data-etiqueta-tipo></span></p><p class="cifra" data-total="consultas">—</p></div>
+  </div>
+
+  <div class="graficos-i6">
+    <section class="glass panel-i6 grafico-ancho-i6" aria-labelledby="t-trafico">
+      <h2 id="t-trafico">Tráfico diario: visitas y accesos autenticados</h2>
+      <p class="nota-i6" data-vacio="trafico" hidden>Sin datos para este rango.</p>
+      <div class="grafico-i6"><canvas id="g-trafico" role="img" aria-label="Gráfico de líneas de visitas y accesos por día. Los valores están en la tabla siguiente."></canvas></div>
+      <details>
+        <summary>Ver tabla de tráfico diario</summary>
+        <div class="table-responsive"><table class="table tabla-i3 tabla-metricas">
+          <caption>Visitas y accesos por día</caption>
+          <thead><tr><th scope="col">Fecha</th><th scope="col" class="text-end">Visitas</th><th scope="col" class="text-end">Accesos</th></tr></thead>
+          <tbody id="tabla-trafico"></tbody>
+        </table></div>
+      </details>
+    </section>
+
+    <section class="glass panel-i6" aria-labelledby="t-registros">
+      <h2 id="t-registros">Cuentas creadas por día</h2>
+      <p class="nota-i6" data-vacio="registros" hidden>Sin datos para este rango.</p>
+      <div class="grafico-i6"><canvas id="g-registros" role="img" aria-label="Gráfico de barras de cuentas creadas por día. Los valores están en la tabla siguiente."></canvas></div>
+      <details>
+        <summary>Ver tabla de cuentas creadas</summary>
+        <div class="table-responsive"><table class="table tabla-i3 tabla-metricas">
+          <caption>Cuentas creadas por día</caption>
+          <thead><tr><th scope="col">Fecha</th><th scope="col" class="text-end">Cuentas</th></tr></thead>
+          <tbody id="tabla-registros"></tbody>
+        </table></div>
+      </details>
+    </section>
+
+    <section class="glass panel-i6" aria-labelledby="t-tipos">
+      <h2 id="t-tipos">Consultas por tipo</h2>
+      <div data-vacio="tipos" hidden><%- include('../partials/i3/estado', { estado: 'vacio', tituloEstado: 'Sin datos para este rango', mensaje: 'No hay consultas que coincidan; no se dibuja la dona.' }) %></div>
+      <div class="grafico-i6 grafico-dona-i6"><canvas id="g-tipos" role="img" aria-label="Gráfico de dona de consultas por tipo. Los valores están en la tabla siguiente."></canvas></div>
+      <div class="table-responsive"><table class="table tabla-i3 tabla-metricas">
+        <caption>Consultas por tipo</caption>
+        <thead><tr><th scope="col">Tipo</th><th scope="col" class="text-end">Cantidad</th><th scope="col" class="text-end">%</th></tr></thead>
+        <tbody id="tabla-tipos"></tbody>
+      </table></div>
+    </section>
+  </div>
+</section>
+
+<script src="/vendor/chart.umd.js"></script>
+<script type="module" src="/js/metricas.js"></script>
+<%- include('../partials/i3/pie') %>
