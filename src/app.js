@@ -23,6 +23,7 @@ import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { obtenerCsrf, mostrarRegistro } from "./controllers/auth.controller.js";
+import { interfazRouter } from "./routes/interfaz.routes.js";
 import authRouter from "./routes/auth.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -111,11 +112,7 @@ app.get("/health", async (_req, res) => {
   }
 });
 
-app.get("/", (_req, res) => {
-  res.render("pages/inicio", {
-    titulo: "Inicio",
-  });
-});
+app.use(interfazRouter);
 
 // El módulo de consultas usa los permisos, CSRF y límites del equipo.
 const consultas = crearModuloConsultas({

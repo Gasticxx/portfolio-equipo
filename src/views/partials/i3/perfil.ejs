@@ -5,6 +5,6 @@
     <span class="codigo"><%= integrante.codigo %></span>
   </div>
   <div class="perfil-texto"><p class="eyebrow"><%= integrante.especialidad %></p><h3><%= integrante.nombre %></h3><p><%= integrante.presentacion %></p>
-    <a class="enlace-flecha" href="/i3/equipo/<%= integrante.codigo %>">Conocer perfil <span aria-hidden="true">↗</span></a>
+    <a class="enlace-flecha" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/equipo/<%= integrante.codigo %>">Conocer perfil <span aria-hidden="true">↗</span></a>
   </div>
 </article>
