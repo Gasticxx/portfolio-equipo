@@ -54,9 +54,35 @@ Una vez clonado el repositorio con GitHub Desktop, abrí la carpeta en Visual St
 
 En PowerShell (Windows):
 
-```powershell
-Copy-Item .env.example .env
-Copy-Item .env.example .env.test
+    Copy-Item .env.example .env
+    Copy-Item .env.example .env.test
+
+### 2. Generar tus dos secretos locales distintos (`SESSION_SECRET` y `VISIT_SECRET`)
+
+Ejecutá dos veces este comando en la terminal:
+
+    node -e "console.log(require('node:crypto').randomBytes(32).toString('hex'))"
+
+Pegá el primer código en `SESSION_SECRET=` y el segundo en `VISIT_SECRET=` dentro de tu archivo `.env` (y repetilo en `.env.test` cambiando `NODE_ENV=test`). Guardá ambos archivos (`Ctrl + S`).
+
+### 3. Instalar dependencias congeladas y preparar librerías visuales
+
+**Importante:** No ejecutar `npm install` ni `npm update`. Usar exclusivamente:
+
+    npm ci
+    npm run assets
+
+### 4. Ejecutar migraciones, datos iniciales, pruebas y levantar el servidor
+
+    npm run db:migrate
+    npm run db:seed
+    npm run test:unit
+    npm test
+    npm run dev
+
+Abrí en el navegador `http://localhost:3000`.
+
+---
 
 ## Despliegue en Producción y Límites de Planes Gratuitos (I2 08)
 
@@ -66,8 +92,24 @@ La versión publicada se ejecuta en un **Web Service Free de Render** conectado 
 - **Start Command:** `npm start`
 - **Health Check:** `GET /health` (`200 {"ok":true}`)
 - **Condiciones operativas del plan gratuito:**
-  - **Render Free:** Se suspende tras 15 minutos sin actividad (el primer acceso puede demorar entre 30 y 50 segundos en despertar) y su disco local es efímero; por ello las sesiones persisten en PostgreSQL (`app.sesiones`), los límites en `app.limites` y las imágenes en Supabase Storage.
+  - **Render Free:** Se suspende tras 15 minutos sin actividad (el primer acceso puede demorar en despertar) y su disco local es efímero; por ello las sesiones persisten en PostgreSQL (`app.sesiones`), los límites en `app.limites` y las imágenes en Supabase Storage.
   - **Supabase Free:** 500 MB de base de datos y 1 GB de Storage; se pausa tras 7 días de inactividad (verificar actividad antes de cada demostración).
-  - **Brevo Free:** Hasta 300 correos diarios mediante API HTTPS (`POST https://api.brevo.com/v3/smtp/email`); las pruebas del equipo se acotan a un máximo de 20 envíos por día.
+  - **Brevo Free:** Hasta 300 correos diarios mediante API HTTPS (`POST [https://api.brevo.com/v3/smtp/email](https://api.brevo.com/v3/smtp/email)`); las pruebas del equipo se acotan a un máximo de 20 envíos por día.
   - **Conservación de datos (`npm run db:limpiar`):** Sesiones según expiración, límites 24 h después de vencer su ventana, visitas y accesos 90 días, y consultas/respuestas/envíos 180 días. Ver detalle completo en `docs/despliegue.md`.
-```
+
+---
+
+## Arquitectura del Sistema y Módulos por Integrante (I2 10 — Requisito R11)
+
+La aplicación **Equipo Seis** sigue una arquitectura en capas sobre **Node.js 24.22.2 (ESM)**, **Express 5**, **EJS 3** y **PostgreSQL 17** (esquema `app`), separando estrictamente rutas (`src/routes`), controladores HTTP (`src/controllers`), validadores Zod (`src/validators`), lógica de negocio y transacciones (`src/services`) y consultas SQL parametrizadas (`src/repositories`):
+
+1. **Orden del Pipeline HTTP (`src/app.js`):**
+   `requestId` y log estructurado -> `helmet` (CSP estricta sin scripts inline) -> archivos estáticos (`src/public`) -> parsers JSON/URL-encoded limitados a 32 KiB -> `cookie-parser` firmado (`VISIT_SECRET`) -> sesión en PostgreSQL (`app.sesiones`, `equipo.sid`) -> verificación de usuario vigente (`activo` y `version_sesion`) -> límites de abuso en PostgreSQL (`app.limites`) y analítica de visitas (`analytics.js`) -> rutas de pantallas y API (`/api/*`) -> manejadores 404 y de errores sin filtración de SQL ni stack traces.
+
+2. **Responsabilidades y Módulos por Integrante:**
+   - **I1 (Producto, Equipo y Servicios):** Inicio, seis perfiles públicos, catálogo y CRUD administrativo de servicios (`equipo.*`, `servicios.*`), matriz de requisitos (`docs/requisitos.md`) y manual de uso (`docs/uso.md`).
+   - **I2 (Servidor, Integración, Métricas y Despliegue):** Base Express/EJS (`src/app.js`, `src/server.js`, `src/config/*`), seguridad común y rate limiting (`errors.js`, `limits.js`), captura de visitas y accesos (`analytics.js`, `metricas.*`), API `GET /api/admin/metricas`, script `scripts/limpiar.js`, CI (`.github/workflows/ci.yml`) y despliegue (`docs/despliegue.md`, `docs/api.md`).
+   - **I3 (Diseño, Componentes y UI de Demos):** Sistema de tokens CSS, manual visual (`docs/manual-diseno.md`), parciales EJS (`src/views/partials`), accesibilidad, animaciones y vistas interactivas del tablero de tareas y visualizador de algoritmos.
+   - **I4 (Identidad, Sesiones, Permisos y Usuarios):** Registro, login/logout con `node:crypto.scrypt`, sesiones en PostgreSQL (`session.js`), protección CSRF (`csrf.js`), autorización por rol y revocación inmediata (`auth.js`, `usuarios.*`, `docs/permisos.md`) y scripts `crear-cuenta.js` / `recuperar-cuenta.js`.
+   - **I5 (Datos, Proyectos, Demos e Imágenes):** Esquema SQL, migraciones con bloqueo asesor (`scripts/migrate.js`) y seeds (`scripts/seed.js`), CRUD de proyectos y demos (`proyectos.*`, `demos.*`), lógica de demos, procesado de imágenes WebP con `sharp` y Supabase Storage (`archivos.*`), respaldos `pg_dump` y restauración.
+   - **I6 (Contacto, Operador, Correo y Gráficos):** Circuito de consultas con idempotencia (`consultas.*`), integración con Brevo API HTTPS (`email.service.js`), panel de operador con respuestas y reintentos, gráficos interactivos con Chart.js (`js/metricas.js`) y plan de pruebas (`docs/pruebas.md`).
