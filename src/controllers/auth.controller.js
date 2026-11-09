@@ -259,3 +259,32 @@ export function mostrarRegistro(req, res) {
     usuarioActual: req.user ?? null,
   });
 }
+
+// Renderiza el formulario de ingreso con los parciales de I3.
+export function mostrarLogin(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
+  return res.render("auth/login", {
+    titulo: "Ingresar",
+    rutaActual: "/login",
+    usuarioActual: req.user ?? null,
+
+    // El registro agrega ?registro=ok cuando la cuenta se creó correctamente.
+    registroCompletado: req.query.registro === "ok",
+  });
+}
+
+export function mostrarMiCuenta(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
+  // cargarUsuarioActual ya comprobó la sesión antes de llegar a esta ruta.
+  if (!req.user) {
+    return res.redirect("/login");
+  }
+
+  return res.render("auth/mi-cuenta", {
+    titulo: "Mi cuenta",
+    rutaActual: "/mi-cuenta",
+    usuarioActual: req.user,
+  });
+}

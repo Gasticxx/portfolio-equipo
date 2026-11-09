@@ -22,8 +22,13 @@ import {
 import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
-import { obtenerCsrf, mostrarRegistro } from "./controllers/auth.controller.js";
 import authRouter from "./routes/auth.routes.js";
+import {
+  obtenerCsrf,
+  mostrarLogin,
+  mostrarRegistro,
+  mostrarMiCuenta,
+} from "./controllers/auth.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -96,6 +101,11 @@ app.get("/api/csrf", obtenerCsrf);
 
 // Muestra el formulario público de registro.
 app.get("/registro", mostrarRegistro);
+
+// Muestra la página pública de ingreso.
+app.get("/login", mostrarLogin);
+
+app.get("/mi-cuenta", mostrarMiCuenta);
 
 app.use(metricasRouter);
 
