@@ -47,3 +47,15 @@ Este documento registra los acuerdos operativos y las decisiones técnicas del *
 - **Decisión** Actualizar sharp de 0.34.5 a 0.35.5, fijando la versión en `package.json` y actualizando `package-lock.json`.
 - **Verificación** npm audit informó cero vulnerabilidades. Se probaron entradas PNG, JPEG y WebP convertidas a WebP de 4 por 4 píxeles.
 - **Pendiente** Revisar el cambio con I5 y comprobar su integración con las cargas de imágenes.
+
+---
+
+## DEC-004 — Migración 003, datos iniciales y reglas del ejecutor
+
+- **Fecha** 2026-11-08.
+- **Responsable** I5, Datos y proyectos.
+- **Consumidores afectados** I1 para miembros, tecnologías y servicios. I6 para consultas, respuestas y envíos. I2 para la ejecución de migraciones y datos iniciales.
+- **Migración** `003_contenido.sql` agrega las tablas de los apartados 10.1, 10.2, 10.3 (tareas de demo) y 10.4.
+- **Ejecutor** `migrate.js` registra como versión el nombre del archivo y no detecta ediciones de migraciones ya integradas, porque `schema_migrations` solo guarda `version` y `applied_at`. Requiere conexión en modo sesión (puerto 5432) por el bloqueo asesor.
+- **Datos iniciales** El seed carga solo faltantes y no restablece cambios del equipo. Los servicios se cargan únicamente con la tabla vacía, porque no tienen clave natural única. Los aportes se cargan solo si el integrante no tiene ninguno en el proyecto. No se cargan tecnologías de miembros, porque requieren confirmación personal.
+- **Verificación** Migraciones 001 a 003 aplicadas con `npm run db:migrate` sobre bases vacías de portfolio_dev y portfolio_test (PostgreSQL 17.11).
