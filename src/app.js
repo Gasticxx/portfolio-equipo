@@ -22,7 +22,8 @@ import {
 import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
-import { obtenerCsrf } from "./controllers/auth.controller.js";
+import { obtenerCsrf, mostrarRegistro } from "./controllers/auth.controller.js";
+import authRouter from "./routes/auth.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -37,12 +38,12 @@ app.set("trust proxy", env.IS_PROD ? 1 : false);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-// 2. Orden obligatorio del Apartado 17:
+// 2. Orden obligatorio del Apartado 17
 // Paso 1: requestId y log seguro
 app.use(requestIdMiddleware);
 app.use(safeRequestLogger);
 
-// Paso 2: Cabeceras de seguridad (helmet con CSP estricta y HSTS solo en producción)
+// Paso 2: Cabeceras de seguridad (Helmet con CSP estricta y HSTS solo en producción)
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -64,7 +65,7 @@ app.use(
   }),
 );
 
-// Paso 3: Archivos estáticos públicos (antes de sesión para no renovarla con assets)
+// Paso 3: Archivos estáticos públicos antes de la sesión
 app.use(express.static(path.join(__dirname, "public")));
 
 // Paso 4: Parsers limitados a 32 KiB
@@ -73,7 +74,7 @@ app.use(
   express.urlencoded({ extended: false, limit: CONSTANTS.JSON_BODY_LIMIT }),
 );
 
-// Paso 5: Cookie-parser firmado con VISIT_SECRET.
+// Paso 5: Cookie-parser firmado con VISIT_SECRET
 app.use(cookieParser(env.VISIT_SECRET));
 
 // Paso 6: Recuperamos la sesión desde PostgreSQL.
@@ -82,7 +83,7 @@ app.use(sessionMiddleware);
 // Paso 7: Comprobamos la sesión y cargamos el usuario vigente.
 app.use(cargarUsuarioActual);
 
-// Paso 8: Límites y timeout de petición entrante (30s) + Analítica de visitas (I2 04)
+// Paso 8: Timeout y analítica de visitas
 app.use((req, res, next) => {
   req.setTimeout(CONSTANTS.REQUEST_TIMEOUT_MS);
   res.setTimeout(CONSTANTS.REQUEST_TIMEOUT_MS);
@@ -90,10 +91,14 @@ app.use((req, res, next) => {
 });
 app.use(analyticsMiddleware);
 
-// Paso 9: Rutas base (Inicio y /health del Apartado 21)
-// Entregamos el token también a visitantes que todavía no iniciaron sesión.
+// Paso 9: Rutas de la aplicación
 app.get("/api/csrf", obtenerCsrf);
+
+// Muestra el formulario público de registro.
+app.get("/registro", mostrarRegistro);
+
 app.use(metricasRouter);
+
 app.get("/health", async (_req, res) => {
   try {
     const dbOk = await checkDbHealth();
@@ -112,8 +117,7 @@ app.get("/", (_req, res) => {
   });
 });
 
-// Módulo I6: contacto, panel del operador, correo (Brevo) y vista de métricas.
-// Usa los permisos y el CSRF de I4 y los límites de I2 (Apartados 14, 15 y 17).
+// El módulo de consultas usa los permisos, CSRF y límites del equipo.
 const consultas = crearModuloConsultas({
   pool,
   env,
@@ -121,8 +125,18 @@ const consultas = crearModuloConsultas({
   csrf: verificarCsrf,
   limites: { contacto: limiteContactoIp, operador: limiteOperadorUsuario },
 });
+
 app.use("/api", consultas.api);
 app.use(consultas.paginas);
+
+// Entregamos el token CSRF a quienes todavía no iniciaron sesión.
+app.get("/api/csrf", obtenerCsrf);
+
+// Mostramos el formulario de registro en el navegador.
+app.get("/registro", mostrarRegistro);
+
+// Publicamos las rutas de autenticación bajo /api/auth.
+app.use("/api/auth", authRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);
