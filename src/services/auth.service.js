@@ -8,6 +8,11 @@ import {
   verificarContrasena,
   HASH_FICTICIO,
 } from "./contrasenas.service.js";
+import { AppError } from "../middlewares/errors.js";
+import {
+  limpiarFallosLoginEmail,
+  registrarFalloLoginEmail,
+} from "../middlewares/limits.js";
 
 export async function registrarUsuario(pool, datosRegistro) {
   // Validamos la entrada antes de calcular el hash.
@@ -37,9 +42,28 @@ export async function autenticarUsuario(pool, datosLogin) {
   const passwordCorrecta = await verificarContrasena(password, hashEsperado);
 
   // Los tres casos comparten el mismo resultado de credenciales rechazadas.
+  // Contamos igual los tres casos: cuenta inexistente, inactiva o contraseña incorrecta.
   if (!usuario || !usuario.activo || !passwordCorrecta) {
+    const fallo = await registrarFalloLoginEmail(email, pool);
+
+    if (fallo.excedido) {
+      const error = new AppError(
+        429,
+        "LIMITE_EXCEDIDO",
+        "Superaste el límite de intentos permitidos. Esperá antes de volver a intentar.",
+      );
+
+      // El controlador usa este valor para enviar la cabecera Retry-After.
+      error.retryAfter = fallo.retryAfterSegundos;
+      throw error;
+    }
+
+    // El controlador sigue devolviendo el 401 de credenciales inválidas.
     return null;
   }
+
+  // Las credenciales válidas reinician el contador del email.
+  await limpiarFallosLoginEmail(email, pool);
 
   // versionSesion es un dato interno que el controlador guardará en la sesión.
   return {

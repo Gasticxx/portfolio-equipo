@@ -1,0 +1,86 @@
+<%# La cabecera de I3 abre el documento y el elemento main. %>
+<%- include("../partials/i3/cabecera") %>
+
+<section class="encabezado-pagina">
+  <p class="eyebrow">Tu cuenta</p>
+  <h1>Creá tu cuenta<span>.</span></h1>
+  <p>Registrate para acceder a los proyectos y las demos del equipo.</p>
+</section>
+
+<section class="formulario-layout seccion">
+  <aside>
+    <h2>Conocé nuestro trabajo.</h2>
+    <p>Completá tus datos para comenzar.</p>
+
+    <%- include("../partials/i3/alerta", {
+      tipo: "aviso",
+      tituloAlerta: "Antes de registrarte",
+      mensaje: "La contraseña debe tener entre 12 y 128 caracteres y ocupar hasta 256 bytes UTF-8."
+    }) %>
+  </aside>
+
+  <form
+    id="registro-form"
+    class="glass formulario"
+    method="post"
+    action="/api/auth/registro"
+    novalidate
+  >
+    <%- include("../partials/i3/campo", {
+      id: "nombre",
+      etiqueta: "Nombre",
+      tipo: "text",
+      limite: 80,
+      ayuda: "Entre 2 y 80 caracteres.",
+      valor: ""
+    }) %>
+
+    <%- include("../partials/i3/campo", {
+      id: "email",
+      etiqueta: "Correo electrónico",
+      tipo: "email",
+      limite: 254,
+      ayuda: "Ingresá una dirección de correo válida.",
+      valor: ""
+    }) %>
+
+    <%- include("../partials/i3/campo", {
+      id: "password",
+      etiqueta: "Contraseña",
+      tipo: "password",
+      limite: 128,
+      ayuda: "Entre 12 y 128 caracteres. Se admiten espacios.",
+      valor: ""
+    }) %>
+
+    <%- include("../partials/i3/campo", {
+      id: "passwordConfirm",
+      etiqueta: "Repetí la contraseña",
+      tipo: "password",
+      limite: 128,
+      ayuda: "Ingresá exactamente la misma contraseña.",
+      valor: ""
+    }) %>
+
+    <%# El script habilita el botón cuando conecta el formulario. %>
+    <button
+      id="registro-enviar"
+      class="btn btn-primary"
+      type="submit"
+      disabled
+    >
+      Crear cuenta
+    </button>
+
+    <p id="registro-estado" role="status" aria-live="polite"></p>
+
+    <p>¿Ya tenés una cuenta? <a href="/login">Ingresá</a>.</p>
+
+    <noscript>Activá JavaScript para utilizar el formulario de registro.</noscript>
+  </form>
+</section>
+
+<script src="/js/auth/registro.js" defer></script>
+
+<%# El pie de I3 cierra main y el documento. %>
+<%- include("../partials/i3/pie") %>
