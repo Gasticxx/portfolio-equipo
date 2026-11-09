@@ -259,3 +259,83 @@ export function mostrarRegistro(req, res) {
     usuarioActual: req.user ?? null,
   });
 }
+
+// Renderiza el formulario de ingreso con los parciales de I3.
+const RUTAS_ADMIN = new Set([
+  "/admin",
+  "/admin/proyectos",
+  "/admin/demos",
+  "/admin/servicios",
+  "/admin/usuarios",
+  "/admin/metricas",
+]);
+
+function destinoDespuesDelLogin(destino, rol) {
+  const destinoPorDefecto = "/mi-cuenta";
+
+  // next viene de la URL. Solo aceptamos un valor con el formato esperado.
+  if (
+    typeof destino !== "string" ||
+    destino.length > 200 ||
+    destino.includes("//") ||
+    /[\\\s\x00-\x1f\x7f]/.test(destino)
+  ) {
+    return destinoPorDefecto;
+  }
+
+  // Validamos la ruta por separado para conservar filtros como ?pagina=2.
+  const [ruta] = destino.split("?", 1);
+  const { ADMINISTRADOR, OPERADOR, REGISTRADO } = CONSTANTS.ROLES;
+
+  if (RUTAS_ADMIN.has(ruta)) {
+    return rol === ADMINISTRADOR ? destino : destinoPorDefecto;
+  }
+
+  if (/^\/operador\/consultas(?:\/[1-9]\d*)?$/.test(ruta)) {
+    return [OPERADOR, ADMINISTRADOR].includes(rol)
+      ? destino
+      : destinoPorDefecto;
+  }
+
+  if (
+    /^\/proyectos\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(ruta) ||
+    /^\/demos\/[1-9]\d*$/.test(ruta)
+  ) {
+    return [REGISTRADO, OPERADOR, ADMINISTRADOR].includes(rol)
+      ? destino
+      : destinoPorDefecto;
+  }
+
+  return destinoPorDefecto;
+}
+
+export function mostrarLogin(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
+  // Después del login, req.user ya trae el rol comprobado por el servidor.
+  if (req.user) {
+    return res.redirect(destinoDespuesDelLogin(req.query.next, req.user.rol));
+  }
+
+  return res.render("auth/login", {
+    titulo: "Ingresar",
+    rutaActual: "/login",
+    usuarioActual: null,
+    registroCompletado: req.query.registro === "ok",
+  });
+}
+
+export function mostrarMiCuenta(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
+  // cargarUsuarioActual ya comprobó la sesión antes de llegar a esta ruta.
+  if (!req.user) {
+    return res.redirect("/login");
+  }
+
+  return res.render("auth/mi-cuenta", {
+    titulo: "Mi cuenta",
+    rutaActual: "/mi-cuenta",
+    usuarioActual: req.user,
+  });
+}

@@ -8,8 +8,12 @@
   <link rel="stylesheet" href="/vendor/bootstrap.min.css">
   <link rel="stylesheet" href="/css/app.css">
   <script src="/js/ui.js" defer></script>
+  <script src="/js/ui.js" defer></script>
   <script src="/js/i3-fondo.js" defer></script>
   <script src="/js/i3-carrusel.js" defer></script>
+  <% if (usuarioActual) { %>
+    <script src="/js/auth/logout.js" defer></script>
+  <% } %>
 </head>
 <body class="interfaz-i3">
   <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -23,8 +27,13 @@
           <a href="<%= ruta %>" <%- ruta === rutaActual ? 'aria-current="page"' : '' %>><%= etiqueta %></a>
         <% } %>
         <% if (!usuarioActual) { %>
-          <a class="acceso" href="/i3/login">Ingresar <span aria-hidden="true">↗</span></a>
-          <a class="btn btn-primary" href="/i3/registro">Registrarse</a>
+          <%# La cabecera se comparte entre la maqueta de I3 y la aplicación. %>
+          <%
+            const enVistaPrevia = typeof rutaActual === "string"
+              && (rutaActual === "/i3" || rutaActual.startsWith("/i3/"));
+          %>
+          <a class="acceso" href="<%= enVistaPrevia ? '/i3/login' : '/login' %>">Ingresar <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-primary" href="<%= enVistaPrevia ? '/i3/registro' : '/registro' %>">Registrarse</a>
         <% } else { %>
           <a href="/mi-cuenta">Mi cuenta</a>
           <% if (['operador','administrador'].includes(usuarioActual.rol)) { %><a href="/operador/consultas">Consultas</a><% } %>
