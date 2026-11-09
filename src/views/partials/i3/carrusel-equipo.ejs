@@ -1,0 +1,14 @@
+<div class="equipo-rueda" data-equipo-rueda role="region" aria-roledescription="carrusel" aria-label="Integrantes del equipo">
+  <div class="equipo-escena rejilla" id="equipo-tarjetas">
+    <% integrantes.forEach(integrante => { %>
+      <div class="equipo-orbita-item" data-nombre="<%= integrante.nombre %>">
+        <%- include('perfil', {integrante}) %>
+      </div>
+    <% }) %>
+  </div>
+  <div class="equipo-controles" hidden>
+    <button type="button" class="btn btn-glass equipo-anterior" aria-label="Ver integrante anterior" aria-controls="equipo-tarjetas">←</button>
+    <p class="equipo-posicion" role="status" aria-live="polite" aria-atomic="true"></p>
+    <button type="button" class="btn btn-glass equipo-siguiente" aria-label="Ver siguiente integrante" aria-controls="equipo-tarjetas">→</button>
+  </div>
+</div>
