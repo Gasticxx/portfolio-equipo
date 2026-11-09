@@ -15,6 +15,7 @@ import {
 } from "./middlewares/errors.js";
 import { cargarUsuarioActual } from "./middlewares/auth.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
+import { metricasRouter } from "./routes/metricas.routes.js";
 import { obtenerCsrf } from "./controllers/auth.controller.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -86,6 +87,7 @@ app.use(analyticsMiddleware);
 // Paso 9: Rutas base (Inicio y /health del Apartado 21)
 // Entregamos el token también a visitantes que todavía no iniciaron sesión.
 app.get("/api/csrf", obtenerCsrf);
+app.use(metricasRouter);
 app.get("/health", async (_req, res) => {
   try {
     const dbOk = await checkDbHealth();
