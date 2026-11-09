@@ -119,8 +119,8 @@ Límite de pruebas: **20 envíos por día** (el plan gratuito de Brevo permite m
 
 | Fecha | Versión | Prueba | Remitente | Casilla | Resultado de Brevo | ¿Llegó? ¿Spam? | Estado |
 |---|---|---|---|---|---|---|---|
-| | | Envío real inicial desde el servidor (I6-02) | | | | | PENDIENTE |
-| | | Notificación de consulta (T06/R02) | | | | | PENDIENTE |
+| 2026-11-09 | feature/I6-04-07-consultas-correo (luego #21) | Envío real inicial desde el servidor (I6-02) | Remitente verificado de I6 (Gmail, single sender) | Casilla de prueba de I6 (Gmail) | 1.º intento: error, causa no confirmada (probable servidor con la API key anterior, sin reiniciar). 2.º intento: aceptado | Llegó a Recibidos, no a spam. Brevo reescribió el remitente a un dominio propio (firmado por `*.brevosend.com`, enviado por `*.sender-sib.com`) porque gmail.com no se puede autenticar | OK |
+| 2026-11-09 | feature/I6-04-07-consultas-correo (luego #21) | Notificación de consulta (T06/R02) | ídem | ídem | Aceptado; la consulta quedó registrada en ambos intentos | Recibidos | OK |
 | | | Respuesta del operador (T09/A25) | | | | | PENDIENTE |
 | | | Reintento tras error de configuración | | | | | PENDIENTE |
 
@@ -131,3 +131,4 @@ Límite de pruebas: **20 envíos por día** (el plan gratuito de Brevo permite m
 | 2026-11-08 | entrega inicial I6 | `node --test --test-concurrency=1 "tests/**/*.test.js"` (PostgreSQL 16 local, Brevo con doble) | 38 de 38 OK, tres ejecuciones seguidas |
 | 2026-11-08 | integración en `main` (b8665d2 + I6) | `npm test` con migraciones 001–003 aplicadas | 70 de 70 OK (24 del equipo + 46 de I6) |
 | 2026-11-08 | integración en `main` (b8665d2 + I6) | `npm test` con base sin migrar (como el CI actual) | 48 de 48 OK; las dos suites de I6 con base se omiten con motivo |
+| 2026-11-09 | `main` ff114bd (con #20 métricas de I2 y #25 sesiones de I4) | `npm test` en Windows, PostgreSQL 17, migraciones 001–003 | 75 de 75 OK, ninguna omitida |
