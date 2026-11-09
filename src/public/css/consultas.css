@@ -1,0 +1,60 @@
+/* Estilos propios del módulo I6 (contacto, operador y métricas).
+   Complementan los componentes de I3 (glass, campo, alerta, estado-vista,
+   tabla-i3) y usan sus tokens; no redefinen colores ni tipografía. */
+
+.seccion-i6 { padding-block: 32px; }
+.panel-i6 { padding: 24px; }
+.panel-i6 h2 { font-size: 22px; margin-bottom: 16px; }
+.panel-i6 h3 { font-size: 18px; margin-top: 16px; }
+
+.nota-i6 { color: var(--color-secundario); font-size: 14px; }
+.texto-aviso-i6 { color: var(--color-aviso); }
+.texto-preformateado { white-space: pre-wrap; overflow-wrap: anywhere; }
+.contador-i6 { margin: -16px 0 24px; color: var(--color-secundario); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.campo-check-i6 { display: flex; gap: 12px; align-items: flex-start; }
+.campo-check-i6 .form-check-input { width: 22px; height: 22px; margin-top: 2px; flex-shrink: 0; }
+.campo-check-i6 label { font-weight: 400; margin: 0; }
+
+/* Filtros en una fila (escritorio) que se apilan en móvil */
+.filtros-i6 { display: grid; grid-template-columns: 2fr repeat(3, minmax(0, 1fr)) auto; gap: 16px; align-items: end; }
+.filtros-i6 .campo { margin-bottom: 0; }
+.filtros-metricas-i6 { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; align-items: start; }
+.filtros-metricas-i6 > .acciones { padding-top: 32px; } /* alinea el botón con los controles */
+.paginacion-i6 { margin-top: 24px; }
+
+/* Detalle de consulta */
+.acciones-i6 { margin-block: 24px; }
+.detalle-i6 { display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; align-items: start; }
+.columna-i6 { display: grid; gap: 24px; }
+.datos-i6 { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 0; }
+.datos-i6 dt { font-weight: 600; }
+.datos-i6 dd { margin: 0; }
+.historial-i6 { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+.historial-i6 li { border-left: 3px solid var(--color-borde); padding-left: 16px; }
+.historial-cabecera { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 4px; }
+.reintento-i6 { display: grid; gap: 6px; }
+
+/* Métricas */
+.rango-i6 { font-weight: 600; margin-block: 16px; }
+.totales-i6 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.totales-i6 .nota-i6 { margin-bottom: 4px; }
+.cifra { font-size: 36px; font-weight: 700; line-height: 1.1; margin: 0; font-variant-numeric: tabular-nums; }
+.graficos-i6 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; }
+.grafico-ancho-i6 { grid-column: 1 / -1; }
+.grafico-i6 { position: relative; height: 280px; }
+.grafico-dona-i6 { height: 240px; }
+.graficos-i6 details { margin-top: 12px; }
+.graficos-i6 summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+
+@media (max-width: 991px) {
+  .filtros-i6, .filtros-metricas-i6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filtros-i6 .campo:first-child { grid-column: 1 / -1; }
+  .filtros-metricas-i6 > .acciones { padding-top: 0; }
+  .detalle-i6, .graficos-i6 { grid-template-columns: 1fr; }
+  .totales-i6 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 575px) {
+  .filtros-i6, .filtros-metricas-i6 { grid-template-columns: 1fr; }
+  .cifra { font-size: 28px; }
+}

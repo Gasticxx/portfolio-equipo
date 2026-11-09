@@ -1,0 +1,95 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/consultas.css">
+<%
+  const claseEnvio = { aceptado: 'text-bg-success', error: 'text-bg-danger', desconocido: 'text-bg-warning', pendiente: 'text-bg-secondary', enviando: 'text-bg-info' };
+  const fecha = new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Argentina/Buenos_Aires' });
+%>
+<section class="encabezado-pagina">
+  <p class="eyebrow">PANEL DEL OPERADOR</p>
+  <h1>Consultas<span>.</span></h1>
+  <p>Mensajes recibidos desde Contacto, con su estado de seguimiento y el resultado del aviso por email.</p>
+</section>
+
+<section class="seccion-i6">
+  <form id="filtros-consultas" class="glass formulario filtros-i6" method="get" action="/operador/consultas" role="search" aria-label="Filtrar consultas">
+    <div class="campo">
+      <label for="q">Buscar</label>
+      <input id="q" name="q" type="search" class="form-control" minlength="2" maxlength="80" value="<%= filtros.q ?? '' %>" aria-describedby="q-ayuda">
+      <small id="q-ayuda">Nombre, email o asunto (2 a 80 caracteres).</small>
+    </div>
+    <div class="campo">
+      <label for="f-tipo">Tipo</label>
+      <select id="f-tipo" name="tipo" class="form-select">
+        <option value="">Todos</option>
+        <% opciones.tipos.forEach((t) => { %><option value="<%= t %>" <%= filtros.tipo === t ? 'selected' : '' %>><%= etiquetas.tipo[t] %></option><% }) %>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="f-estado">Estado</label>
+      <select id="f-estado" name="estado" class="form-select">
+        <option value="">Todos</option>
+        <% opciones.estados.forEach((e) => { %><option value="<%= e %>" <%= filtros.estado === e ? 'selected' : '' %>><%= etiquetas.estadoConsulta[e] %></option><% }) %>
+      </select>
+    </div>
+    <div class="campo">
+      <label for="f-notif">Notificación</label>
+      <select id="f-notif" name="notificacionEstado" class="form-select">
+        <option value="">Todas</option>
+        <% opciones.estadosEnvio.forEach((e) => { %><option value="<%= e %>" <%= filtros.notificacionEstado === e ? 'selected' : '' %>><%= etiquetas.estadoEnvio[e] %></option><% }) %>
+      </select>
+    </div>
+    <div class="acciones">
+      <button type="submit" class="btn btn-primary">Filtrar</button>
+      <a class="btn btn-glass" href="/operador/consultas">Limpiar</a>
+    </div>
+  </form>
+
+  <% if (errorFiltros) { %>
+    <%- include('../partials/i3/alerta', { tipo: 'aviso', tituloAlerta: 'Filtros ignorados', mensaje: errorFiltros }) %>
+  <% } %>
+
+  <p class="nota-i6" aria-live="polite">
+    <%= meta.total %> <%= meta.total === 1 ? 'consulta' : 'consultas' %><%= meta.totalPages > 1 ? ` · página ${meta.page} de ${meta.totalPages}` : '' %>
+  </p>
+
+  <% if (consultas.length === 0) { %>
+    <%- include('../partials/i3/estado', { estado: 'vacio', tituloEstado: meta.total === 0 ? 'No hay consultas' : 'Página sin resultados', mensaje: meta.total === 0 ? 'Ninguna consulta coincide con los filtros.' : 'Volvé a la primera página.' }) %>
+  <% } else { %>
+    <div class="table-responsive glass" role="region" aria-label="Consultas recibidas" tabindex="0">
+      <table class="table tabla-i3">
+        <caption>Consultas recibidas, más recientes primero</caption>
+        <thead>
+          <tr><th scope="col">#</th><th scope="col">Fecha</th><th scope="col">Nombre</th><th scope="col">Tipo</th><th scope="col">Asunto</th><th scope="col">Estado</th><th scope="col">Notificación</th></tr>
+        </thead>
+        <tbody>
+          <% consultas.forEach((c) => { %>
+            <tr>
+              <td><a href="/operador/consultas/<%= c.id %>">#<%= c.id %></a></td>
+              <td class="text-nowrap"><%= fecha.format(new Date(c.createdAt)) %></td>
+              <td><%= c.nombre %></td>
+              <td><%= etiquetas.tipo[c.tipo] %></td>
+              <td><a href="/operador/consultas/<%= c.id %>"><%= c.asunto %></a></td>
+              <td><span class="badge text-bg-light border"><%= etiquetas.estadoConsulta[c.estado] %></span></td>
+              <td><% if (c.notificacionEstado) { %><span class="badge <%= claseEnvio[c.notificacionEstado] %>"><%= etiquetas.estadoEnvio[c.notificacionEstado] %></span><% } else { %>—<% } %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+  <% if (meta.totalPages > 1) { %>
+    <nav class="paginacion-i6" aria-label="Páginas de consultas">
+      <ul class="pagination flex-wrap">
+        <li class="page-item <%= meta.page <= 1 ? 'disabled' : '' %>"><a class="page-link" href="<%= urlPagina(Math.max(1, Math.min(meta.page - 1, meta.totalPages))) %>">Anterior</a></li>
+        <% for (let p = Math.max(1, meta.page - 2); p <= Math.min(meta.totalPages, meta.page + 2); p++) { %>
+          <li class="page-item <%= p === meta.page ? 'active' : '' %>"><a class="page-link" href="<%= urlPagina(p) %>" <%- p === meta.page ? 'aria-current="page"' : '' %>><%= p %></a></li>
+        <% } %>
+        <li class="page-item <%= meta.page >= meta.totalPages ? 'disabled' : '' %>"><a class="page-link" href="<%= urlPagina(Math.min(meta.page + 1, meta.totalPages)) %>">Siguiente</a></li>
+      </ul>
+    </nav>
+  <% } %>
+</section>
+
+<script type="module" src="/js/operador.js"></script>
+<%- include('../partials/i3/pie') %>
