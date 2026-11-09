@@ -19,9 +19,10 @@ import {
   limiteContactoIp,
   limiteOperadorUsuario,
 } from "./middlewares/limits.js";
-import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
+import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
+import { interfazRouter } from "./routes/interfaz.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import {
   obtenerCsrf,
@@ -98,14 +99,10 @@ app.use(analyticsMiddleware);
 
 // Paso 9: Rutas de la aplicación
 app.get("/api/csrf", obtenerCsrf);
-
-// Muestra el formulario público de registro.
 app.get("/registro", mostrarRegistro);
-
-// Muestra la página pública de ingreso.
 app.get("/login", mostrarLogin);
-
 app.get("/mi-cuenta", mostrarMiCuenta);
+app.use("/api/auth", authRouter);
 
 app.use(metricasRouter);
 
@@ -121,12 +118,6 @@ app.get("/health", async (_req, res) => {
   }
 });
 
-app.get("/", (_req, res) => {
-  res.render("pages/inicio", {
-    titulo: "Inicio",
-  });
-});
-
 // El módulo de consultas usa los permisos, CSRF y límites del equipo.
 const consultas = crearModuloConsultas({
   pool,
@@ -139,14 +130,8 @@ const consultas = crearModuloConsultas({
 app.use("/api", consultas.api);
 app.use(consultas.paginas);
 
-// Entregamos el token CSRF a quienes todavía no iniciaron sesión.
-app.get("/api/csrf", obtenerCsrf);
-
-// Mostramos el formulario de registro en el navegador.
-app.get("/registro", mostrarRegistro);
-
-// Publicamos las rutas de autenticación bajo /api/auth.
-app.use("/api/auth", authRouter);
+// Las rutas de autenticación y consultas se resuelven antes que la interfaz de I3.
+app.use(interfazRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);

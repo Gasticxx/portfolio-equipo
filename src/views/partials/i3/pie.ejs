@@ -1,8 +1,8 @@
   </main>
   <footer class="pie contenedor">
-    <a class="marca" href="/i3">equipo<span class="marca-seis">seis</span>.</a>
+    <a class="marca" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %><%= typeof baseUi === 'string' && !baseUi ? '/' : '' %>">equipo<span class="marca-seis">seis</span>.</a>
     <p>Seis miradas. Un proyecto en común.</p>
-    <nav aria-label="Navegación del pie"><a href="/i3/equipo">Equipo</a><a href="/i3/proyectos">Proyectos</a><a href="/i3/contacto">Contacto</a></nav>
+    <nav aria-label="Navegación del pie"><a href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/equipo">Equipo</a><a href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/proyectos">Proyectos</a><a href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/contacto">Contacto</a></nav>
     <small>Portfolio colectivo · En desarrollo</small>
   </footer>
   <div class="notificacion" role="status" aria-live="polite" aria-atomic="true" id="notificacion"></div>
