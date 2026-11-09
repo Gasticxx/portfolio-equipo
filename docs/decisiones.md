@@ -47,3 +47,19 @@ Este documento registra los acuerdos operativos y las decisiones técnicas del *
 - **Decisión** Actualizar sharp de 0.34.5 a 0.35.5, fijando la versión en `package.json` y actualizando `package-lock.json`.
 - **Verificación** npm audit informó cero vulnerabilidades. Se probaron entradas PNG, JPEG y WebP convertidas a WebP de 4 por 4 píxeles.
 - **Pendiente** Revisar el cambio con I5 y comprobar su integración con las cargas de imágenes.
+
+
+---
+
+## DEC-004: Organización y Ceremonias del Sprint 1 y 2 (Tarjeta I2 05)
+
+- **Facilitador (Scrum Master):** I2 (@Gasticxx)
+- **Product Owner:** I1
+- **Objetivo del Sprint 1 (Apartado 19):** "Un visitante conoce al equipo y una cuenta entra al primer proyecto y demo."
+- **Objetivo del Sprint 2 (Apartado 19):** "El equipo gestiona contenido, cuentas y consultas completas."
+
+### Ritmo operativo acordado (Apartado 19)
+- **Daily Scrum:** 15 minutos diarios por Discord a las 20:00 hs (Argentina). Cada integrante responde qué integrará a continuación y qué bloqueo requiere apoyo.
+- **Ventanas de revisión e integración de Pull Requests:** 13:00 hs y 21:00 hs (Argentina). Máximo 1 tarea en desarrollo y hasta 2 revisiones pendientes por persona.
+- **Gestión de bloqueos:** Si un bloqueo supera entre 30 y 60 minutos sin avance, se coloca la etiqueta `Bloqueada` en GitHub Projects indicando causa, persona que apoya y próximo paso.
+- **Retrospectiva y mejora accionable:** Integrar ramas cortas a diario y verificar los esquemas SQL con I5 antes de abrir el Pull Request de cada módulo.

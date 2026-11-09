@@ -25,7 +25,7 @@ export function esRutaContableDeVisita(method, rawPath) {
     }
     const cleanPath = (rawPath || '/').split('?')[0];
     const normalizada =
-    cleanPath.length > 1 ? cleanPath.replace(/\/+$/, '') : cleanPath;
+        cleanPath.length > 1 ? cleanPath.replace(/\/+$/, '') : cleanPath;
 
     return PATRONES_RUTAS_CONTABLES.some((regex) => regex.test(normalizada));
 }
@@ -44,4 +44,31 @@ export async function registrarActividadVisita(
     const nuevoId = crypto.randomUUID();
     await deps.insertNuevaVisita(nuevoId, false);
     return { visitaId: nuevoId, esNueva: true };
+}
+
+export async function registrarAccesoUsuario(
+    visitaId,
+    usuarioId,
+    deps = metricasRepo
+) {
+    const idNumerico = Number(usuarioId);
+    if (!esUuidVisitaValido(visitaId) || !Number.isInteger(idNumerico) || idNumerico <= 0) {
+        return { registrado: false, acceso: null };
+    }
+
+    const nuevoAcceso = await deps.insertAccesoAutenticado(visitaId, idNumerico);
+    return {
+        registrado: Boolean(nuevoAcceso),
+        acceso: nuevoAcceso,
+    };
+}
+
+export async function garantizarVisitaYAccesoEnLogin(
+    cookieVisitaId,
+    usuarioId,
+    deps = metricasRepo
+) {
+    const { visitaId, esNueva } = await registrarActividadVisita(cookieVisitaId, deps);
+    const { registrado, acceso } = await registrarAccesoUsuario(visitaId, usuarioId, deps);
+    return { visitaId, esNuevaVisita: esNueva, accesoRegistrado: registrado, acceso };
 }

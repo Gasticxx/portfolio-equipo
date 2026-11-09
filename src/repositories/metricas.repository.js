@@ -19,5 +19,16 @@ export async function insertNuevaVisita(visitaId, esPrueba = false, db = pool) {
         RETURNING id, iniciada_at, ultima_actividad_at, es_prueba
     `;
     const result = await db.query(sql, [visitaId, Boolean(esPrueba)]);
-return result.rows[0];
+    return result.rows[0];
+}
+
+export async function insertAccesoAutenticado(visitaId, usuarioId, db = pool) {
+    const sql = `
+        INSERT INTO app.accesos (visita_id, usuario_id, created_at)
+        VALUES ($1, $2, now())
+        ON CONFLICT (visita_id, usuario_id) DO NOTHING
+        RETURNING id, visita_id AS "visitaId", usuario_id AS "usuarioId", created_at AS "createdAt"
+    `;
+    const result = await db.query(sql, [visitaId, usuarioId]);
+    return result.rows[0] || null;
 }
