@@ -95,3 +95,60 @@ test('registrarActividadVisita (Caso A28): recargar dentro de 30 min mantiene 1 
     assert.notEqual(despuesDeExpirar.visitaId, primera.visitaId);
     assert.equal(visitasEnMemoria.size, 2);
 });
+
+test('Caso A07 y A29: login conserva visita anonima, no duplica acceso en recargas y suma segundo acceso con otra cuenta', async () => {
+    const { garantizarVisitaYAccesoEnLogin } = await import(
+        '../../src/services/metricas.service.js'
+    );
+
+    const visitas = new Map();
+    const accesos = new Set();
+
+    const fakeDeps = {
+        async touchVisitaVigente(id) {
+            if (visitas.has(id)) {
+                return { id };
+            }
+            return null;
+        },
+        async insertNuevaVisita(id) {
+            visitas.set(id, { id });
+            return { id };
+        },
+        async insertAccesoAutenticado(visitaId, usuarioId) {
+            const clave = `${visitaId}:${usuarioId}`;
+            if (accesos.has(clave)) {
+                return null;
+            }
+            accesos.add(clave);
+            return { id: accesos.size, visitaId, usuarioId };
+        },
+    };
+
+  // 1. Visitante navega anónimo -> genera visita V1
+    const navAnonima = await registrarActividadVisita(undefined, fakeDeps);
+    assert.equal(visitas.size, 1);
+    assert.equal(accesos.size, 0);
+
+  // 2. Inicia sesión la Cuenta 1 (id=10) en esa misma visita -> conserva V1 y suma 1 acceso (Caso A07)
+    const loginU1 = await garantizarVisitaYAccesoEnLogin(navAnonima.visitaId, 10, fakeDeps);
+    assert.equal(loginU1.visitaId, navAnonima.visitaId);
+    assert.equal(loginU1.esNuevaVisita, false);
+    assert.equal(loginU1.accesoRegistrado, true);
+    assert.equal(visitas.size, 1);
+    assert.equal(accesos.size, 1);
+
+  // 3. Cuenta 1 recarga varias veces -> mantiene 1 visita y 1 acceso (sin duplicar)
+    const recargaU1 = await garantizarVisitaYAccesoEnLogin(navAnonima.visitaId, 10, fakeDeps);
+    assert.equal(recargaU1.accesoRegistrado, false);
+    assert.equal(visitas.size, 1);
+    assert.equal(accesos.size, 1);
+
+  // 4. Cuenta 1 cierra sesión y entra Cuenta 2 (id=20) en la misma visita -> 1 visita y 2 accesos (Caso A29)
+    const loginU2 = await garantizarVisitaYAccesoEnLogin(navAnonima.visitaId, 20, fakeDeps);
+    assert.equal(loginU2.visitaId, navAnonima.visitaId);
+    assert.equal(loginU2.esNuevaVisita, false);
+    assert.equal(loginU2.accesoRegistrado, true);
+    assert.equal(visitas.size, 1);
+    assert.equal(accesos.size, 2);
+});

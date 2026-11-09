@@ -4,9 +4,38 @@ import {
     esRutaContableDeVisita,
     esUuidVisitaValido,
     registrarActividadVisita,
+    registrarAccesoUsuario,
+    garantizarVisitaYAccesoEnLogin,
 } from '../services/metricas.service.js';
 
-export function crearAnalyticsMiddleware(servicioRegistrar = registrarActividadVisita) {
+function obtenerUsuarioAutenticadoId(req, res) {
+    const candidato =
+        req.user?.id ??
+        req.usuario?.id ??
+        res.locals?.usuarioActual?.id ??
+        req.session?.usuarioId ??
+        null;
+    const id = Number(candidato);
+    return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+function fijarCookieVisita(res, visitaId) {
+    res.cookie(CONSTANTS.VISITS.COOKIE_NAME, visitaId, {
+        signed: true,
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        secure: env.IS_PROD,
+        maxAge: CONSTANTS.VISITS.WINDOW_MS,
+    });
+}
+
+export function crearAnalyticsMiddleware(
+    deps = {
+        servicioVisitas: registrarActividadVisita,
+        servicioAccesos: registrarAccesoUsuario,
+    }
+) {
     return async function analyticsMiddleware(req, res, next) {
         const cookieActual = req.signedCookies?.[CONSTANTS.VISITS.COOKIE_NAME];
         if (esUuidVisitaValido(cookieActual)) {
@@ -19,25 +48,38 @@ export function crearAnalyticsMiddleware(servicioRegistrar = registrarActividadV
         }
 
         try {
-            const { visitaId } = await servicioRegistrar(cookieActual);
+            const { visitaId } = await deps.servicioVisitas(cookieActual);
             req.visitaId = visitaId;
             res.locals.visitaId = visitaId;
+            fijarCookieVisita(res, visitaId);
 
-            res.cookie(CONSTANTS.VISITS.COOKIE_NAME, visitaId, {
-                signed: true,
-                httpOnly: true,
-                sameSite: 'lax',
-                path: '/',
-                secure: env.IS_PROD,
-                maxAge: CONSTANTS.VISITS.WINDOW_MS,
-            });
+            const usuarioId = obtenerUsuarioAutenticadoId(req, res);
+            if (usuarioId) {
+                await deps.servicioAccesos(visitaId, usuarioId);
+            }
         } catch {
-      // Si la tabla app.visitas aún no fue migrada en desarrollo local,
-      // no se interrumpe la navegación pública (degradación controlada).
-    }
+      // Degradación controlada si la base local aún no tiene las tablas migradas
+        }
 
         return next();
     };
+}
+
+export async function registrarAccesoTrasLogin(req, res, usuarioId) {
+    const cookieActual =
+        req.visitaId || req.signedCookies?.[CONSTANTS.VISITS.COOKIE_NAME];
+    try {
+        const { visitaId } = await garantizarVisitaYAccesoEnLogin(
+            cookieActual,
+            usuarioId
+        );
+        req.visitaId = visitaId;
+        res.locals.visitaId = visitaId;
+        fijarCookieVisita(res, visitaId);
+        return visitaId;
+    } catch {
+        return null;
+    }
 }
 
 export const analyticsMiddleware = crearAnalyticsMiddleware();
