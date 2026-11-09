@@ -1,0 +1,48 @@
+<%# Reutilizamos la cabecera y los campos del formulario de registro. %>
+<%- include("../partials/i3/cabecera") %>
+
+<section class="encabezado-pagina">
+  <p class="eyebrow">Tu cuenta</p>
+  <h1>Ingresá a tu cuenta<span>.</span></h1>
+  <p>Accedé a los proyectos y las demos del equipo.</p>
+</section>
+
+<section class="formulario-layout seccion">
+  <aside>
+    <h2>Bienvenido de vuelta.</h2>
+
+    <% if (registroCompletado) { %>
+      <p role="status">Tu cuenta ya está creada. Ingresá con tus datos.</p>
+    <% } %>
+  </aside>
+
+  <form id="login-form" class="glass formulario" method="post" action="/api/auth/login" novalidate>
+    <%- include("../partials/i3/campo", {
+      id: "email",
+      etiqueta: "Correo electrónico",
+      tipo: "email",
+      limite: 254,
+      ayuda: "Usá el correo con el que te registraste.",
+      valor: ""
+    }) %>
+
+    <%- include("../partials/i3/campo", {
+      id: "password",
+      etiqueta: "Contraseña",
+      tipo: "password",
+      limite: 128,
+      ayuda: "Ingresá la contraseña de tu cuenta.",
+      valor: ""
+    }) %>
+
+    <%# El script del formulario habilitará el botón cuando esté conectado. %>
+    <button id="login-enviar" class="btn btn-primary" type="submit" disabled>
+      Ingresar
+    </button>
+
+    <p id="login-estado" role="status" aria-live="polite"></p>
+    <p>¿Todavía no tenés cuenta? <a href="/registro">Registrate</a>.</p>
+  </form>
+</section>
+<script src="/js/auth/login.js" defer></script>
+<%- include("../partials/i3/pie") %>

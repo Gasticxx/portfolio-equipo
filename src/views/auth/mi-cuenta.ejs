@@ -1,0 +1,18 @@
+<%- include("../partials/i3/cabecera") %>
+
+<section class="encabezado-pagina">
+  <h1>Mi cuenta<span>.</span></h1>
+</section>
+
+<section class="glass seccion">
+  <dl>
+    <dt>Nombre</dt>
+    <dd><%= usuarioActual.nombre %></dd>
+    <dt>Correo</dt>
+    <dd><%= usuarioActual.email %></dd>
+    <dt>Rol</dt>
+    <dd><%= usuarioActual.rol %></dd>
+  </dl>
+</section>
+
+<%- include("../partials/i3/pie") %>
