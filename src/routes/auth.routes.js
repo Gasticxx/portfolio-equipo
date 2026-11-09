@@ -7,16 +7,18 @@ import {
 } from "../controllers/auth.controller.js";
 import { requerirAutenticacion } from "../middlewares/auth.js";
 import { verificarCsrf } from "../middlewares/csrf.js";
+import { limiteLoginIp, limiteRegistroIp } from "../middlewares/limits.js";
 
 // Agrupamos las rutas de autenticación.
 // La aplicación agregará el prefijo /api/auth al montar este router.
 const authRouter = express.Router();
 
 // Comprobamos CSRF antes de crear una cuenta.
-authRouter.post("/registro", verificarCsrf, registrar);
+// Aplicamos el límite por IP y validamos CSRF antes de crear la cuenta.
+authRouter.post("/registro", limiteRegistroIp, verificarCsrf, registrar);
 
-// Comprobamos CSRF antes de verificar credenciales y crear la sesión.
-authRouter.post("/login", verificarCsrf, iniciarSesion);
+// Aplicamos el límite por IP y validamos CSRF antes de verificar credenciales.
+authRouter.post("/login", limiteLoginIp, verificarCsrf, iniciarSesion);
 
 // Exigimos autenticación y CSRF antes de destruir la sesión.
 authRouter.post("/logout", requerirAutenticacion, verificarCsrf, cerrarSesion);

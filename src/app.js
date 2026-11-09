@@ -23,6 +23,7 @@ import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { obtenerCsrf, mostrarRegistro } from "./controllers/auth.controller.js";
+import authRouter from "./routes/auth.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -127,6 +128,15 @@ const consultas = crearModuloConsultas({
 
 app.use("/api", consultas.api);
 app.use(consultas.paginas);
+
+// Entregamos el token CSRF a quienes todavía no iniciaron sesión.
+app.get("/api/csrf", obtenerCsrf);
+
+// Mostramos el formulario de registro en el navegador.
+app.get("/registro", mostrarRegistro);
+
+// Publicamos las rutas de autenticación bajo /api/auth.
+app.use("/api/auth", authRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);

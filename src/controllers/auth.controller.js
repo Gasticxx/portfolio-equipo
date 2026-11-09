@@ -9,6 +9,7 @@ import { obtenerTokenCsrf } from "../middlewares/csrf.js";
 import { env } from "../config/env.js";
 import { CONSTANTS } from "../config/constants.js";
 import { logoutSchema } from "../validators/auth.validator.js";
+import { responderLimiteExcedido } from "../middlewares/limits.js";
 
 function obtenerErroresPorCampo(error) {
   // Guardamos un mensaje por campo en un objeto sin claves heredadas.
@@ -188,7 +189,10 @@ export async function iniciarSesion(req, res, next) {
         ),
       );
     }
-
+    // Reutilizamos la misma respuesta que envían los límites por IP.
+    if (error.status === 429 && error.code === "LIMITE_EXCEDIDO") {
+      return responderLimiteExcedido(req, res, error.retryAfter);
+    }
     return next(error);
   }
 }
