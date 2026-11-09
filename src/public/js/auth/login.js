@@ -42,7 +42,8 @@ formulario.addEventListener("submit", async (evento) => {
     }
 
     // El navegador ya recibió la cookie de la sesión autenticada.
-    window.location.assign("/mi-cuenta");
+    // Volvemos a pedir /login con la cookie nueva y el mismo parámetro next.
+    window.location.reload();
   } catch {
     estado.textContent = "No se pudo completar el ingreso. Volvé a intentar.";
   } finally {
