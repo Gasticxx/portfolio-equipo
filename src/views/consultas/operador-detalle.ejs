@@ -1,0 +1,117 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/consultas.css">
+<%
+  const claseEnvio = { aceptado: 'text-bg-success', error: 'text-bg-danger', desconocido: 'text-bg-warning', pendiente: 'text-bg-secondary', enviando: 'text-bg-info' };
+  const fecha = new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Argentina/Buenos_Aires' });
+  const f = (iso) => (iso ? fecha.format(new Date(iso)) : '—');
+  const c = consulta;
+%>
+<section class="encabezado-pagina" data-consulta-id="<%= c.id %>">
+  <a class="regreso" href="/operador/consultas">← Volver a consultas</a>
+  <p class="eyebrow">CONSULTA · <%= etiquetas.tipo[c.tipo].toUpperCase() %></p>
+  <h1>#<%= c.id %> <%= c.asunto %><span>.</span></h1>
+  <p>Estado: <strong><%= etiquetas.estadoConsulta[c.estado] %></strong> · recibida el <%= f(c.createdAt) %></p>
+</section>
+
+<div id="operador-estado" class="alerta" role="status" aria-live="polite" tabindex="-1" hidden></div>
+
+<div class="acciones acciones-i6" aria-label="Cambiar estado">
+  <% c.transicionesPermitidas.forEach((destino) => { %>
+    <button type="button" class="btn btn-glass" data-accion="estado" data-estado="<%= destino %>">
+      <%= c.estado === 'cerrada' && destino === 'en_proceso' ? 'Reabrir consulta' : etiquetas.accionEstado[destino] %>
+    </button>
+  <% }) %>
+  <% if (c.estado === 'respondida') { %><small class="nota-i6">“Cerrar” finaliza el seguimiento; se puede reabrir.</small><% } %>
+</div>
+
+<div class="detalle-i6">
+  <section class="glass panel-i6" aria-labelledby="titulo-datos">
+    <h2 id="titulo-datos">Datos de la consulta</h2>
+    <dl class="datos-i6">
+      <dt>Nombre</dt><dd><%= c.nombre %></dd>
+      <dt>Email</dt><dd class="text-break"><%= c.email %></dd>
+      <dt>Tipo</dt><dd><%= etiquetas.tipo[c.tipo] %></dd>
+      <dt>Servicio</dt>
+      <dd><% if (c.servicio.nombre) { %><%= c.servicio.nombre %><% if (c.servicio.id === null) { %> <span class="nota-i6">(servicio eliminado; se conserva el nombre)</span><% } %><% } else { %>—<% } %></dd>
+      <dt>Consentimiento</dt><dd><%= f(c.consentimientoAt) %></dd>
+    </dl>
+    <h3>Mensaje</h3>
+    <p class="texto-preformateado"><%= c.mensaje %></p>
+  </section>
+
+  <div class="columna-i6">
+    <section class="glass panel-i6" aria-labelledby="titulo-historial">
+      <h2 id="titulo-historial">Historial de respuestas</h2>
+      <% if (c.respuestas.length === 0) { %>
+        <p class="nota-i6">Todavía no hay respuestas.</p>
+      <% } else { %>
+        <ol class="historial-i6">
+          <% c.respuestas.forEach((r) => { %>
+            <li>
+              <p class="historial-cabecera"><strong><%= r.autor.nombre %></strong> <span class="nota-i6"><%= f(r.createdAt) %></span>
+                <% if (r.envio) { %><span class="badge <%= claseEnvio[r.envio.estado] %>"><%= etiquetas.estadoEnvio[r.envio.estado] %></span><% } %></p>
+              <p class="texto-preformateado"><%= r.mensaje %></p>
+            </li>
+          <% }) %>
+        </ol>
+      <% } %>
+    </section>
+
+    <section class="glass panel-i6" aria-labelledby="titulo-responder">
+      <h2 id="titulo-responder">Responder</h2>
+      <% if (!c.puedeResponder) { %>
+        <%- include('../partials/i3/alerta', { tipo: 'aviso', tituloAlerta: 'Consulta cerrada', mensaje: 'Reabrila para enviar una nueva respuesta.' }) %>
+      <% } else { %>
+        <p class="nota-i6">Se envía a <strong class="text-break"><%= c.email %></strong> desde la casilla del equipo, como texto plano.</p>
+        <form id="form-respuesta" novalidate data-min="<%= limites.mensaje.min %>" data-max="<%= limites.mensaje.max %>">
+          <%- include('../partials/i3/campo', { id: 'respuesta', etiqueta: 'Mensaje de respuesta', tipo: 'textarea', limite: limites.mensaje.max, ayuda: `Entre ${limites.mensaje.min} y ${limites.mensaje.max} caracteres.`, valor: '' }) %>
+          <p id="contador-respuesta" class="contador-i6">0 / <%= limites.mensaje.max %></p>
+          <button type="submit" id="btn-responder" class="btn btn-primary">Enviar respuesta →</button>
+        </form>
+      <% } %>
+    </section>
+  </div>
+</div>
+
+<section class="seccion-i6" aria-labelledby="titulo-envios">
+  <h2 id="titulo-envios">Envíos de email</h2>
+  <p class="nota-i6">“Aceptado” significa que Brevo admitió el mensaje; la recepción se comprueba en la casilla. Hasta 3 intentos por envío, con al menos 60 segundos entre intentos.</p>
+  <div class="table-responsive glass" role="region" aria-label="Envíos de email" tabindex="0">
+    <table class="table tabla-i3">
+      <caption>Envíos de email de esta consulta</caption>
+      <thead><tr><th scope="col">Clase</th><th scope="col">Destinatario</th><th scope="col">Estado</th><th scope="col">Intentos</th><th scope="col">Detalle</th><th scope="col">Acción</th></tr></thead>
+      <tbody>
+        <% c.envios.forEach((e) => { %>
+          <tr>
+            <td><%= etiquetas.clase[e.clase] %><br><small class="nota-i6"><%= f(e.updatedAt) %></small></td>
+            <td class="text-break"><%= e.destinatario %></td>
+            <td><span class="badge <%= claseEnvio[e.estado] %>"><%= etiquetas.estadoEnvio[e.estado] %></span></td>
+            <td><%= e.intentos %> / 3</td>
+            <td class="text-break"><small>
+              <% if (e.errorCodigo) { %>Código: <%= e.errorCodigo %><br><% } %>
+              <% if (e.proveedorId) { %>ID proveedor: <%= e.proveedorId %><% } %>
+              <% if (!e.errorCodigo && !e.proveedorId) { %>—<% } %>
+            </small></td>
+            <td>
+              <% if (e.reintento.permitido || e.reintento.esperaSegundos > 0) { %>
+                <div class="reintento-i6">
+                  <% if (e.reintento.requiereConfirmacion) { %>
+                    <label class="campo-check-i6"><input class="form-check-input" type="checkbox" id="confirmar-<%= e.id %>"> <small>Revisé el panel de Brevo y acepto el riesgo de duplicado</small></label>
+                  <% } %>
+                  <button type="button" class="btn btn-glass btn-sm" data-accion="reintentar" data-envio-id="<%= e.id %>"
+                          data-requiere-confirmacion="<%= e.reintento.requiereConfirmacion %>" data-espera="<%= e.reintento.esperaSegundos %>">Reintentar</button>
+                  <% if (e.reintento.motivo) { %><small class="texto-aviso-i6"><%= e.reintento.motivo %></small><% } %>
+                </div>
+              <% } else { %>
+                <small class="nota-i6"><%= e.reintento.motivo ?? '—' %></small>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script type="module" src="/js/operador.js"></script>
+<%- include('../partials/i3/pie') %>

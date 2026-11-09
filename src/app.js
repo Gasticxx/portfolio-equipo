@@ -5,7 +5,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import { env } from "./config/env.js";
 import { CONSTANTS } from "./config/constants.js";
-import { checkDbHealth } from "./config/db.js";
+import { checkDbHealth, pool } from "./config/db.js";
 import { sessionMiddleware } from "./config/session.js";
 import {
   requestIdMiddleware,
@@ -13,7 +13,13 @@ import {
   notFoundHandler,
   errorHandler,
 } from "./middlewares/errors.js";
-import { cargarUsuarioActual } from "./middlewares/auth.js";
+import { cargarUsuarioActual, requerirRol } from "./middlewares/auth.js";
+import { verificarCsrf } from "./middlewares/csrf.js";
+import {
+  limiteContactoIp,
+  limiteOperadorUsuario,
+} from "./middlewares/limits.js";
+import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { obtenerCsrf } from "./controllers/auth.controller.js";
@@ -105,6 +111,18 @@ app.get("/", (_req, res) => {
     titulo: "Inicio",
   });
 });
+
+// Módulo I6: contacto, panel del operador, correo (Brevo) y vista de métricas.
+// Usa los permisos y el CSRF de I4 y los límites de I2 (Apartados 14, 15 y 17).
+const consultas = crearModuloConsultas({
+  pool,
+  env,
+  auth: { api: requerirRol },
+  csrf: verificarCsrf,
+  limites: { contacto: limiteContactoIp, operador: limiteOperadorUsuario },
+});
+app.use("/api", consultas.api);
+app.use(consultas.paginas);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);

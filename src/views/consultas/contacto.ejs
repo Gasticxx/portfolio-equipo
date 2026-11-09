@@ -1,0 +1,66 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/consultas.css">
+
+<section class="encabezado-pagina">
+  <p class="eyebrow">CONTACTO</p>
+  <h1>Contanos tu idea<span>.</span></h1>
+  <p>Escribinos para una consulta general, pedir una cotización o solicitar asesoría. Te respondemos por email.</p>
+</section>
+
+<section class="formulario-layout seccion">
+  <aside>
+    <h2>¿Qué pasa después?</h2>
+    <p>Tu consulta queda registrada y el equipo recibe un aviso. Te respondemos a la dirección que indiques.</p>
+    <p class="nota-i6">Usamos estos datos solo para responder esta consulta.</p>
+  </aside>
+
+  <form id="form-contacto" class="glass formulario" novalidate
+        data-min-nombre="<%= limites.nombre.min %>" data-max-nombre="<%= limites.nombre.max %>"
+        data-max-email="<%= limites.email.max %>"
+        data-min-asunto="<%= limites.asunto.min %>" data-max-asunto="<%= limites.asunto.max %>"
+        data-min-mensaje="<%= limites.mensaje.min %>" data-max-mensaje="<%= limites.mensaje.max %>">
+
+    <div id="contacto-estado" class="alerta" role="status" aria-live="polite" tabindex="-1" hidden></div>
+
+    <%- include('../partials/i3/campo', { id: 'nombre', etiqueta: 'Nombre', tipo: 'text', limite: limites.nombre.max, ayuda: `Entre ${limites.nombre.min} y ${limites.nombre.max} caracteres.`, valor: '' }) %>
+    <%- include('../partials/i3/campo', { id: 'email', etiqueta: 'Correo electrónico', tipo: 'email', limite: limites.email.max, ayuda: 'Te respondemos a esta dirección.', valor: '' }) %>
+
+    <div class="campo">
+      <label for="tipo">Tipo de consulta</label>
+      <select id="tipo" name="tipo" class="form-select" required aria-describedby="tipo-error">
+        <option value="general" <%= seleccion.tipo === 'general' ? 'selected' : '' %>>General</option>
+        <option value="cotizacion" <%= seleccion.tipo === 'cotizacion' ? 'selected' : '' %>>Cotización</option>
+        <option value="asesoria" <%= seleccion.tipo === 'asesoria' ? 'selected' : '' %>>Asesoría</option>
+      </select>
+      <span id="tipo-error" class="error-campo"></span>
+    </div>
+
+    <div class="campo" id="grupo-servicio" <%= seleccion.tipo === 'cotizacion' ? '' : 'hidden' %>>
+      <label for="servicioId">Servicio (opcional)</label>
+      <select id="servicioId" name="servicioId" class="form-select" aria-describedby="servicioId-ayuda servicioId-error">
+        <option value="">Sin servicio específico</option>
+        <% servicios.forEach((s) => { %>
+          <option value="<%= s.id %>" <%= seleccion.servicioId === s.id ? 'selected' : '' %>><%= s.nombre %></option>
+        <% }) %>
+      </select>
+      <small id="servicioId-ayuda">Solo para cotizaciones.</small><span id="servicioId-error" class="error-campo"></span>
+    </div>
+
+    <%- include('../partials/i3/campo', { id: 'asunto', etiqueta: 'Asunto', tipo: 'text', limite: limites.asunto.max, ayuda: `Entre ${limites.asunto.min} y ${limites.asunto.max} caracteres, en una línea.`, valor: '' }) %>
+    <%- include('../partials/i3/campo', { id: 'mensaje', etiqueta: 'Mensaje', tipo: 'textarea', limite: limites.mensaje.max, ayuda: `Entre ${limites.mensaje.min} y ${limites.mensaje.max} caracteres. Contanos qué necesitás.`, valor: '' }) %>
+    <p id="contador-mensaje" class="contador-i6">0 / <%= limites.mensaje.max %></p>
+
+    <div class="campo campo-check-i6">
+      <input id="consentimiento" name="consentimiento" type="checkbox" class="form-check-input" required aria-describedby="consentimiento-error">
+      <div>
+        <label for="consentimiento"><%= textoConsentimiento %></label>
+        <span id="consentimiento-error" class="error-campo"></span>
+      </div>
+    </div>
+
+    <button id="btn-enviar" type="submit" class="btn btn-primary">Enviar consulta →</button>
+  </form>
+</section>
+
+<script type="module" src="/js/contacto.js"></script>
+<%- include('../partials/i3/pie') %>
