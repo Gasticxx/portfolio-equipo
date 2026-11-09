@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="/css/app.css">
   <script src="/js/ui.js" defer></script>
   <script src="/js/ui.js" defer></script>
+  <script src="/js/i3-fondo.js" defer></script>
+  <script src="/js/i3-carrusel.js" defer></script>
   <% if (usuarioActual) { %>
     <script src="/js/auth/logout.js" defer></script>
   <% } %>
@@ -39,6 +41,7 @@
           <button class="btn btn-outline-primary" type="button" data-salir>Salir</button>
         <% } %>
       </nav>
+      <button class="tema-boton btn btn-glass" type="button" aria-label="Cambiar tema" aria-pressed="false" hidden></button>
     </div>
   </header>
   <main id="contenido" tabindex="-1" class="contenedor">
