@@ -1,5 +1,5 @@
 <%- include('../partials/i3/cabecera') %>
-<section class="encabezado-pagina"><a href="/i3/detalle">← Volver al proyecto</a><p class="eyebrow">LABORATORIO DE INTERFACES</p><h1><%= titulo %><span>.</span></h1><p>Prototipo de I3 · datos de muestra, sin sesión ni persistencia.</p></section>
+<section class="encabezado-pagina"><a href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/detalle">← Volver al proyecto</a><p class="eyebrow">LABORATORIO DE INTERFACES</p><h1><%= titulo %><span>.</span></h1><p>Prototipo de I3 · datos de muestra, sin sesión ni persistencia.</p></section>
 <%- include('../partials/i3/alerta',{tipo:'aviso',tituloAlerta:'Entorno de revisión visual',mensaje:'Esta muestra es independiente de las demos finales. I4 protege sus rutas e I5 conecta los datos y algoritmos antes de publicarlas.'}) %>
 <% if(vista === 'tablero') { %>
 <section class="seccion" data-tablero data-modo="muestra">
