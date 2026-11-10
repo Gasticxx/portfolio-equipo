@@ -40,10 +40,10 @@ npm run test:unit                              # solo unitarias, sin base
 | T03 | Login incorrecto y luego válido | Error genérico; sesión solo en el segundo | I4 / I2 | Registrado | PENDIENTE | |
 | T04 | Pedir detalle y recurso de demo sin sesión | Acceso denegado sin filtrar contenido | I5 / I4 | Visitante | PENDIENTE | |
 | T05 | Acceder con cuenta y cerrar sesión | Contenido durante la sesión; rechazo después | I4 / I5 | Registrado | PENDIENTE | |
-| T06 | Enviar consulta válida y con campos inválidos | Persistencia y correo; 422 con campos | **I6** / I4 | Visitante | OK (automático) · recepción real PENDIENTE | `A20/T06` en `consultas.api.test.js`; validadores en `consultas.validator.test.js` |
+| T06 | Enviar consulta válida y con campos inválidos | Persistencia y correo; 422 con campos | **I6** / I4 | Visitante | OK (automático y recepción real, §4) | `A20/T06` en `consultas.api.test.js`; validadores en `consultas.validator.test.js` |
 | T07 | Simular fallo del servicio de correo | Consulta conservada y estado real visible | **I6** / I4 | Visitante + operador | OK (automático) | `A24/T07` (error, red, timeout) |
 | T08 | Abrir panel y endpoints con rol registrado | Rechazo de consultas y administración | **I6** + I4 / I2 | Registrado | OK (consultas) · admin PENDIENTE I4 | `A27/T08` |
-| T09 | Responder una consulta como operador | Email recibido e historial registrado | **I6** / I1 | Operador | OK (automático) · recepción real PENDIENTE | `A25/T09` |
+| T09 | Responder una consulta como operador | Email recibido e historial registrado | **I6** / I1 | Operador | OK (automático y recepción real, §4) | `A25/T09` |
 | T10 | Crear, editar y eliminar cada contenido | Persistencia y relaciones controladas | I5 + I1 / I4 | Administrador | PENDIENTE | |
 | T11 | Elegir rol administrador al registrarse | Rechazo 422 del campo | I4 / I2 | Visitante | PENDIENTE | |
 | T12 | Bloquear cuenta y probar acceso posterior | Bloqueo aplicado en la próxima petición | I4 / I2 | Administrador | PENDIENTE | |
@@ -84,7 +84,7 @@ npm run test:unit                              # solo unitarias, sin base
 | **A22** | Reutilizar clave con otro mensaje | 409 sin alta ni envío | **I6** / I4 | OK (automático) | `A22…` |
 | **A23** | Base cae antes del commit de contacto | 503 sin confirmación | **I6** / I4 | OK (automático, pool caído simulado) · manual con PostgreSQL detenido PENDIENTE | `A23…` |
 | **A24** | Brevo falla o agota timeout tras el commit | Consulta conservada; error/desconocido visible | **I6** / I4 | OK (automático) | `A24/T07…` |
-| **A25** | Operador responde y se comprueba la casilla | Historial persistido; recepción revisada | **I6** / I1 | OK (automático) · recepción real PENDIENTE | `A25/T09…` |
+| **A25** | Operador responde y se comprueba la casilla | Historial persistido; recepción revisada | **I6** / I1 | OK (automático y recepción real, §4) | `A25/T09…` |
 | **A26** | Dos reintentos simultáneos o cuarto intento | Una llamada por envío; 409 | **I6** / I4 | OK (automático) | `A26: …` (dos tests) |
 | **A27** | Ver contacto como visitante o registrado | 403 sin listado ni historial | **I6** / I4 | OK (automático) | `A27/T08…` |
 | A28 | Recargar varias veces en la misma visita | Una visita | I2 / I5 | PENDIENTE | |
@@ -119,10 +119,10 @@ Límite de pruebas: **20 envíos por día** (el plan gratuito de Brevo permite m
 
 | Fecha | Versión | Prueba | Remitente | Casilla | Resultado de Brevo | ¿Llegó? ¿Spam? | Estado |
 |---|---|---|---|---|---|---|---|
-| 2026-11-09 | feature/I6-04-07-consultas-correo (luego #21) | Envío real inicial desde el servidor (I6-02) | Remitente verificado de I6 (Gmail, single sender) | Casilla de prueba de I6 (Gmail) | 1.º intento: error, causa no confirmada (probable servidor con la API key anterior, sin reiniciar). 2.º intento: aceptado | Llegó a Recibidos, no a spam. Brevo reescribió el remitente a un dominio propio (firmado por `*.brevosend.com`, enviado por `*.sender-sib.com`) porque gmail.com no se puede autenticar | OK |
+| 2026-11-09 | feature/I6-04-07-consultas-correo (luego #21) | Envío real inicial desde el servidor (I6-02) | Remitente verificado de I6 (Gmail, single sender) | Casilla de prueba de I6 (Gmail) | Consulta #1: el servidor se reinició (`node --watch`, al restaurar un stash) con el envío en curso; quedó `enviando` sin resultado y pasó a `desconocido`. Los registros de Brevo confirmaron que no salió (se reintentó después, ver fila de reintento). Consulta #2: aceptado | Llegó a Recibidos, no a spam. Brevo reescribió el remitente a un dominio propio (firmado por `*.brevosend.com`, enviado por `*.sender-sib.com`) porque gmail.com no se puede autenticar | OK |
 | 2026-11-09 | feature/I6-04-07-consultas-correo (luego #21) | Notificación de consulta (T06/R02) | ídem | ídem | Aceptado; la consulta quedó registrada en ambos intentos | Recibidos | OK |
-| | | Respuesta del operador (T09/A25) | | | | | PENDIENTE |
-| | | Reintento tras error de configuración | | | | | PENDIENTE |
+| 2026-11-09 | `main` 8ef87f3 | Respuesta del operador (T09/A25), consulta #3 | ídem | Email de la consulta | Aceptado (clase `respuesta`) | Llegó a Recibidos. La consulta pasó a `respondida` con autor tomado de la sesión. Luego se cerró: el formulario desaparece y `POST …/respuestas` devuelve 409 `CONSULTA_CERRADA`; solo se ofrece reabrir (`en_proceso`) | OK |
+| 2026-11-09 | `main` 8ef87f3 | Reintento manual de un envío `desconocido` (consulta #1) | ídem | Casilla de prueba de I6 (Gmail) | Reintento con la casilla de confirmación de riesgo marcada: aceptado, `intentos` = 2 | Llegó a Recibidos, una sola vez | OK |
 
 ## 5. Historial de ejecución automática del módulo I6
 
@@ -149,6 +149,6 @@ Fecha: 2026-11-09 · Versión: `main` 8ef87f3 · Rol: administrador (cuenta loca
 | f | Abrir con filtros en la URL | Controles restaurados | Rango, fechas y tipo cargados desde la URL | OK |
 | g | Consultas vs. otra fuente | Misma cantidad | Panel del operador: 2 consultas (1 general, 1 asesoría) | OK |
 | h | Vista móvil (375 px) | Sin desbordes; gráficos apilados | Sin desplazamiento horizontal | OK |
-| i | Tema oscuro de I3 | Ejes, leyenda y series legibles | **Defecto encontrado**: ejes y leyenda en tono oscuro sobre fondo oscuro. Corregido en `fix/I6-08-graficos-tema-oscuro`: colores leídos de `<body>`, paleta oscura validada (#5B8DEF, #DB7036, #1AA996; contraste ≥ 3:1) y repintado con el evento `i3:tema` | OK tras corrección |
+| i | Tema oscuro de I3 | Ejes, leyenda y series legibles | **Defecto encontrado**: ejes y leyenda en tono oscuro sobre fondo oscuro. Corregido en `correccion/I6-08-graficos-tema-oscuro`: colores leídos de `<body>`, paleta oscura validada (#5B8DEF, #DB7036, #1AA996; contraste ≥ 3:1) y repintado con el evento `i3:tema` | OK tras corrección |
 
 Pendiente para I6 09: comparar visitas, accesos y cuentas contra una consulta SQL directa y revisar lectura de cifras con I1 e I3.
