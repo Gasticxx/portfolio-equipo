@@ -47,14 +47,14 @@ npm run test:unit                              # solo unitarias, sin base
 | T10 | Crear, editar y eliminar cada contenido | Persistencia y relaciones controladas | I5 + I1 / I4 | Administrador | PENDIENTE | |
 | T11 | Elegir rol administrador al registrarse | Rechazo 422 del campo | I4 / I2 | Visitante | PENDIENTE | |
 | T12 | Bloquear cuenta y probar acceso posterior | Bloqueo aplicado en la próxima petición | I4 / I2 | Administrador | PENDIENTE | |
-| T13 | Generar visitas y accesos y aplicar filtros | Contadores y gráficos consistentes | I2 + **I6** / I1 | Administrador | UI OK con datos del contrato · BLOQUEADO: falta `GET /api/admin/metricas` (I2) | |
+| T13 | Generar visitas y accesos y aplicar filtros | Contadores y gráficos consistentes | I2 + **I6** / I1 | Administrador | OK con API real (2026-11-09, `main` 8ef87f3): filtros de rango y tipo, tabla = gráfico, consultas = panel del operador | Recorrido I6 08 (§6) · revisión de I1 PENDIENTE |
 | T14 | Recurso inválido e imagen no permitida | Rechazo controlado y mensaje claro | I5 / I4 | Administrador | PENDIENTE | |
 | T15 | Iniciar el proyecto desde otra PC | README suficiente y base preparada | I2 / I5 | — | PENDIENTE | |
 | T16 | Proyecto con varios participantes | Miembros y aporte de cada uno | I5 + I1 / I3 | Registrado | PENDIENTE | |
 | T17 | Comparar ficha pública con cuenta | La ficha no concede permisos | I4 / I1 | Visitante | PENDIENTE | |
 | T18 | Recargar dentro de la misma visita | Un único evento de visita | I2 / I5 | Visitante | PENDIENTE | |
 | T19 | Login durante visita anónima | Un acceso sin duplicar la visita | I2 + I4 / I5 | Registrado | PENDIENTE | |
-| T20 | Filtrar un rango con eventos en sus límites | Coherente con Argentina; día final completo | I2 + **I6** / I1 | Administrador | OK con stub y dataset 20.2 · PENDIENTE con API real | ver §3 |
+| T20 | Filtrar un rango con eventos en sus límites | Coherente con Argentina; día final completo | I2 + **I6** / I1 | Administrador | OK: dataset 20.2 en prueba automática de I2 (`obtenerMetricasPanel`, 4/3/2/4) · comparación manual con datos propios en I6 09 | ver §3 |
 
 ## 2. Casos de la especificación (A01–A38)
 
@@ -89,8 +89,8 @@ npm run test:unit                              # solo unitarias, sin base
 | **A27** | Ver contacto como visitante o registrado | 403 sin listado ni historial | **I6** / I4 | OK (automático) | `A27/T08…` |
 | A28 | Recargar varias veces en la misma visita | Una visita | I2 / I5 | PENDIENTE | |
 | A29 | Dos cuentas durante una visita | Una visita y dos accesos | I2 / I5 | PENDIENTE | |
-| **A30** | Fechas límite y tipo de consulta | Día final incluido; tipo solo cambia consultas | I2 + **I6** / I1 | UI OK con stub · API real PENDIENTE | §3 |
-| **A31** | Rango vacío o inválido | Ceros y estado vacío; 400 en inválidos | I2 + **I6** / I1 | UI OK con stub · API real PENDIENTE | `08-metricas-vacio.png` |
+| **A30** | Fechas límite y tipo de consulta | Día final incluido; tipo solo cambia consultas | I2 + **I6** / I1 | OK con API real: tipo=asesoria cambia solo Consultas (2→1) y la dona | §6 |
+| **A31** | Rango vacío o inválido | Ceros y estado vacío; 400 en inválidos | I2 + **I6** / I1 | OK con API real: 01–05/10 en ceros con “Sin datos” y sin dona; rango invertido, futuro, tipo inexistente y una sola fecha → 400 | §6 |
 | A32 | Tareas: crear, cambiar, ajena | Persistencia propia; 404 ajena | I5 / I4 · **I6 ejecuta** | PENDIENTE | |
 | A33 | Superar 50 tareas en paralelo | Límite sin carrera | I5 / I4 | PENDIENTE | |
 | A34 | Búsqueda y burbuja con duplicados | Resultados correctos; errores claros | I5 / I3 · **I6 prueba errores** | PENDIENTE | |
@@ -132,3 +132,23 @@ Límite de pruebas: **20 envíos por día** (el plan gratuito de Brevo permite m
 | 2026-11-08 | integración en `main` (b8665d2 + I6) | `npm test` con migraciones 001–003 aplicadas | 70 de 70 OK (24 del equipo + 46 de I6) |
 | 2026-11-08 | integración en `main` (b8665d2 + I6) | `npm test` con base sin migrar (como el CI actual) | 48 de 48 OK; las dos suites de I6 con base se omiten con motivo |
 | 2026-11-09 | `main` ff114bd (con #20 métricas de I2 y #25 sesiones de I4) | `npm test` en Windows, PostgreSQL 17, migraciones 001–003 | 75 de 75 OK, ninguna omitida |
+| 2026-11-09 | `main` 8ef87f3 (con #29 login de I4 y #32 de Lucas) | `npm test` en Windows, PostgreSQL 17, migraciones 001–003 | 100 de 100 OK, ninguna omitida |
+
+## 6. Recorrido de gráficos con la API real (I6 08)
+
+Fecha: 2026-11-09 · Versión: `main` 8ef87f3 · Rol: administrador (cuenta local promovida por SQL) · Base: `portfolio_dev` · Navegador de escritorio y vista móvil de 375 px.
+
+| # | Acción | Esperado | Obtenido | Estado |
+|---|---|---|---|---|
+| a | Abrir `/admin/metricas` | Últimos 7 días de Argentina con cifras del servidor | 03/11–09/11: visitas 4, accesos 1, cuentas 1, consultas 2 | OK |
+| b | Tipo = Asesoría | Cambia solo Consultas y la dona | Consultas 2 → 1; visitas, accesos y cuentas sin cambios; dona Asesoría 100 % | OK |
+| c | Personalizado 01/10–05/10 | Ceros, “Sin datos para este rango”, sin porción inventada | 0/0/0/0, aviso visible, dona oculta, tabla con 5 días en 0 | OK |
+| d | Hasta anterior a Desde | Error en el campo, sin petición | Mensaje en “Hasta”, `aria-invalid` y foco; no se envió petición | OK |
+| d' | API con rango invertido, fecha futura, tipo inexistente o una sola fecha | 400 | 400 `PARAMETRO_INVALIDO` en los cuatro casos | OK |
+| e | Tabla vs. gráfico | Mismos valores por día | Coinciden en los 7 días (tráfico y cuentas); dona = tabla por tipo | OK |
+| f | Abrir con filtros en la URL | Controles restaurados | Rango, fechas y tipo cargados desde la URL | OK |
+| g | Consultas vs. otra fuente | Misma cantidad | Panel del operador: 2 consultas (1 general, 1 asesoría) | OK |
+| h | Vista móvil (375 px) | Sin desbordes; gráficos apilados | Sin desplazamiento horizontal | OK |
+| i | Tema oscuro de I3 | Ejes, leyenda y series legibles | **Defecto encontrado**: ejes y leyenda en tono oscuro sobre fondo oscuro. Corregido en `fix/I6-08-graficos-tema-oscuro`: colores leídos de `<body>`, paleta oscura validada (#5B8DEF, #DB7036, #1AA996; contraste ≥ 3:1) y repintado con el evento `i3:tema` | OK tras corrección |
+
+Pendiente para I6 09: comparar visitas, accesos y cuentas contra una consulta SQL directa y revisar lectura de cifras con I1 e I3.
