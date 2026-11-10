@@ -80,3 +80,28 @@ test('Proteccion de metricas (I2 07): GET /api/admin/metricas sin sesion devuelv
     assert.equal(res.body.error.code, 'NO_AUTENTICADO');
     assert.ok(res.body.error.requestId);
 });
+
+test('Health check (Apartado 21): GET /health responde JSON 200 {"ok":true} con BD sana y 503 {"ok":false} si falla la consulta, sin depender de la sesion', async (t) => {
+  // 1. Simulamos BD sana (SELECT 1 responde una fila) -> debe dar 200 y {"ok": true}
+    const mockQuery = t.mock.method(pool, 'query', async () => ({
+        rows: [{ ok: 1 }],
+        rowCount: 1,
+    }));
+
+    const resSana = await request(app).get('/health');
+    assert.equal(resSana.status, 200);
+    assert.deepEqual(resSana.body, { ok: true });
+
+  // 2. Simulamos fallo de PostgreSQL en pool.query y enviamos cookie de sesion -> debe dar 503 JSON y no HTML
+    mockQuery.mock.mockImplementation(async () => {
+        throw new Error('ECONNREFUSED: PostgreSQL detenido');
+    });
+
+    const resCaida = await request(app)
+        .get('/health')
+        .set('Cookie', ['equipo.sid=s%3Asesion_simulada.firma']);
+
+    assert.equal(resCaida.status, 503);
+    assert.match(resCaida.headers['content-type'], /application\/json/);
+    assert.deepEqual(resCaida.body, { ok: false });
+});

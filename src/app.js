@@ -87,6 +87,20 @@ app.use(
 // Paso 5: Cookie-parser firmado con VISIT_SECRET
 app.use(cookieParser(env.VISIT_SECRET));
 
+// Health check antes de sessionMiddleware y analyticsMiddleware (Apartado 21 y pedido de I6):
+// No requiere sesión, no cuenta visitas y responde siempre JSON 200 {"ok":true} o 503 {"ok":false}.
+app.get("/health", async (_req, res) => {
+  try {
+    const dbOk = await checkDbHealth();
+    if (!dbOk) {
+      return res.status(503).json({ ok: false });
+    }
+    return res.status(200).json({ ok: true });
+  } catch {
+    return res.status(503).json({ ok: false });
+  }
+});
+
 // Paso 6: Recuperamos la sesión desde PostgreSQL.
 app.use(sessionMiddleware);
 
@@ -110,18 +124,6 @@ app.get("/mi-cuenta", mostrarMiCuenta);
 app.use("/api/auth", authRouter);
 
 app.use(metricasRouter);
-
-app.get("/health", async (_req, res) => {
-  try {
-    const dbOk = await checkDbHealth();
-    if (!dbOk) {
-      return res.status(503).json({ ok: false });
-    }
-    return res.status(200).json({ ok: true });
-  } catch {
-    return res.status(503).json({ ok: false });
-  }
-});
 
 // El módulo de consultas usa los permisos, CSRF y límites del equipo.
 const consultas = crearModuloConsultas({
