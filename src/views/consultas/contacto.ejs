@@ -7,6 +7,13 @@
   <p>Escribinos para una consulta general, pedir una cotización o solicitar asesoría. Te respondemos por email.</p>
 </section>
 
+<% if (!contactoDisponible) { %>
+  <%- include('../partials/i3/alerta', {
+    tipo: 'aviso', tituloAlerta: 'Contacto temporalmente no disponible',
+    mensaje: 'Por el momento no podemos recibir consultas. Volvé a cargar esta página en unos minutos para intentar nuevamente.'
+  }) %>
+<% } %>
+
 <section class="formulario-layout seccion">
   <aside>
     <h2>¿Qué pasa después?</h2>
@@ -15,6 +22,7 @@
   </aside>
 
   <form id="form-contacto" class="glass formulario" novalidate
+        data-disponible="<%= contactoDisponible ? '1' : '0' %>"
         data-min-nombre="<%= limites.nombre.min %>" data-max-nombre="<%= limites.nombre.max %>"
         data-max-email="<%= limites.email.max %>"
         data-min-asunto="<%= limites.asunto.min %>" data-max-asunto="<%= limites.asunto.max %>"
@@ -58,7 +66,7 @@
       </div>
     </div>
 
-    <button id="btn-enviar" type="submit" class="btn btn-primary">Enviar consulta →</button>
+    <button id="btn-enviar" type="submit" class="btn btn-primary" <%= contactoDisponible ? '' : 'disabled' %>>Enviar consulta →</button>
   </form>
 </section>
 

@@ -5,6 +5,7 @@
 import { pedir, obtenerCsrf, ErrorHttp, ErrorRed, mensajeDeError, largoUnicode, normalizarTexto, mostrarAlerta } from './consultas-http.js';
 
 const form = document.getElementById('form-contacto');
+const disponible = form.dataset.disponible !== '0';
 const estado = document.getElementById('contacto-estado');
 const boton = document.getElementById('btn-enviar');
 const tipo = document.getElementById('tipo');
@@ -104,6 +105,7 @@ function validar(d) {
 // ------------------------------------------------------------------- Envío
 async function enviar(evento) {
   evento.preventDefault();
+  if (!disponible) return;
   if (enviando) return;
   limpiarErrores();
 
@@ -172,4 +174,6 @@ mensaje.addEventListener('input', actualizarContador);
 sincronizarServicio();
 actualizarContador();
 // Prepara la sesión anónima y el token CSRF antes del primer envío.
-obtenerCsrf().catch(() => mostrarEstado('aviso', 'No se pudo preparar el formulario. Recargá la página antes de enviar.'));
+if (disponible) {
+  obtenerCsrf().catch(() => mostrarEstado('aviso', 'No se pudo preparar el formulario. Recargá la página antes de enviar.'));
+}

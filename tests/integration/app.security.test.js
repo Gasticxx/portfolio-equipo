@@ -8,6 +8,21 @@ after(async () => {
     await pool.end();
 });
 
+test('Navegación pública: acceso único, rutas reales y scripts sin duplicar', async () => {
+    for (const ruta of ['/', '/equipo', '/servicios', '/proyectos', '/login', '/registro']) {
+        const { text } = await request(app).get(ruta).expect(200);
+        const nav = text.match(/<nav id="navegacion"[\s\S]*?<\/nav>/)?.[0];
+        assert.ok(nav, `Falta navegación en ${ruta}`);
+        assert.equal((nav.match(/>Ingresar\s*</g) || []).length, 1, ruta);
+        assert.equal((nav.match(/>Registrarse<\/a>/g) || []).length, 1, ruta);
+        assert.match(nav, /href="\/login"/);
+        assert.match(nav, /href="\/registro"/);
+        assert.doesNotMatch(text, /href="\/i3(?:\/|")/);
+        const scripts = [...text.matchAll(/<script[^>]*src="([^"]+)"/g)].map(match => match[1]);
+        assert.equal(scripts.length, new Set(scripts).size, `Scripts duplicados en ${ruta}`);
+    }
+});
+
 test('Seguridad base: GET / devuelve 200, X-Request-Id, CSP estricta y oculta X-Powered-By', async () => {
     const res = await request(app).get('/');
 

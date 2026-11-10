@@ -85,13 +85,13 @@
   temaSistema.addEventListener('change', () => { if (!temaGuardado) aplicarTema(temaSistema.matches); });
   // Ilustraciones locales: decorativas, sin interceptar enlaces ni agregar tabulaciones.
   const dibujos = {
-    '/i3':'<path d="M12 31 32 13l20 18M18 27v25h28V27M28 52V37h9v15"/><path class="detalle" d="m44 14 2-5 2 5 5 2-5 2-2 5-2-5-5-2Z"/>',
-    '/i3/equipo':'<circle cx="32" cy="23" r="7"/><circle cx="14" cy="28" r="6"/><circle cx="50" cy="28" r="6"/><path d="M21 51V41q0-10 11-10t11 10v10M5 50V41q0-8 9-8l9 6m36 11V41q0-8-9-8l-9 6"/><path class="detalle" d="M14 43q18 16 36 0"/>',
-    '/i3/servicios':'<rect x="9" y="15" width="46" height="36" rx="5"/><path d="M9 25h46m-37-5h1m5 0h1m5 0h1M24 33l-6 6 6 6m16-12 6 6-6 6m-5-13-6 15"/>',
-    '/i3/proyectos':'<path d="M8 23v29h48V19H32l-6-7H8v11Z"/><path class="detalle" d="m25 41 5 5 12-13"/>',
-    '/i3/contacto':'<rect x="15" y="10" width="38" height="46" rx="5"/><path d="M22 10v46M11 19h8m-8 10h8m-8 10h8m-8 10h8"/><circle cx="37" cy="26" r="5"/><path class="detalle" d="M29 41q0-10 8-10t8 10m-14 7h12"/>',
-    '/i3/login':'<rect x="29" y="10" width="24" height="46" rx="4"/><path class="detalle" d="M7 33h32m-9-9 9 9-9 9m15-10h1"/>',
-    '/i3/registro':'<circle cx="27" cy="22" r="9"/><path d="M10 53v-7q0-13 17-13 9 0 13 5"/><path class="detalle" d="M48 37v18m-9-9h18"/>'
+    '/':'<path d="M12 31 32 13l20 18M18 27v25h28V27M28 52V37h9v15"/><path class="detalle" d="m44 14 2-5 2 5 5 2-5 2-2 5-2-5-5-2Z"/>',
+    '/equipo':'<circle cx="32" cy="23" r="7"/><circle cx="14" cy="28" r="6"/><circle cx="50" cy="28" r="6"/><path d="M21 51V41q0-10 11-10t11 10v10M5 50V41q0-8 9-8l9 6m36 11V41q0-8-9-8l-9 6"/><path class="detalle" d="M14 43q18 16 36 0"/>',
+    '/servicios':'<rect x="9" y="15" width="46" height="36" rx="5"/><path d="M9 25h46m-37-5h1m5 0h1m5 0h1M24 33l-6 6 6 6m16-12 6 6-6 6m-5-13-6 15"/>',
+    '/proyectos':'<path d="M8 23v29h48V19H32l-6-7H8v11Z"/><path class="detalle" d="m25 41 5 5 12-13"/>',
+    '/contacto':'<rect x="15" y="10" width="38" height="46" rx="5"/><path d="M22 10v46M11 19h8m-8 10h8m-8 10h8m-8 10h8"/><circle cx="37" cy="26" r="5"/><path class="detalle" d="M29 41q0-10 8-10t8 10m-14 7h12"/>',
+    '/login':'<rect x="29" y="10" width="24" height="46" rx="4"/><path class="detalle" d="M7 33h32m-9-9 9 9-9 9m15-10h1"/>',
+    '/registro':'<circle cx="27" cy="22" r="9"/><path d="M10 53v-7q0-13 17-13 9 0 13 5"/><path class="detalle" d="M48 37v18m-9-9h18"/>'
   };
   let enlaceIlustrado = null;
   function mostrarIlustracion(enlace) {
@@ -105,7 +105,9 @@
     enlaceIlustrado = null;
   }
   pagina.querySelectorAll('.navegacion a').forEach(enlace => {
-    const dibujo = dibujos[enlace.getAttribute('href')];
+    // El preview y la aplicacion comparten ilustraciones aunque usen rutas distintas.
+    const ruta = (enlace.getAttribute('href') || '').replace(/^\/i3(?=\/|$)/, '') || '/';
+    const dibujo = dibujos[ruta];
     if (!dibujo) return;
     const ilustracion = document.createElement('span');
     ilustracion.className = 'nav-ilustracion';
