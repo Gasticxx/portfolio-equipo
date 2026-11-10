@@ -298,6 +298,7 @@ function destinoDespuesDelLogin(destino, rol) {
   }
 
   if (
+    ruta === '/demos' ||
     /^\/proyectos\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(ruta) ||
     /^\/demos\/[1-9]\d*$/.test(ruta)
   ) {

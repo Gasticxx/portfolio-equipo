@@ -1,18 +1,40 @@
 <%- include("../partials/i3/cabecera") %>
+<link rel="stylesheet" href="/css/cuenta.css">
 
-<section class="encabezado-pagina">
+<section class="encabezado-pagina cuenta-encabezado">
+  <p class="eyebrow">TU ESPACIO EN EQUIPO SEIS</p>
   <h1>Mi cuenta<span>.</span></h1>
+  <p>Conocé lo que estamos construyendo y encontrá tu próximo desafío.</p>
 </section>
 
-<section class="glass seccion">
-  <dl>
-    <dt>Nombre</dt>
-    <dd><%= usuarioActual.nombre %></dd>
-    <dt>Correo</dt>
-    <dd><%= usuarioActual.email %></dd>
-    <dt>Rol</dt>
-    <dd><%= usuarioActual.rol %></dd>
-  </dl>
+<% const iniciales = usuarioActual.nombre.trim().split(/\s+/).slice(0, 2).map(parte => Array.from(parte)[0]).join('').toUpperCase(); %>
+<section class="cuenta-layout seccion" aria-label="Perfil de la cuenta">
+  <article class="glass cuenta-perfil" aria-labelledby="cuenta-nombre">
+    <div class="cuenta-identidad">
+      <span class="cuenta-avatar" aria-hidden="true"><%= iniciales %></span>
+      <div><p class="eyebrow">QUÉ BUENO VERTE POR ACÁ</p><h2 id="cuenta-nombre"><%= usuarioActual.nombre %></h2></div>
+    </div>
+    <span class="cuenta-sesion"><span aria-hidden="true"></span> Sesión iniciada</span>
+    <dl class="cuenta-datos">
+      <div><dt>Nombre</dt><dd><%= usuarioActual.nombre %></dd></div>
+      <div><dt>Correo electrónico</dt><dd><%= usuarioActual.email %></dd></div>
+      <div><dt>Tipo de cuenta</dt><dd><%= ({registrado:'Cuenta registrada',operador:'Operador',administrador:'Administrador'})[usuarioActual.rol] || usuarioActual.rol %></dd></div>
+    </dl>
+    <div class="cuenta-acciones"><a class="btn btn-primary" href="/demos">Ver demos interactivas <span aria-hidden="true">↗</span></a><a class="enlace-flecha" href="/proyectos">Explorar proyectos <span aria-hidden="true">→</span></a></div>
+  </article>
+
+  <div class="cuenta-arte" aria-hidden="true">
+    <div class="cuenta-trama"></div>
+    <div class="cuenta-halo"></div>
+    <div class="cuenta-orbita cuenta-orbita-uno"><i></i></div>
+    <div class="cuenta-orbita cuenta-orbita-dos"><i></i></div>
+    <div class="cuenta-sello"><span>6</span><small>IDEAS QUE<br>CONECTAN.</small></div>
+    <div class="cuenta-tarjeta cuenta-tarjeta-codigo"><span class="cuenta-mini-etiqueta">DE LA IDEA AL CÓDIGO</span><strong>&lt;/&gt;</strong><div class="cuenta-lineas"><i></i><i></i><i></i></div><span class="cuenta-pie-tarjeta">CONSTRUIR ES APRENDER <b>↗</b></span></div>
+    <div class="cuenta-tarjeta cuenta-tarjeta-ideas"><span class="cuenta-mini-etiqueta">DISTINTAS MIRADAS</span><svg viewBox="0 0 100 70" fill="none"><path d="M10 50 35 15 60 50Z"/><circle cx="65" cy="35" r="24"/><path d="M25 60H90"/></svg><span class="cuenta-pie-tarjeta">UN MISMO EQUIPO <b>✳</b></span></div>
+    <span class="cuenta-nota cuenta-nota-arriba">DISEÑO + CÓDIGO</span>
+    <span class="cuenta-nota cuenta-nota-abajo"><i></i> Tu próxima idea empieza acá.</span>
+    <span class="cuenta-destello cuenta-destello-uno">✳</span><span class="cuenta-destello cuenta-destello-dos">+</span>
+  </div>
 </section>
 
 <%- include("../partials/i3/pie") %>
