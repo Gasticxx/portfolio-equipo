@@ -54,7 +54,7 @@ npm run test:unit                              # solo unitarias, sin base
 | T17 | Comparar ficha pública con cuenta | La ficha no concede permisos | I4 / I1 | Visitante | PENDIENTE | |
 | T18 | Recargar dentro de la misma visita | Un único evento de visita | I2 / I5 | Visitante | PENDIENTE | |
 | T19 | Login durante visita anónima | Un acceso sin duplicar la visita | I2 + I4 / I5 | Registrado | PENDIENTE | |
-| T20 | Filtrar un rango con eventos en sus límites | Coherente con Argentina; día final completo | I2 + **I6** / I1 | Administrador | OK: dataset 20.2 en prueba automática de I2 (`obtenerMetricasPanel`, 4/3/2/4) · comparación manual con datos propios en I6 09 | ver §3 |
+| T20 | Filtrar un rango con eventos en sus límites | Coherente con Argentina; día final completo | I2 + **I6** / I1 | Administrador | OK: dataset 20.2 en prueba automática de I2 (`obtenerMetricasPanel`, 4/3/2/4) · comparación con SQL directa sobre datos propios: OK (§8) | ver §3 |
 
 ## 2. Casos de la especificación (A01–A38)
 
@@ -151,7 +151,7 @@ Fecha: 2026-11-09 · Versión: `main` 8ef87f3 · Rol: administrador (cuenta loca
 | h | Vista móvil (375 px) | Sin desbordes; gráficos apilados | Sin desplazamiento horizontal | OK |
 | i | Tema oscuro de I3 | Ejes, leyenda y series legibles | **Defecto encontrado**: ejes y leyenda en tono oscuro sobre fondo oscuro. Corregido en `correccion/I6-08-graficos-tema-oscuro`: colores leídos de `<body>`, paleta oscura validada (#5B8DEF, #DB7036, #1AA996; contraste ≥ 3:1) y repintado con el evento `i3:tema` | OK tras corrección |
 
-Pendiente para I6 09: comparar visitas, accesos y cuentas contra una consulta SQL directa y revisar lectura de cifras con I1 e I3.
+La comparación contra SQL directa está en §8. Queda pendiente revisar la lectura de las cifras con I1 e I3.
 
 ## 7. Recorrido de demos (I6 05)
 
@@ -203,3 +203,34 @@ Todos se rechazan antes de generar pasos: el estado queda «Listo · 0 pasos», 
 Observación de texto, para I3: el estado dice «1 pasos»; podría usar el singular.
 
 No probado aquí: pausa automática al ocultar la pestaña y movimiento reducido (corresponden a A37, revisión de I3).
+
+## 8. Comparación de cifras con SQL directa (I6 09)
+
+Fecha: 2026-11-09, 23:20 (hora de Argentina; en UTC ya era 10/11) · Versión: `main` 858d4e4 · Rol: administrador · Base: `portfolio_dev`.
+
+Control: `docs/evidencias/i6-09-comparar-metricas.sql`. Agrupa cada fila por su fecha de Argentina (`AT TIME ZONE … ::date`), un método distinto al del repositorio de I2, que calcula los límites UTC del rango. Entre la consulta y la API no se navegó por páginas que cuenten visitas.
+
+| Dato (SQL) | Valor |
+|---|---|
+| 2026-11-09 | 6 visitas, 3 accesos, 1 cuenta, consultas 1 general, 1 cotización y 1 asesoría |
+| Otros días | Sin eventos |
+| Eventos de esa noche que en UTC ya son 10/11 | 4 visitas, 3 accesos, 1 cuenta, 1 consulta |
+| Visitas `es_prueba` | 0 |
+| Cuentas por rol | 1 administrador |
+
+| Petición a `GET /api/admin/metricas` | Obtenido | Comparación |
+|---|---|---|
+| Sin filtros | Rango 03/11–09/11 (7 días); 6 / 3 / 1 / 3 | Igual a SQL. El «hoy» del servidor es 09/11 aunque en UTC sea 10/11 |
+| 11/10 a 09/11 (30 días) | 30 días; 6 / 3 / 1 / 3 | Igual |
+| Solo 09/11 | 6 / 3 / 1 / 3. Incluye los eventos posteriores a las 21:00 | Igual: el día argentino termina a medianoche local |
+| Solo 08/11 | Todo en 0 | Igual: los eventos de la noche del 09 no se corren de día |
+| 09/11 con tipo cotización | Consultas 1 (0/1/0); visitas, accesos y cuentas sin cambio | Igual |
+| Solo 10/11 | 400 `PARAMETRO_INVALIDO` (fecha futura en Argentina) | Correcto |
+| 01/08 a 09/11 (más de 90 días) | 400 `PARAMETRO_INVALIDO` | Correcto |
+| Tarjetas y tabla de `/admin/metricas` | 6 / 3 / 1 / 3; dona 33 % por tipo | Igual a la API |
+
+Resultado: **OK**. Las cifras de visitas, accesos, cuentas y consultas coinciden con la base, también en el límite de medianoche entre Argentina y UTC.
+
+Observaciones:
+- Solo había datos de un día. La agregación de varios días está cubierta por la prueba automática de I2 con el dataset de §3 (T20).
+- «Cuentas creadas» cuenta todos los roles, incluida la cuenta de administrador creada por script. Si el contrato pide solo cuentas `registrado`, lo decide I1 y lo ajusta I2.
