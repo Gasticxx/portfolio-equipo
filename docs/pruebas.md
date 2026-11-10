@@ -91,10 +91,10 @@ npm run test:unit                              # solo unitarias, sin base
 | A29 | Dos cuentas durante una visita | Una visita y dos accesos | I2 / I5 | PENDIENTE | |
 | **A30** | Fechas límite y tipo de consulta | Día final incluido; tipo solo cambia consultas | I2 + **I6** / I1 | OK con API real: tipo=asesoria cambia solo Consultas (2→1) y la dona | §6 |
 | **A31** | Rango vacío o inválido | Ceros y estado vacío; 400 en inválidos | I2 + **I6** / I1 | OK con API real: 01–05/10 en ceros con “Sin datos” y sin dona; rango invertido, futuro, tipo inexistente y una sola fecha → 400 | §6 |
-| A32 | Tareas: crear, cambiar, ajena | Persistencia propia; 404 ajena | I5 / I4 · **I6 ejecuta** | PENDIENTE | |
+| A32 | Tareas: crear, cambiar, ajena | Persistencia propia; 404 ajena | I5 / I4 · **I6 ejecuta** | BLOQUEADO (2026-11-09, `main` 858d4e4): `demos.routes.js` solo sirve demos `algoritmos` y no existe la API de `app.tareas_demo`. Depende de I5 | §7 |
 | A33 | Superar 50 tareas en paralelo | Límite sin carrera | I5 / I4 | PENDIENTE | |
-| A34 | Búsqueda y burbuja con duplicados | Resultados correctos; errores claros | I5 / I3 · **I6 prueba errores** | PENDIENTE | |
-| A35 | Pausar, avanzar y reiniciar visualizador | Sin timers superpuestos | I3 / I5 · **I6 prueba reinicio** | PENDIENTE | |
+| A34 | Búsqueda y burbuja con duplicados | Resultados correctos; errores claros | I5 / I3 · **I6 prueba errores** | OK (2026-11-09, `main` 858d4e4): 9 casos de resultado y 11 de error · confirmación de I5 PENDIENTE | §7 |
+| A35 | Pausar, avanzar y reiniciar visualizador | Sin timers superpuestos | I3 / I5 · **I6 prueba reinicio** | OK (2026-11-09, `main` 858d4e4) con un defecto menor para I3 (D-I6-05-1) | §7 |
 | A36 | Superar rate limit y reiniciar | 429 y ventana conservada | I2 / I4 | PENDIENTE (I6 entrega los puntos de enganche `limites.contacto` y `limites.operador`) | |
 | A37 | Teclado y movimiento reducido | Foco visible y acciones disponibles | I3 / todos | PENDIENTE (vistas de I6 listas para revisar) | |
 | A38 | Restaurar backup en base de prueba | Datos recuperados | I5 / I2 | PENDIENTE | |
@@ -152,3 +152,54 @@ Fecha: 2026-11-09 · Versión: `main` 8ef87f3 · Rol: administrador (cuenta loca
 | i | Tema oscuro de I3 | Ejes, leyenda y series legibles | **Defecto encontrado**: ejes y leyenda en tono oscuro sobre fondo oscuro. Corregido en `correccion/I6-08-graficos-tema-oscuro`: colores leídos de `<body>`, paleta oscura validada (#5B8DEF, #DB7036, #1AA996; contraste ≥ 3:1) y repintado con el evento `i3:tema` | OK tras corrección |
 
 Pendiente para I6 09: comparar visitas, accesos y cuentas contra una consulta SQL directa y revisar lectura de cifras con I1 e I3.
+
+## 7. Recorrido de demos (I6 05)
+
+Fecha: 2026-11-09 · Versión: `main` 858d4e4 · Rol: administrador · Demo: «Visualizador de búsqueda y ordenamiento» (`/demos/2`).
+
+Preparación: el seed crea las demos sin publicar y todavía no hay administración de demos. Para probar se publicó solo en la base local:
+`UPDATE app.demos SET publicada = true WHERE tipo = 'algoritmos';`. Antes de eso, `/demos` mostró correctamente el estado vacío.
+
+### A34: resultados con duplicados
+
+| Algoritmo | Datos | Objetivo | Obtenido | Estado |
+|---|---|---|---|---|
+| Lineal | 4,2,4 | 4 | Encontrado en posición 1 (primera aparición), 1 paso | OK |
+| Lineal | 5,3,5,3 | 3 | Encontrado en posición 2, 2 pasos | OK |
+| Lineal | -99,0,99,-99 | -99 | Encontrado en posición 1 (límites del rango) | OK |
+| Lineal | 1,2,3 | 9 | «El valor 9 no se encuentra en la lista», 3 pasos | OK |
+| Burbuja | 3,1,3,2,1 | — | 1, 1, 2, 3, 3 en 10 pasos | OK |
+| Burbuja | 1,1,2 | — | Sin intercambios; corta tras la primera pasada (2 pasos) | OK |
+| Burbuja | 5,5,5 | — | Sin intercambios (2 pasos) | OK |
+| Burbuja | 7 | — | «La lista ya está ordenada» (1 paso) | OK |
+| Burbuja | 20 valores con repetidos, -99 y 99 | — | Orden ascendente correcto en 169 pasos | OK |
+
+### A34: errores (parte de I6)
+
+Todos se rechazan antes de generar pasos: el estado queda «Listo · 0 pasos», el campo se marca con `aria-invalid="true"` y recibe el foco.
+
+| Entrada | Mensaje | Estado |
+|---|---|---|
+| Datos vacíos, `1,a,3`, `1.5,2`, `1,100`, 21 valores, `1,2,` | «Ingresá de 1 a 20 enteros entre -99 y 99.» | OK |
+| Objetivo vacío, `150` o `1.5` | «Ingresá un objetivo entero entre -99 y 99.» | OK |
+| Datos `x` y objetivo `999` a la vez | Ambos mensajes; foco en Datos | OK |
+| ` 3 , 1 , 2 ` (con espacios) | Se acepta y se ordena | OK |
+
+### A35: pausa, paso y reinicio (intervalo de 200 ms)
+
+| Prueba | Obtenido | Estado |
+|---|---|---|
+| Tres clics seguidos en Iniciar | 5 pasos en 1050 ms (con timers duplicados serían 10); Iniciar se deshabilita y los campos se bloquean | OK |
+| Pausar | Sigue en 5 pasos después de 700 ms; quedan habilitados Iniciar y Paso | OK |
+| Paso en pausa | Avanza exactamente uno (6) y sigue en pausa | OK |
+| Iniciar de nuevo | Continúa desde el paso 6 | OK |
+| Reiniciar durante la ejecución | «Listo · 0 pasos» al instante y sigue así 800 ms después (sin timer huérfano); vuelven los datos ingresados, sin barras marcadas y campos habilitados | OK |
+| Reiniciar al finalizar | Limpia el resultado y habilita Iniciar, Paso y los campos | OK |
+| Cambiar el intervalo durante la ejecución | El selector no se bloquea; el nuevo intervalo se aplica desde el paso siguiente, sin duplicar timers | OK |
+| Reiniciar después de un error de validación | Restaura los últimos datos válidos, pero el mensaje de error y `aria-invalid="true"` siguen visibles | **D-I6-05-1** |
+
+**D-I6-05-1 (menor, para I3, `src/ui-i3/demos/algoritmos.js`).** Pasos: escribir `1,a`, pulsar Paso y luego Reiniciar. El campo vuelve a un valor válido, pero sigue mostrando el error. Corrección sugerida: en el manejador de Reiniciar, vaciar `#datos-error` y `#objetivo-error` y poner `aria-invalid="false"` en ambos campos.
+
+Observación de texto, para I3: el estado dice «1 pasos»; podría usar el singular.
+
+No probado aquí: pausa automática al ocultar la pestaña y movimiento reducido (corresponden a A37, revisión de I3).
