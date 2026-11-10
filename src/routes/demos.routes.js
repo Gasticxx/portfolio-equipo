@@ -17,6 +17,16 @@ function autorizar(req, res, next) {
   return comprobarRol(req, res, next);
 }
 
+// El catálogo no depende de que exista un proyecto con un slug predeterminado.
+demosRouter.get('/demos', autorizar, async (_req, res) => {
+  const { rows } = await pool.query(`
+    SELECT d.id, d.titulo, d.descripcion, d.tipo, p.titulo AS proyecto_titulo
+    FROM app.demos d JOIN app.proyectos p ON p.id = d.proyecto_id
+    WHERE d.publicada = true AND p.publicado = true AND d.tipo = 'algoritmos'
+    ORDER BY p.titulo, d.orden, d.id`);
+  res.render('demos/index', { titulo: 'Demos interactivas', rutaActual: '/demos', demos: rows, disponible: true });
+});
+
 demosRouter.get('/proyectos/:slug', autorizar, async (req, res, next) => {
   const { rows } = await pool.query(
     'SELECT id, titulo, descripcion FROM app.proyectos WHERE slug = $1 AND publicado = true',
@@ -60,8 +70,14 @@ demosRouter.get('/demos/:id/recurso.js', autorizar, cargarDemo, async (_req, res
   res.type('application/javascript').send(`${motor}\nwindow.algoritmosAdapter = { generar: generarPasos };\n${interfaz}`);
 });
 
-demosRouter.use((err, _req, _res, next) => {
+demosRouter.use((err, req, res, next) => {
   if (!esErrorDeBaseInaccesible(err)) return next(err);
+  if (req.method === 'GET' && !req.path.endsWith('/recurso.js')) {
+    res.set('Retry-After', '30');
+    return res.status(503).render('demos/index', {
+      titulo: 'Demos interactivas', rutaActual: '/demos', demos: [], disponible: false,
+    });
+  }
   const error = new AppError(503, 'SERVICIO_NO_DISPONIBLE', 'El servicio no está disponible temporalmente.');
   error.retryAfter = 30;
   return next(error);

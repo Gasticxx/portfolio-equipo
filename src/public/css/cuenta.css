@@ -1,0 +1,56 @@
+.cuenta-encabezado { margin-bottom:28px; }
+.cuenta-encabezado>p:last-child { max-width:540px; }
+.cuenta-layout { display:grid; grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); gap:44px; align-items:center; margin-top:0; margin-bottom:64px; }
+.cuenta-perfil { padding:clamp(24px,3.5vw,44px); text-align:left; position:relative; z-index:1; }
+.cuenta-identidad { display:flex; align-items:center; gap:18px; min-width:0; }
+.cuenta-identidad>div { min-width:0; }
+.cuenta-identidad .eyebrow { margin:0 0 8px; font-size:10px; letter-spacing:1.8px; }
+.cuenta-identidad h2 { margin:0; overflow-wrap:anywhere; font-size:clamp(24px,2.6vw,34px); }
+.cuenta-avatar { display:grid; place-items:center; flex:0 0 68px; height:68px; border-radius:22px; background:linear-gradient(135deg,#c5d6ff,#dcd4fa); border:1px solid #a9bae7; color:#304a91; font-size:25px; font-weight:750; box-shadow:0 8px 20px #5369a71c; }
+.cuenta-sesion { display:inline-flex; align-items:center; gap:8px; margin:24px 0 0; font-size:12px; color:var(--color-secundario); }
+.cuenta-sesion>span,.cuenta-nota-abajo>i { width:7px; height:7px; border-radius:50%; background:#34867b; box-shadow:0 0 0 4px #34867b16; }
+.cuenta-datos { margin:22px 0 28px; }
+.cuenta-datos>div { padding:16px 0; border-top:1px solid var(--color-borde); }
+.cuenta-datos dt { font-size:11px; text-transform:uppercase; letter-spacing:1.7px; color:var(--color-secundario); font-weight:600; margin-bottom:5px; }
+.cuenta-datos dd { margin:0; font-size:16px; overflow-wrap:anywhere; }
+.cuenta-acciones { display:flex; align-items:flex-start; flex-direction:column; gap:18px; }
+.cuenta-acciones .btn { display:inline-flex; gap:18px; align-items:center; justify-content:space-between; max-width:100%; }
+.cuenta-arte { position:relative; isolation:isolate; min-width:0; height:480px; color:#5168a4; }
+.cuenta-trama { position:absolute; inset:30px 0; background-image:radial-gradient(#8294c680 1px,transparent 1px); background-size:22px 22px; mask-image:radial-gradient(ellipse,black 10%,transparent 70%); }
+.cuenta-halo { position:absolute; inset:50px 0; border-radius:50%; background:radial-gradient(ellipse,#a6b8ec55,transparent 65%); filter:blur(8px); }
+.cuenta-orbita { position:absolute; top:50%; left:50%; border:1px solid #849acf50; border-radius:50%; width:360px; height:360px; margin:-180px; animation:cuenta-girar 38s linear infinite; }
+.cuenta-orbita-dos { width:440px; height:440px; margin:-220px; border-style:dashed; opacity:.55; animation-direction:reverse; animation-duration:55s; }
+.cuenta-orbita>i { display:block; width:10px; height:10px; border-radius:50%; background:#9eb6f0; position:absolute; top:12%; left:14%; box-shadow:0 0 18px #94b4ff; }
+.cuenta-sello { position:absolute; left:48%; top:40%; display:flex; align-items:center; gap:10px; transform:translate(-50%,-50%); z-index:3; }
+.cuenta-sello>span { display:grid; place-items:center; width:82px; height:82px; background:linear-gradient(140deg,#d5e2ff,#a4bdf7); color:#3652a0; border-radius:26px; font-size:54px; font-weight:800; transform:rotate(-8deg); box-shadow:0 15px 35px #3e519930,inset 0 1px 0 #fff; }
+.cuenta-sello small { font-size:11px; line-height:1.5; letter-spacing:2px; font-weight:700; color:var(--color-texto); }
+.cuenta-tarjeta { position:absolute; width:224px; padding:22px; border:1px solid #a4b6deaa; border-radius:23px; background:linear-gradient(125deg,#ffffffdf,#e4ebfcaa); box-shadow:0 20px 44px #30467b1f; backdrop-filter:blur(12px); animation:cuenta-flotar 7s ease-in-out infinite; }
+.cuenta-tarjeta-codigo { left:4%; top:43%; --inclinacion:-10deg; z-index:2; }
+.cuenta-tarjeta-ideas { right:1%; top:18%; --inclinacion:11deg; animation-delay:-3.5s; }
+.cuenta-mini-etiqueta { display:block; font-size:8px; letter-spacing:1.4px; font-weight:700; }
+.cuenta-tarjeta strong { display:block; font-size:48px; line-height:1.4; font-weight:500; color:#5c78be; }
+.cuenta-lineas { display:grid; gap:7px; margin:3px 0 24px; }
+.cuenta-lineas>i { height:5px; width:85%; border-radius:4px; background:#a5b9df80; }
+.cuenta-lineas>i:nth-child(2) { width:60%; background:#beb0e18f; }
+.cuenta-lineas>i:nth-child(3) { width:74%; }
+.cuenta-pie-tarjeta { display:flex; align-items:center; justify-content:space-between; font-size:8px; letter-spacing:1px; border-top:1px solid #90a2ca55; padding-top:12px; }
+.cuenta-pie-tarjeta b { font-size:20px; }
+.cuenta-tarjeta svg { display:block; width:100%; height:120px; stroke:#6e83bd; stroke-width:1.2; margin:8px 0; }
+.cuenta-nota { position:absolute; font-size:9px; letter-spacing:2px; font-weight:650; }
+.cuenta-nota-arriba { top:7%; left:13%; }
+.cuenta-nota-abajo { bottom:5%; left:20%; display:flex; align-items:center; gap:12px; letter-spacing:.4px; font-size:12px; color:var(--color-secundario); }
+.cuenta-destello { position:absolute; font-weight:300; color:#899fe0; animation:cuenta-brillar 5s ease-in-out infinite; }
+.cuenta-destello-uno { left:13%; top:23%; font-size:38px; }
+.cuenta-destello-dos { right:10%; bottom:15%; font-size:34px; animation-delay:-2s; }
+@keyframes cuenta-flotar { 0%,100% { transform:translateY(0) rotate(var(--inclinacion)); } 50% { transform:translateY(-12px) rotate(calc(var(--inclinacion) + 2deg)); } }
+@keyframes cuenta-girar { to { transform:rotate(360deg); } }
+@keyframes cuenta-brillar { 0%,100% { opacity:.4; transform:scale(.9); } 50% { opacity:1; transform:scale(1.1); } }
+.tema-oscuro .cuenta-avatar { background:linear-gradient(130deg,#3a528a,#4c467c); color:#e1eaff; border-color:#6d87bf; }
+.tema-oscuro .cuenta-tarjeta { background:linear-gradient(130deg,#304568ed,#2d3358e8); border-color:#7895cc99; color:#bacbf1; box-shadow:0 22px 48px #080f2740; }
+.tema-oscuro .cuenta-tarjeta strong,.tema-oscuro .cuenta-tarjeta svg { color:#b4c8ff; stroke:#b4c8ff; }
+.tema-oscuro .cuenta-sesion>span,.tema-oscuro .cuenta-nota-abajo>i { background:#8dcbbd; }
+.interfaz-i3:is(.movimiento-pausado,.efectos-pausados) .cuenta-arte * { animation-play-state:paused; }
+@media(max-width:991px) { .cuenta-layout { gap:24px; } .cuenta-tarjeta { width:185px; padding:18px; } .cuenta-orbita-uno { width:280px; height:280px; margin:-140px; } .cuenta-orbita-dos { width:330px; height:330px; margin:-165px; } .cuenta-sello small { display:none; } .cuenta-nota-abajo { left:7%; } }
+@media(max-width:767px) { .cuenta-layout { grid-template-columns:minmax(0,1fr); gap:4px; margin-bottom:32px; } .cuenta-arte { height:370px; max-width:430px; width:100%; justify-self:center; } .cuenta-tarjeta-codigo { top:38%; left:6%; } .cuenta-tarjeta-ideas { top:12%; right:6%; } .cuenta-sello { top:33%; } .cuenta-avatar { flex-basis:56px; height:56px; border-radius:18px; font-size:22px; } .cuenta-identidad { gap:12px; } }
+@media(max-width:359px) { .cuenta-tarjeta { width:160px; padding:16px; } .cuenta-orbita-dos { width:270px; height:270px; margin:-135px; } .cuenta-acciones .btn { font-size:13px; gap:8px; } }
+@media(prefers-reduced-motion:reduce) { .cuenta-arte * { animation:none!important; } .cuenta-tarjeta { transform:rotate(var(--inclinacion)); } }
