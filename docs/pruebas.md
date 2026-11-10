@@ -52,7 +52,7 @@ npm run test:unit                              # solo unitarias, sin base
 | **A20** | Enviar cada tipo y consentimiento falso | Tres altas; rechazo del falso | **I6** / I4 | OK (automático) | `A20/T06…` |
 | **A21** | Repetir consulta con misma clave y payload | Una consulta y una notificación; 200 | **I6** / I4 | OK (automático) | `A21…`, `carrera de altas…` |
 | **A22** | Reutilizar clave con otro mensaje | 409 sin alta ni envío | **I6** / I4 | OK (automático) | `A22…` |
-| **A23** | Base cae antes del commit de contacto | 503 sin confirmación | **I6** / I4 | OK (automático, pool caído simulado) · manual con PostgreSQL detenido PENDIENTE | `A23…` |
+| **A23** | Base cae antes del commit de contacto | 503 sin confirmación | **I6** / I4 | OK (automático, pool caído simulado, y manual con PostgreSQL detenido, 2026-11-10) | `A23…` · §9 |
 | **A24** | Brevo falla o agota timeout tras el commit | Consulta conservada; error/desconocido visible | **I6** / I4 | OK (automático) | `A24/T07…` |
 | **A25** | Operador responde y se comprueba la casilla | Historial persistido; recepción revisada | **I6** / I1 | OK (automático y recepción real, §4) | `A25/T09…` |
 | **A26** | Dos reintentos simultáneos o cuarto intento | Una llamada por envío; 409 | **I6** / I4 | OK (automático) | `A26: …` (dos tests) |
@@ -198,3 +198,20 @@ Resultado: **OK**. Las cifras de visitas, accesos, cuentas y consultas coinciden
 Observaciones:
 - Solo había datos de un día. La agregación de varios días está cubierta por la prueba automática de I2 con el dataset de §3 (T20).
 - «Cuentas creadas» cuenta todos los roles, incluida la cuenta de administrador creada por script. Si el contrato pide solo cuentas `registrado`, lo decide I1 y lo ajusta I2.
+
+## 9. A23 manual: base detenida al enviar una consulta
+
+Fecha: 2026-11-10, 00:05 · Versión: `main` 858d4e4 · Rol: visitante · Base: `portfolio_dev` (PostgreSQL 17 local).
+
+| Paso | Obtenido | Estado |
+|---|---|---|
+| Antes de detener la base | 3 consultas y 4 envíos en `app.consultas` y `app.envios_email` | — |
+| Formulario de `/contacto` completo (tipo general, consentimiento marcado) y `Stop-Service postgresql-x64-17` | Servicio en `Stopped`; `/health` responde 503 | — |
+| Enviar la consulta | `POST /api/consultas` → **503** `SERVICIO_NO_DISPONIBLE`, `Retry-After: 30`, en 12 ms. La página muestra «El servicio no está disponible y no se guardó nada. Intentá de nuevo en unos minutos.», sin confirmación. El formulario conserva lo escrito y el botón queda habilitado | OK |
+| `Start-Service` y contar de nuevo | Siguen 3 consultas y 4 envíos: no se guardó nada | OK |
+| Correo | No llegó ninguna notificación a la casilla de prueba: no se llamó a Brevo | OK |
+| Recuperación | Sin reiniciar Node, `/health` vuelve a 200 y `/contacto` carga normalmente | OK |
+
+Resultado: **OK**. Con esto, los cinco casos de R02 (A20–A24) están en OK.
+
+Observación para I2: con la base caída, `/health` responde 503 con la página HTML de error y no con `{"ok":false}`, como dice `docs/despliegue.md`. La causa es que la ruta está después de `sessionMiddleware` en `src/app.js`, y la sesión falla primero al no poder leer `app.sesiones`. El estado 503 es correcto para el chequeo de Render. Montar `/health` antes de la sesión devolvería el JSON documentado y evitaría leer la sesión en cada chequeo.
