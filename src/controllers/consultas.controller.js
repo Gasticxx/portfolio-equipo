@@ -22,7 +22,7 @@ import {
   ESTADOS_CONSULTA,
   ESTADOS_ENVIO
 } from '../config/consultas.constants.js';
-import { ErrorApi } from '../services/consultas.errores.js';
+import { ErrorApi, esErrorDeBaseInaccesible } from '../services/consultas.errores.js';
 
 /**
  * @param {object} deps
@@ -80,7 +80,15 @@ export function crearConsultasController({ servicio, usuarioDe }) {
     // ---------------------------------------------------------------- Páginas
     async paginaContacto(req, res) {
       const query = contactoQuerySchema.parse(req.query);
-      const servicios = await servicio.listarServiciosActivos();
+      let servicios = [];
+      let contactoDisponible = true;
+      try {
+        servicios = await servicio.listarServiciosActivos();
+      } catch (err) {
+        if (!esErrorDeBaseInaccesible(err)) throw err;
+        contactoDisponible = false;
+      }
+      res.set('Cache-Control', 'no-store');
       // Solo se preselecciona un servicio activo y solo para cotización.
       const tipo = query.tipo ?? 'general';
       const servicioId =
@@ -89,6 +97,7 @@ export function crearConsultasController({ servicio, usuarioDe }) {
         titulo: 'Contacto',
         rutaActual: '/contacto',
         servicios,
+        contactoDisponible,
         seleccion: { tipo, servicioId },
         textoConsentimiento: TEXTO_CONSENTIMIENTO,
         limites: LIMITES_CONSULTA

@@ -10,9 +10,6 @@
   <script src="/js/ui.js" defer></script>
   <script src="/js/i3-fondo.js" defer></script>
   <script src="/js/i3-carrusel.js" defer></script>
-  <script src="/js/ui.js" defer></script>
-  <script src="/js/i3-fondo.js" defer></script>
-  <script src="/js/i3-carrusel.js" defer></script>
   <% if (usuarioActual) { %>
     <script src="/js/auth/logout.js" defer></script>
   <% } %>
@@ -30,9 +27,6 @@
           <a href="<%= destino %>" <%- destino === rutaActual ? 'aria-current="page"' : '' %>><%= etiqueta %></a>
         <% } %>
         <% if (!usuarioActual) { %>
-          <% if (typeof baseUi !== "string") { %><a class="acceso" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/login">Ingresar <span aria-hidden="true">↗</span></a>
-          <% } %>
-          <a class="btn btn-primary" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/registro">Registrarse</a>
           <%# La cabecera se comparte entre la maqueta de I3 y la aplicación. %>
           <%
             const enVistaPrevia = typeof rutaActual === "string"

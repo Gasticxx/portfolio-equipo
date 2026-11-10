@@ -14,6 +14,7 @@ import {
   errorHandler,
 } from "./middlewares/errors.js";
 import { cargarUsuarioActual, requerirRol } from "./middlewares/auth.js";
+import { recuperarNavegacionPublica } from "./middlewares/session-recovery.js";
 import { verificarCsrf } from "./middlewares/csrf.js";
 import {
   limiteContactoIp,
@@ -23,6 +24,7 @@ import { analyticsMiddleware } from "./middlewares/analytics.js";
 import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { interfazRouter } from "./routes/interfaz.routes.js";
+import { demosRouter } from "./routes/demos.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import {
   obtenerCsrf,
@@ -35,6 +37,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const app = express();
+// Los parciales compartidos usan las rutas de la aplicación principal.
+app.locals.baseUi = '';
 
 // 1. Configuración de proxy y deshabilitar x-powered-by (Apartado 17)
 app.disable("x-powered-by");
@@ -88,6 +92,7 @@ app.use(sessionMiddleware);
 
 // Paso 7: Comprobamos la sesión y cargamos el usuario vigente.
 app.use(cargarUsuarioActual);
+app.use(recuperarNavegacionPublica);
 
 // Paso 8: Timeout y analítica de visitas
 app.use((req, res, next) => {
@@ -131,6 +136,7 @@ app.use("/api", consultas.api);
 app.use(consultas.paginas);
 
 // Las rutas de autenticación y consultas se resuelven antes que la interfaz de I3.
+app.use(demosRouter);
 app.use(interfazRouter);
 
 // Paso 10: Recurso inexistente (404)

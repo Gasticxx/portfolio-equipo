@@ -1,0 +1,24 @@
+<%- include('../partials/i3/cabecera') %>
+<section class="encabezado-pagina">
+  <a class="regreso" href="/proyectos">← Volver a proyectos</a>
+  <p class="eyebrow">PROYECTO DEL EQUIPO</p>
+  <h1><%= proyecto.titulo %><span>.</span></h1>
+  <p><%= proyecto.descripcion %></p>
+</section>
+<section class="seccion">
+  <h2>Demos interactivas</h2>
+  <% if (demos.length) { %>
+    <div class="rejilla">
+      <% demos.forEach(demo => { %>
+        <article class="glass servicio">
+          <h3><%= demo.titulo %></h3>
+          <p><%= demo.descripcion %></p>
+          <a class="btn btn-primary" href="/demos/<%= demo.id %>">Abrir visualizador ↗</a>
+        </article>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p>Todavía no hay demos publicadas para este proyecto.</p>
+  <% } %>
+</section>
+<%- include('../partials/i3/pie') %>
