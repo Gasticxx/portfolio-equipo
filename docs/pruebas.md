@@ -1,7 +1,9 @@
-# Registro de pruebas — Portfolio Equipo Seis
+# Registro de pruebas — módulo de I6 (contacto, operador, correo y métricas)
 
-Coordina: **I6**. Cada autor ejecuta y corrige los casos de su módulo; el revisor confirma el resultado.
-Un defecto vuelve a la tarjeta del autor. Un caso se marca **OK** solo con evidencia repetible (comando, captura o enlace a PR).
+Este archivo registra las pruebas que ejecutó **I6**: las de su módulo y las que hizo sobre módulos ajenos (métricas de I2, demos de I3 e I5).
+Por acuerdo del equipo, **cada integrante registra las pruebas de su módulo en su ficha (`docs/integrantes/Ix.md`), en sus pruebas automáticas (`tests/`) y en la descripción de sus PR**. Los casos de la guía (T01–T20) y de la especificación (A01–A38) que no involucran a I6 no se repiten acá.
+
+Un defecto encontrado en un módulo ajeno se describe acá y vuelve a su autor. Un caso se marca **OK** solo con evidencia repetible (comando, captura o enlace a PR).
 
 ## Cómo registrar un resultado
 
@@ -31,54 +33,22 @@ npm run test:unit                              # solo unitarias, sin base
 
 ---
 
-## 1. Casos de la guía general (T01–T20)
+## 1. Casos de la guía general en los que interviene I6
 
 | Caso | Acción | Esperado | Responsable / revisor | Rol | Estado | Evidencia |
 |---|---|---|---|---|---|---|
-| T01 | Abrir el sitio en escritorio y teléfono | Equipo, seis perfiles y servicios sin desbordes | I1 / I3 | Visitante | PENDIENTE | |
-| T02 | Registrar cuenta válida y repetir email | Alta y rechazo 409 del duplicado | I4 / I2 | Visitante | PENDIENTE | |
-| T03 | Login incorrecto y luego válido | Error genérico; sesión solo en el segundo | I4 / I2 | Registrado | PENDIENTE | |
-| T04 | Pedir detalle y recurso de demo sin sesión | Acceso denegado sin filtrar contenido | I5 / I4 | Visitante | PENDIENTE | |
-| T05 | Acceder con cuenta y cerrar sesión | Contenido durante la sesión; rechazo después | I4 / I5 | Registrado | PENDIENTE | |
 | T06 | Enviar consulta válida y con campos inválidos | Persistencia y correo; 422 con campos | **I6** / I4 | Visitante | OK (automático y recepción real, §4) | `A20/T06` en `consultas.api.test.js`; validadores en `consultas.validator.test.js` |
 | T07 | Simular fallo del servicio de correo | Consulta conservada y estado real visible | **I6** / I4 | Visitante + operador | OK (automático) | `A24/T07` (error, red, timeout) |
 | T08 | Abrir panel y endpoints con rol registrado | Rechazo de consultas y administración | **I6** + I4 / I2 | Registrado | OK (consultas) · admin PENDIENTE I4 | `A27/T08` |
 | T09 | Responder una consulta como operador | Email recibido e historial registrado | **I6** / I1 | Operador | OK (automático y recepción real, §4) | `A25/T09` |
-| T10 | Crear, editar y eliminar cada contenido | Persistencia y relaciones controladas | I5 + I1 / I4 | Administrador | PENDIENTE | |
-| T11 | Elegir rol administrador al registrarse | Rechazo 422 del campo | I4 / I2 | Visitante | PENDIENTE | |
-| T12 | Bloquear cuenta y probar acceso posterior | Bloqueo aplicado en la próxima petición | I4 / I2 | Administrador | PENDIENTE | |
 | T13 | Generar visitas y accesos y aplicar filtros | Contadores y gráficos consistentes | I2 + **I6** / I1 | Administrador | OK con API real (2026-11-09, `main` 8ef87f3): filtros de rango y tipo, tabla = gráfico, consultas = panel del operador | Recorrido I6 08 (§6) · revisión de I1 PENDIENTE |
-| T14 | Recurso inválido e imagen no permitida | Rechazo controlado y mensaje claro | I5 / I4 | Administrador | PENDIENTE | |
-| T15 | Iniciar el proyecto desde otra PC | README suficiente y base preparada | I2 / I5 | — | PENDIENTE | |
-| T16 | Proyecto con varios participantes | Miembros y aporte de cada uno | I5 + I1 / I3 | Registrado | PENDIENTE | |
-| T17 | Comparar ficha pública con cuenta | La ficha no concede permisos | I4 / I1 | Visitante | PENDIENTE | |
-| T18 | Recargar dentro de la misma visita | Un único evento de visita | I2 / I5 | Visitante | PENDIENTE | |
-| T19 | Login durante visita anónima | Un acceso sin duplicar la visita | I2 + I4 / I5 | Registrado | PENDIENTE | |
 | T20 | Filtrar un rango con eventos en sus límites | Coherente con Argentina; día final completo | I2 + **I6** / I1 | Administrador | OK: dataset 20.2 en prueba automática de I2 (`obtenerMetricasPanel`, 4/3/2/4) · comparación con SQL directa sobre datos propios: OK (§8) | ver §3 |
 
-## 2. Casos de la especificación (A01–A38)
+## 2. Casos de la especificación en los que interviene I6
 
 | Caso | Acción | Resultado obligatorio | Responsable / revisor | Estado | Evidencia |
 |---|---|---|---|---|---|
-| A01 | Instalar en otra PC con base vacía | npm ci, assets, migraciones, seed y arranque | I2 / I5 | PENDIENTE | |
-| A02 | Inicio y perfiles a 360 y 1366 px | Seis fichas sin desbordes | I1 + I3 / I3 | PENDIENTE | |
-| A03 | Registro correcto y email repetido | 201 sin privilegios; 409 sin reemplazo | I4 / I2 | PENDIENTE | |
-| A04 | Enviar rol en el registro | 422 por campo no admitido | I4 / I2 | PENDIENTE | |
-| A05 | Contraseña de 11 caracteres o > 256 bytes | 422 | I4 / I2 | PENDIENTE | |
-| A06 | Login válido e inválido | Sesión solo en el primero | I4 / I2 | PENDIENTE | |
-| A07 | Login después de navegar anónimo | Cambia SID, conserva visita, un acceso | I4 + I2 / I5 | PENDIENTE | |
-| A08 | Logout y nueva petición privada | 401 API o redirección HTML | I4 / I2 | PENDIENTE | |
-| A09 | Sesión 30 min inactiva u 8 h | Rechazo en servidor | I4 / I2 | PENDIENTE | |
-| A10 | Escribir sin CSRF o desde otro origen | 403 sin cambios | I4 / I2 | PENDIENTE (I6 verifica que sus rutas exigen CSRF: OK) | `Idempotency-Key ausente…; sin CSRF es 403` |
-| A11 | Detalle y script de demo sin sesión | Rechazo por URL directa | I5 + I4 / I4 | PENDIENTE | |
-| A12 | Bloquear cuenta con sesión abierta | Próxima petición denegada | I4 / I2 | PENDIENTE | |
-| A13 | Cambiar contraseña y usar sesión anterior | Sesiones previas rechazadas | I4 / I2 | PENDIENTE | |
-| A14 | Registrado u operador modifica contenido o métricas | 403 sin filtración | I4 / I5 | PENDIENTE | |
-| A15 | CRUD de proyectos con aportes | Relaciones coherentes | I5 / I4 | PENDIENTE | |
-| A16 | Borrar proyecto con demos | 409 sin borrado parcial | I5 / I4 | PENDIENTE | |
-| A17 | CRUD de demos y servicios | Cuatro operaciones y efecto público | I5 + I1 / I4 | PENDIENTE | |
-| A18 | Subir JPEG, SVG, falso y 6 MiB | WebP en el primero; rechazo en el resto | I5 / I4 | PENDIENTE | |
-| A19 | Reiniciar servidor tras una carga | Portada disponible | I5 / I2 | PENDIENTE | |
+| A10 | Escribir sin CSRF o desde otro origen | 403 sin cambios | I4 / I2 · **I6 en sus rutas** | Parte de I6: OK, todas las escrituras del módulo responden 403 sin CSRF. El caso general es de I4 | `Idempotency-Key ausente…; sin CSRF es 403` |
 | **A20** | Enviar cada tipo y consentimiento falso | Tres altas; rechazo del falso | **I6** / I4 | OK (automático) | `A20/T06…` |
 | **A21** | Repetir consulta con misma clave y payload | Una consulta y una notificación; 200 | **I6** / I4 | OK (automático) | `A21…`, `carrera de altas…` |
 | **A22** | Reutilizar clave con otro mensaje | 409 sin alta ni envío | **I6** / I4 | OK (automático) | `A22…` |
@@ -87,17 +57,11 @@ npm run test:unit                              # solo unitarias, sin base
 | **A25** | Operador responde y se comprueba la casilla | Historial persistido; recepción revisada | **I6** / I1 | OK (automático y recepción real, §4) | `A25/T09…` |
 | **A26** | Dos reintentos simultáneos o cuarto intento | Una llamada por envío; 409 | **I6** / I4 | OK (automático) | `A26: …` (dos tests) |
 | **A27** | Ver contacto como visitante o registrado | 403 sin listado ni historial | **I6** / I4 | OK (automático) | `A27/T08…` |
-| A28 | Recargar varias veces en la misma visita | Una visita | I2 / I5 | PENDIENTE | |
-| A29 | Dos cuentas durante una visita | Una visita y dos accesos | I2 / I5 | PENDIENTE | |
 | **A30** | Fechas límite y tipo de consulta | Día final incluido; tipo solo cambia consultas | I2 + **I6** / I1 | OK con API real: tipo=asesoria cambia solo Consultas (2→1) y la dona | §6 |
 | **A31** | Rango vacío o inválido | Ceros y estado vacío; 400 en inválidos | I2 + **I6** / I1 | OK con API real: 01–05/10 en ceros con “Sin datos” y sin dona; rango invertido, futuro, tipo inexistente y una sola fecha → 400 | §6 |
 | A32 | Tareas: crear, cambiar, ajena | Persistencia propia; 404 ajena | I5 / I4 · **I6 ejecuta** | BLOQUEADO (2026-11-09, `main` 858d4e4): `demos.routes.js` solo sirve demos `algoritmos` y no existe la API de `app.tareas_demo`. Depende de I5 | §7 |
-| A33 | Superar 50 tareas en paralelo | Límite sin carrera | I5 / I4 | PENDIENTE | |
 | A34 | Búsqueda y burbuja con duplicados | Resultados correctos; errores claros | I5 / I3 · **I6 prueba errores** | OK (2026-11-09, `main` 858d4e4): 9 casos de resultado y 11 de error · confirmación de I5 PENDIENTE | §7 |
 | A35 | Pausar, avanzar y reiniciar visualizador | Sin timers superpuestos | I3 / I5 · **I6 prueba reinicio** | OK (2026-11-09, `main` 858d4e4) con un defecto menor para I3 (D-I6-05-1) | §7 |
-| A36 | Superar rate limit y reiniciar | 429 y ventana conservada | I2 / I4 | PENDIENTE (I6 entrega los puntos de enganche `limites.contacto` y `limites.operador`) | |
-| A37 | Teclado y movimiento reducido | Foco visible y acciones disponibles | I3 / todos | PENDIENTE (vistas de I6 listas para revisar) | |
-| A38 | Restaurar backup en base de prueba | Datos recuperados | I5 / I2 | PENDIENTE | |
 
 ## 3. Dataset de métricas (apartado 20.2)
 
