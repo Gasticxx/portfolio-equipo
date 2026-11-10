@@ -32,6 +32,8 @@ En el panel de Render (`Environment`) se cargan únicamente las variables de eje
 | `MAIL_FROM_NAME`            | `Equipo Seis`                                                                                                                                 | I6                   |
 | `CONTACT_TO_EMAIL`          | Casilla real de recepción de notificaciones del equipo                                                                                        | I6                   |
 
+> Cómo obtener y comprobar las cuatro variables de Brevo sin exponer secretos: `docs/consultas.md` §8 (I6).
+
 ## 3. Secuencia de Despliegue y Migraciones (Sin Shell remota)
 
 1. En Render Free no se ejecutan migraciones ni seeds automáticos al iniciar el contenedor.
