@@ -12,7 +12,11 @@ Este documento describe los recorridos funcionales de la aplicación según los 
    - Al ingresar a `/equipo/:slug`, se consulta la formación académica, enlaces profesionales y los **aportes en estado comprobado** correspondientes a proyectos publicados.
 3. **Servicios (`/servicios`):** Lista los servicios activos ordenados por prioridad. El botón **Solicitar cotización** redirige automáticamente a `/contacto?tipo=cotizacion&servicioId=<id>` precargando la selección.
 4. **Proyectos (`/proyectos`):** Muestra el resumen de los proyectos publicados e informa que para acceder al detalle técnico y a las demos interactivas es obligatorio iniciar sesión.
-5. **Contacto (`/contacto`):** Permite enviar consultas (`general`, `cotizacion` o `asesoria`) validando consentimiento explícito y evitando envíos duplicados mediante clave de idempotencia.
+5. **Contacto (`/contacto`):** Formulario con nombre, email, tipo de consulta (`general`, `cotizacion` o `asesoria`), asunto, mensaje (20 a 3000 caracteres) y consentimiento obligatorio.
+   - En una cotización se puede elegir un servicio activo; desde **Solicitar cotización** llega preseleccionado.
+   - Los errores aparecen junto a cada campo, con el mismo criterio que aplica el servidor.
+   - Al enviar, la página confirma que la consulta quedó registrada e indica si el aviso por correo al equipo fue aceptado o quedó pendiente de revisión. Un fallo del correo nunca hace perder la consulta.
+   - Pulsar Enviar dos veces o repetir tras un corte de red no crea una consulta duplicada. Límite: 5 envíos cada 15 minutos por conexión.
 6. **Registro e Ingreso (`/registro` y `/login`):** Permite crear una cuenta con rol `registrado` (contraseña de 12 a 128 caracteres) e iniciar sesión.
 
 ---
@@ -33,12 +37,19 @@ Además de las vistas públicas, el usuario autenticado accede a:
 
 Incluye los permisos de usuario registrado y suma la gestión de contacto:
 
-1. **Bandeja de Consultas (`/operador/consultas`):** Permite buscar y filtrar consultas por texto (`q`), tipo (`general`, `cotizacion`, `asesoria`), estado de gestión (`nueva`, `en_proceso`, `respondida`, `cerrada`) y estado de notificación por correo.
-2. **Detalle y Respuesta (`/operador/consultas/:id`):**
-   - Al abrir una consulta en gestión, el operador puede pasar su estado a `en_proceso`.
-   - Permite redactar y enviar respuestas por correo electrónico a través de Brevo HTTPS al email registrado en la consulta.
-   - Si el envío es aceptado por el proveedor, la consulta pasa a `respondida`.
-   - Permite reintentar envíos en estado `error` o `pendiente` (máximo 3 intentos) o gestionar envíos en estado `desconocido` con confirmación explícita.
+1. **Bandeja de Consultas (`/operador/consultas`):** Busca por nombre, email o asunto y filtra por tipo (`general`, `cotizacion`, `asesoria`), estado de gestión (`nueva`, `en_proceso`, `respondida`, `cerrada`) y estado del aviso por correo. Muestra 10 consultas por página, las más recientes primero.
+2. **Detalle (`/operador/consultas/:id`):** Datos de la consulta, servicio elegido (se conserva aunque el servicio se borre después), historial de respuestas y tabla de envíos de correo. Abrir una consulta no cambia su estado.
+3. **Estados:**
+   - **Marcar en proceso:** desde `nueva` o `respondida`.
+   - **Respondida:** es automática cuando Brevo acepta una respuesta; no se marca a mano.
+   - **Cerrar consulta:** desde `respondida`. Una consulta cerrada no se puede responder.
+   - **Reabrir:** desde `cerrada`, vuelve a `en_proceso`.
+4. **Responder:** Mensaje de 10 a 3000 caracteres que se envía por Brevo al email registrado en la consulta; el autor es el operador con la sesión abierta. Una respuesta enviada no se edita: una corrección es otra respuesta.
+5. **Reintentar un envío:**
+   - `error` o `pendiente`: se puede reintentar 60 segundos después del intento anterior, hasta 3 intentos.
+   - `desconocido`: el correo pudo haber salido. Antes de reintentar se revisan los registros de Brevo y se marca la confirmación de riesgo.
+   - `aceptado`: nunca se reintenta.
+   - Qué hacer si un email no llega: `docs/consultas.md` §5.
 
 ---
 
@@ -49,4 +60,8 @@ Incluye todas las funciones anteriores y habilita las capacidades de promoción 
 1. **Gestión de Proyectos (`/admin/proyectos`) y Demos (`/admin/demos`):** CRUD completo de proyectos (incluyendo portada WebP en Supabase Storage, tecnologías y aportes de cada miembro) y de fichas de demos.
 2. **Gestión de Servicios (`/admin/servicios`):** CRUD completo de servicios ofertados (`nombre`, `categoria`, `descripcion`, `orden` y estado `activo`). Al eliminar un servicio, las consultas históricas conservan el nombre en `servicio_nombre_snapshot`.
 3. **Gestión de Usuarios (`/admin/usuarios`):** Búsqueda de cuentas con rol `registrado` y habilitación/deshabilitación inmediata (`activo = true/false`), revocando sesiones activas al bloquear.
-4. **Panel de Métricas (`/admin/metricas`):** Visualización de contadores y tres gráficos interactivos (tráfico diario de visitas vs. accesos autenticados, registros diarios y distribución de consultas por tipo) filtrables por rango de fechas (`desde`, `hasta`) y tipo de consulta.
+4. **Panel de Métricas (`/admin/metricas`):** Cuatro tarjetas (visitas, accesos autenticados, cuentas creadas y consultas) y tres gráficos, cada uno con una tabla para leer los valores sin depender del color: visitas y accesos por día, cuentas creadas por día y consultas por tipo.
+   - **Rango:** últimos 7 días (predeterminado), últimos 30 días o personalizado de hasta 90 días.
+   - **Tipo de consulta:** filtra solo las consultas; visitas, accesos y cuentas no cambian.
+   - Sin datos en el rango, muestra ceros y el aviso «Sin datos para este rango».
+   - Los gráficos se adaptan al tema claro u oscuro de la interfaz.

@@ -16,15 +16,19 @@ const TIPOS = [
   { clave: 'asesoria', nombre: 'Asesoría' }
 ];
 
-// Colores por entidad (orden fijo; validados para daltonismo y contraste).
-const COLOR = {
-  visitas: '#1D4ED8',
-  accesos: '#C2410C',
-  cuentas: '#0D9488',
-  general: '#1D4ED8',
-  cotizacion: '#C2410C',
-  asesoria: '#0D9488'
+// Colores por entidad y por tema (orden fijo). Validados con el chequeo de
+// paletas: separación para daltonismo y contraste >= 3:1 contra la superficie
+// de cada tema (claro: #FFFFFF; oscuro de I3: vidrio sobre #19233a).
+const PALETAS = {
+  claro: { visitas: '#1D4ED8', accesos: '#C2410C', cuentas: '#0D9488' },
+  oscuro: { visitas: '#5B8DEF', accesos: '#DB7036', cuentas: '#1AA996' }
 };
+// I3 activa el tema oscuro con la clase tema-oscuro en <body> (src/public/js/ui.js).
+const esTemaOscuro = () => document.body.classList.contains('tema-oscuro');
+function colores() {
+  const p = PALETAS[esTemaOscuro() ? 'oscuro' : 'claro'];
+  return { ...p, general: p.visitas, cotizacion: p.accesos, asesoria: p.cuentas };
+}
 
 const form = document.getElementById('filtros-metricas');
 const selRango = document.getElementById('m-rango');
@@ -161,7 +165,8 @@ function filtrosDesdeUrl() {
 
 // ------------------------------------------------------------- Chart.js
 function estiloTexto() {
-  const css = getComputedStyle(document.documentElement);
+  // Las variables del tema oscuro de I3 se definen sobre <body>, no sobre <html>.
+  const css = getComputedStyle(document.body);
   return {
     texto: css.getPropertyValue('--color-texto').trim() || '#0F172A',
     secundario: css.getPropertyValue('--color-secundario').trim() || '#475569',
@@ -193,6 +198,34 @@ function opcionesBase({ leyenda, eje = true }) {
   return base;
 }
 
+/** Repinta los gráficos existentes con los colores del tema actual. */
+function aplicarTemaGraficos() {
+  const t = estiloTexto();
+  const c = colores();
+  for (const grafico of Object.values(graficos)) {
+    if (!grafico) continue;
+    const o = grafico.options;
+    if (o.plugins?.legend?.labels) o.plugins.legend.labels.color = t.texto;
+    if (o.scales?.x) o.scales.x.ticks.color = t.secundario;
+    if (o.scales?.y) {
+      o.scales.y.ticks.color = t.secundario;
+      o.scales.y.grid.color = t.borde;
+    }
+  }
+  if (graficos.trafico) {
+    const [v, a] = graficos.trafico.data.datasets;
+    v.borderColor = v.backgroundColor = c.visitas;
+    a.borderColor = a.backgroundColor = c.accesos;
+  }
+  if (graficos.registros) graficos.registros.data.datasets[0].backgroundColor = c.cuentas;
+  if (graficos.tipos) {
+    const d = graficos.tipos.data.datasets[0];
+    d.backgroundColor = TIPOS.map((x) => c[x.clave]);
+    d.borderColor = t.superficie;
+  }
+  for (const grafico of Object.values(graficos)) grafico?.update('none');
+}
+
 function crearOActualizar(clave, crear, actualizar) {
   if (!Chart) return;
   if (graficos[clave]) {
@@ -215,8 +248,8 @@ function pintarTrafico(serie) {
         data: {
           labels: etiquetas,
           datasets: [
-            { label: 'Visitas', data: visitas, borderColor: COLOR.visitas, backgroundColor: COLOR.visitas, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0 },
-            { label: 'Accesos autenticados', data: accesos, borderColor: COLOR.accesos, backgroundColor: COLOR.accesos, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointStyle: 'rectRot', borderDash: [6, 3], tension: 0 }
+            { label: 'Visitas', data: visitas, borderColor: colores().visitas, backgroundColor: colores().visitas, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, tension: 0 },
+            { label: 'Accesos autenticados', data: accesos, borderColor: colores().accesos, backgroundColor: colores().accesos, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, pointStyle: 'rectRot', borderDash: [6, 3], tension: 0 }
           ]
         },
         options: opcionesBase({ leyenda: true })
@@ -244,7 +277,7 @@ function pintarRegistros(serie) {
         type: 'bar',
         data: {
           labels: etiquetas,
-          datasets: [{ label: 'Cuentas creadas', data: cuentas, backgroundColor: COLOR.cuentas, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 32 }]
+          datasets: [{ label: 'Cuentas creadas', data: cuentas, backgroundColor: colores().cuentas, borderRadius: 4, borderSkipped: 'start', maxBarThickness: 32 }]
         },
         options: opcionesBase({ leyenda: false })
       }),
@@ -280,7 +313,7 @@ function pintarTipos(porTipo) {
           type: 'doughnut',
           data: {
             labels: TIPOS.map((x) => x.nombre),
-            datasets: [{ data: cantidades, backgroundColor: TIPOS.map((x) => COLOR[x.clave]), borderColor: t.superficie, borderWidth: 2 }]
+            datasets: [{ data: cantidades, backgroundColor: TIPOS.map((x) => colores()[x.clave]), borderColor: t.superficie, borderWidth: 2 }]
           },
           options: { ...opcionesBase({ leyenda: true, eje: false }), cutout: '60%' }
         }),
@@ -359,6 +392,8 @@ form.addEventListener('submit', (e) => {
   aplicar();
 });
 selRango.addEventListener('change', sincronizarRango);
+// El botón de tema de I3 avisa con el evento i3:tema sobre <body>.
+document.body.addEventListener('i3:tema', aplicarTemaGraficos);
 filtrosDesdeUrl();
 sincronizarRango();
 aplicar();

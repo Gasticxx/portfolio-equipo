@@ -54,7 +54,7 @@ Va después de `cargarUsuarioActual` y `analyticsMiddleware`, y antes de `notFou
 | Componentes de I3 | `encabezado-pagina`, `glass`, `formulario`, `campo`, `alerta`, `estado-vista`, `tabla-i3` | I3 |
 | `/vendor/chart.umd.js` | Copiado por `npm run assets` | I2 |
 | Migración `003_contenido.sql` | Tablas `app.consultas`, `app.respuestas`, `app.envios_email` | I5 |
-| `GET /api/admin/metricas` | La vista de métricas la consume. **Todavía no existe**: hasta que I2 la publique, la página muestra el error “No se pudieron cargar las métricas” | I2 |
+| `GET /api/admin/metricas` | La vista de métricas la consume. Publicada por I2 y probada con datos reales en I6 08 (`docs/pruebas.md` §6). Si falla, la página muestra “No se pudieron cargar las métricas” | I2 |
 
 ### Variables de entorno
 
@@ -156,3 +156,39 @@ Formato: `{"ok":false,"error":{"code","message","fields?","requestId"}}`.
 | 422 | VALIDACION | Campos inválidos, con `fields` |
 | 503 | SERVICIO_NO_DISPONIBLE | Base inaccesible: nada se confirmó |
 | 500 | ERROR_INTERNO | Inesperado; usar `requestId` para buscar en el log |
+
+## 8. Configuración de Brevo (para I2 y el despliegue)
+
+Esta guía no contiene claves ni direcciones reales. Los valores se cargan solo en `.env` (local, ignorado por Git) y en el panel de Render.
+
+### Pasos en Brevo
+
+1. **Cuenta.** El plan gratuito admite 300 correos por día por API. El equipo se limita a 20 envíos de prueba por día y los registra en `docs/pruebas.md` §4.
+2. **Remitente.** En *Senders, domains & dedicated IPs → Senders → Add a sender* se agrega la casilla del equipo y se confirma con el código que llega a esa casilla. Esa dirección es `MAIL_FROM_EMAIL`.
+   - Con una casilla gratuita (por ejemplo gmail.com) Brevo no puede autenticar el dominio y reescribe el remitente a uno propio (`*.brevosend.com`). El correo llega igual, pero el destinatario ve que lo envió Brevo. Esto ya se comprobó en I6 02.
+   - Para mostrar un remitente propio hace falta un dominio del equipo autenticado en *Domains* (SPF, DKIM y DMARC). No es obligatorio para la entrega.
+3. **Clave de API.** En *SMTP & API → API keys* se genera una clave nueva. Si Brevo ofrece permisos por clave, se habilitan solo los de **emails transaccionales**. La clave se ve una sola vez: se copia directo a `BREVO_API_KEY`.
+   - Usar una clave para desarrollo y otra para producción, así borrar una no corta la otra.
+   - Nunca pegarla en el repositorio, en un chat, en una captura ni en un PR. Si se expone, se **borra en Brevo y se genera otra** (rotación), y se actualiza `.env` o Render. Después hay que reiniciar el servidor, porque la variable se lee al arrancar.
+4. **IPs autorizadas.** Si en la seguridad de la cuenta está activo el bloqueo de IPs desconocidas, Brevo rechaza las llamadas de un servidor nuevo y el envío queda en `error` con un código `HTTP_401_*`. Para Render hay dos opciones: autorizar las IPs de salida que Render muestra para el servicio, o desactivar ese bloqueo. Al probar desde una PC o red nueva puede pasar lo mismo.
+
+### Variables en Render
+
+| Variable | Qué va | Cómo comprobarla sin mostrarla |
+|---|---|---|
+| `BREVO_API_KEY` | Clave de producción del paso 3 | Un envío de prueba queda `aceptado` y no `HTTP_401_*` |
+| `MAIL_FROM_EMAIL` | Remitente verificado del paso 2 | Figura como verificado en *Senders*; si no, Brevo responde `HTTP_400_*` |
+| `MAIL_FROM_NAME` | `Equipo Seis` | Nombre visible en el correo recibido |
+| `CONTACT_TO_EMAIL` | Casilla del equipo que recibe las notificaciones | Llega la notificación de la consulta de prueba |
+
+Con `NODE_ENV=production`, `src/config/env.js` exige las cuatro y el servidor no arranca si falta alguna. En desarrollo pueden quedar vacías (ver §2).
+
+### Comprobación después de desplegar
+
+1. Enviar una consulta desde `/contacto` en la URL de Render.
+2. En `/operador/consultas/<id>`, el envío `notificacion` debe estar `aceptado` y tener **ID proveedor**.
+3. Buscar ese ID en Brevo (*Transactional → Logs*) y revisar Recibidos y spam de `CONTACT_TO_EMAIL`.
+4. Responder la consulta desde el panel y comprobar que llega al email de la consulta.
+5. Registrar ambas pruebas en `docs/pruebas.md` §4.
+
+Si Brevo agota la cuota del día, el envío queda en `error` y la consulta se conserva. Se reintenta desde el panel al día siguiente (máximo 3 intentos, ver §4).
