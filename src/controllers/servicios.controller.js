@@ -1,4 +1,5 @@
 import { serviciosService } from '../services/servicios.service.js';
+import { obtenerTokenCsrf } from '../middlewares/csrf.js';
 import {
   servicioBodySchema,
   servicioPutBodySchema,
@@ -23,7 +24,9 @@ export const serviciosController = {
     try {
       const servicios = await serviciosService.listarPublicos();
       return res.render('servicios/index', {
+        titulo: 'Servicios',
         tituloPagina: 'Servicios - Reflection Tech',
+        rutaActual: '/servicios',
         servicios
       });
     } catch (err) {
@@ -35,9 +38,12 @@ export const serviciosController = {
   async vistaAdminServicios(req, res, next) {
     try {
       const resultado = await serviciosService.listarAdmin({ page: 1, pageSize: 50 });
+      const csrfToken = obtenerTokenCsrf(req.session);
       return res.render('servicios/admin', {
         titulo: 'Administración de Servicios',
+        tituloPagina: 'Administración de Servicios - Equipo Seis',
         rutaActual: '/admin/servicios',
+        csrfToken,
         servicios: resultado.data,
         meta: resultado.meta
       });

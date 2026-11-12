@@ -1,5 +1,6 @@
 (() => {
-  let csrfToken = null;
+  const panelEl = document.getElementById('panel-admin-servicios');
+  let csrfToken = panelEl?.dataset?.csrfToken || null;
   let ultimoBotonFoco = null;
 
   const alertaBox = document.getElementById('alerta-admin-servicios');
@@ -7,6 +8,8 @@
   const formFiltros = document.getElementById('form-filtros-servicios');
   const btnNuevo = document.getElementById('btn-nuevo-servicio');
   const modalEl = document.getElementById('modal-servicio');
+  const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+  const btnCancelarModal = document.getElementById('btn-cancelar-modal');
   const formServicio = document.getElementById('form-servicio');
   const btnGuardar = document.getElementById('btn-guardar-servicio');
   const modalTitulo = document.getElementById('modal-servicio-titulo');
@@ -25,14 +28,30 @@
     orden: { input: inputOrden, error: document.getElementById('error-orden') }
   };
 
-  function obtenerInstanciaModal() {
-    if (window.bootstrap && window.bootstrap.Modal) {
-      return window.bootstrap.Modal.getOrCreateInstance(modalEl);
+  function abrirModal() {
+    if (!modalEl) return;
+    if (typeof modalEl.showModal === 'function') {
+      if (!modalEl.open) modalEl.showModal();
+    } else if (window.bootstrap && window.bootstrap.Modal) {
+      window.bootstrap.Modal.getOrCreateInstance(modalEl).show();
     }
-    return null;
+    inputNombre?.focus();
+  }
+
+  function cerrarModal() {
+    if (!modalEl) return;
+    if (typeof modalEl.close === 'function') {
+      if (modalEl.open) modalEl.close();
+    } else if (window.bootstrap && window.bootstrap.Modal) {
+      window.bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+    }
+    if (ultimoBotonFoco && typeof ultimoBotonFoco.focus === 'function') {
+      ultimoBotonFoco.focus();
+    }
   }
 
   function mostrarAlerta(mensaje, tipo = 'success') {
+    if (!alertaBox) return;
     alertaBox.className = `alert alert-${tipo}`;
     alertaBox.textContent = mensaje;
     alertaBox.classList.remove('d-none');
@@ -40,8 +59,8 @@
 
   function limpiarErroresFormulario() {
     Object.values(camposMapa).forEach(({ input, error }) => {
-      input.classList.remove('is-invalid');
-      error.textContent = '';
+      if (input) input.classList.remove('is-invalid');
+      if (error) error.textContent = '';
     });
   }
 
@@ -66,27 +85,32 @@
 
   async function asegurarCsrf(forzar = false) {
     if (csrfToken && !forzar) return csrfToken;
-    const res = await fetch('/api/csrf', {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: { Accept: 'application/json' }
-    });
-    if (res.ok) {
-      const payload = await res.json();
-      csrfToken = payload?.data?.csrfToken || null;
+    try {
+      const res = await fetch('/api/csrf', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' }
+      });
+      if (res.ok) {
+        const payload = await res.json();
+        csrfToken = payload?.data?.csrfToken || payload?.csrfToken || csrfToken;
+      }
+    } catch {
+      // Mantiene el token inyectado desde el SSR en data-csrf-token
     }
     return csrfToken;
   }
 
-  function renderizarFilas(servicios) {
-    tablaBody.textContent = '';
+  function renderizarFilas(servicios = []) {
+    if (!tablaBody) return;
+    tablaBody.innerHTML = '';
 
-    if (!Array.isArray(servicios) || servicios.length === 0) {
+    if (servicios.length === 0) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
       td.colSpan = 5;
       td.className = 'text-center text-secondary py-4';
-      td.textContent = 'No se encontraron servicios para los filtros seleccionados.';
+      td.textContent = 'No se encontraron servicios.';
       tr.appendChild(td);
       tablaBody.appendChild(tr);
       return;
@@ -109,17 +133,17 @@
       divDesc.textContent = s.descripcion;
       tdNombre.append(divTitulo, divDesc);
 
-      const tdCategoria = document.createElement('td');
+      const tdCat = document.createElement('td');
       const badgeCat = document.createElement('span');
       badgeCat.className = 'badge text-bg-secondary text-uppercase';
       badgeCat.textContent = s.categoria;
-      tdCategoria.appendChild(badgeCat);
+      tdCat.appendChild(badgeCat);
 
       const tdEstado = document.createElement('td');
-      const badgeEst = document.createElement('span');
-      badgeEst.className = s.activo ? 'badge text-bg-success' : 'badge text-bg-secondary';
-      badgeEst.textContent = s.activo ? 'Activo' : 'Inactivo';
-      tdEstado.appendChild(badgeEst);
+      const badgeEstado = document.createElement('span');
+      badgeEstado.className = s.activo ? 'badge text-bg-success' : 'badge text-bg-secondary';
+      badgeEstado.textContent = s.activo ? 'Activo' : 'Inactivo';
+      tdEstado.appendChild(badgeEstado);
 
       const tdAcciones = document.createElement('td');
       tdAcciones.className = 'text-end';
@@ -138,17 +162,17 @@
       btnEliminar.textContent = 'Eliminar';
 
       tdAcciones.append(btnEditar, btnEliminar);
-      tr.append(tdOrden, tdNombre, tdCategoria, tdEstado, tdAcciones);
+      tr.append(tdOrden, tdNombre, tdCat, tdEstado, tdAcciones);
       tablaBody.appendChild(tr);
     });
   }
 
   async function cargarServicios() {
-    const q = document.getElementById('filtro-q').value.trim();
-    const activo = document.getElementById('filtro-activo').value;
     const params = new URLSearchParams({ page: '1', pageSize: '50' });
+    const q = document.getElementById('filtro-q')?.value?.trim() || '';
+    const activo = document.getElementById('filtro-activo')?.value || '';
 
-    if (q.length > 0) params.set('q', q);
+    if (q.length >= 2) params.set('q', q);
     if (activo === 'true' || activo === 'false') params.set('activo', activo);
 
     const res = await fetch(`/api/admin/servicios?${params.toString()}`, {
@@ -156,23 +180,16 @@
       credentials: 'same-origin',
       headers: { Accept: 'application/json' }
     });
-
     const payload = await res.json();
     if (!res.ok || !payload.ok) {
-      mostrarAlerta(payload?.error?.message || 'Error al cargar servicios.', 'danger');
+      mostrarAlerta(payload?.error?.message || 'Error al filtrar servicios.', 'danger');
       return;
     }
-
     renderizarFilas(payload.data);
   }
 
-  if (modalEl) {
-    modalEl.addEventListener('hidden.bs.modal', () => {
-      if (ultimoBotonFoco && typeof ultimoBotonFoco.focus === 'function') {
-        ultimoBotonFoco.focus();
-      }
-    });
-  }
+  btnCerrarModal?.addEventListener('click', cerrarModal);
+  btnCancelarModal?.addEventListener('click', cerrarModal);
 
   if (btnNuevo) {
     btnNuevo.addEventListener('click', () => {
@@ -183,7 +200,7 @@
       inputOrden.value = '1';
       inputActivo.checked = true;
       modalTitulo.textContent = 'Nuevo servicio';
-      obtenerInstanciaModal()?.show();
+      abrirModal();
     });
   }
 
@@ -221,7 +238,7 @@
         inputOrden.value = String(s.orden);
         inputActivo.checked = Boolean(s.activo);
         modalTitulo.textContent = 'Editar servicio';
-        obtenerInstanciaModal()?.show();
+        abrirModal();
         return;
       }
 
@@ -251,12 +268,6 @@
         }
 
         const payload = await res.json();
-        if (res.status === 403 && payload?.error?.code === 'CSRF_INVALIDO') {
-          await asegurarCsrf(true);
-          mostrarAlerta('La sesión de seguridad se actualizó. Volvé a intentar eliminar el servicio.', 'warning');
-          return;
-        }
-
         mostrarAlerta(payload?.error?.message || 'No se pudo eliminar el servicio.', 'danger');
       }
     });
@@ -303,21 +314,18 @@
             mostrarErroresCampos(payload.error.fields);
             return;
           }
-          if (res.status === 403 && payload?.error?.code === 'CSRF_INVALIDO') {
-            await asegurarCsrf(true);
-            mostrarAlerta('Token de seguridad renovado. Presioná Guardar nuevamente.', 'warning');
-            return;
-          }
           mostrarAlerta(payload?.error?.message || 'Error al guardar el servicio.', 'danger');
           return;
         }
 
-        obtenerInstanciaModal()?.hide();
+        cerrarModal();
         mostrarAlerta(
           esEdicion ? 'Servicio actualizado correctamente.' : 'Servicio creado correctamente.',
           'success'
         );
         await cargarServicios();
+      } catch {
+        mostrarAlerta('Error de red al guardar el servicio.', 'danger');
       } finally {
         btnGuardar.disabled = false;
       }
