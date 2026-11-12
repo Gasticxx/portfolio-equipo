@@ -72,7 +72,7 @@ export function validateEnv(source = process.env) {
         SUPABASE_STORAGE_BUCKET: (source.SUPABASE_STORAGE_BUCKET || 'portfolio-media').trim(),
         BREVO_API_KEY: (source.BREVO_API_KEY || '').trim(),
         MAIL_FROM_EMAIL: (source.MAIL_FROM_EMAIL || '').trim(),
-        MAIL_FROM_NAME: (source.MAIL_FROM_NAME || 'Equipo Seis').trim(),
+        MAIL_FROM_NAME: (source.MAIL_FROM_NAME || 'Reflection Tech').trim(),
         CONTACT_TO_EMAIL: (source.CONTACT_TO_EMAIL || '').trim(),
     });
 }

@@ -37,7 +37,7 @@ export function asuntoRespuesta(consultaId) {
 
 export function cuerpoNotificacion(consulta, appOrigin) {
   const lineas = [
-    'Nueva consulta recibida en el sitio del Equipo Seis.',
+    'Nueva consulta recibida en el sitio del Reflection Tech.',
     '',
     `Consulta #${consulta.id}`,
     `Tipo: ${NOMBRES_TIPO[consulta.tipo] ?? consulta.tipo}`
@@ -64,7 +64,7 @@ export function cuerpoRespuesta(consulta, mensaje) {
     mensaje,
     '',
     '—',
-    'Equipo Seis',
+    'Reflection Tech',
     `Respuesta a tu consulta #${consulta.id}: ${consulta.asunto}`
   ].join('\n');
   return recortar(texto, CORREO.cuerpoMax);

@@ -25,7 +25,7 @@ export const serviciosController = {
       const servicios = await serviciosService.listarPublicos();
       return res.render('servicios/index', {
         titulo: 'Servicios',
-        tituloPagina: 'Servicios - Equipo Seis',
+        tituloPagina: 'Servicios - Reflection Tech',
         rutaActual: '/servicios',
         servicios
       });
