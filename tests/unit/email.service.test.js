@@ -13,7 +13,7 @@ import { huellaPayload, huellaActor } from '../../src/services/consultas.service
 const env = {
   BREVO_API_KEY: 'xkeysib-prueba',
   MAIL_FROM_EMAIL: 'equipo@equipo.test',
-  MAIL_FROM_NAME: 'Equipo Seis',
+  MAIL_FROM_NAME: 'Reflection Tech',
   CONTACT_TO_EMAIL: 'casilla@equipo.test'
 };
 
@@ -54,7 +54,7 @@ test('envía a /v3/smtp/email con api-key, sender verificado y texto plano', asy
   assert.equal(llamada.init.method, 'POST');
   assert.equal(llamada.init.headers['api-key'], 'xkeysib-prueba');
   const body = JSON.parse(llamada.init.body);
-  assert.deepEqual(body.sender, { email: 'equipo@equipo.test', name: 'Equipo Seis' });
+  assert.deepEqual(body.sender, { email: 'equipo@equipo.test', name: 'Reflection Tech' });
   assert.deepEqual(body.to, [{ email: 'casilla@equipo.test' }]);
   assert.deepEqual(body.replyTo, { email: 'ana@example.com', name: 'Ana' });
   assert.equal(body.textContent, '<b>no es HTML</b>');
@@ -65,7 +65,7 @@ test('la respuesta va al email de la consulta con replyTo del equipo', () => {
   const s = servicioCon(async () => respuestaJson(201, {}));
   const m = s.construirMensaje({ clase: 'respuesta', asunto: 'R', cuerpo: 'x', destinatario: 'ana@example.com', consulta_nombre: 'Ana' });
   assert.deepEqual(m.to, [{ email: 'ana@example.com', name: 'Ana' }]);
-  assert.deepEqual(m.replyTo, { email: 'equipo@equipo.test', name: 'Equipo Seis' });
+  assert.deepEqual(m.replyTo, { email: 'equipo@equipo.test', name: 'Reflection Tech' });
 });
 
 test('clasifica rechazos, timeout y fallos de red', async () => {
