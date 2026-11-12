@@ -142,6 +142,11 @@ h1>span,h2>span{
 .marca-seis,.marca-punto{
   color:var(--color-primario)
 }
+.marca-seis { margin-left:.2em; }
+@media(max-width:767px) {
+  .marca { font-size:18px; letter-spacing:-.6px; }
+  .marca-icono { width:28px; height:30px; font-size:20px; margin-right:7px; }
+}
 .navegacion{
   display:flex;
   gap:24px;

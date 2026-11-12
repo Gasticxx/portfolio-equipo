@@ -110,7 +110,7 @@ test('evaluarReintento aplica estados, máximo de 3 y espera de 60 s', () => {
 });
 
 test('asunto de notificación con prefijo y máximo 160 caracteres', () => {
-  assert.equal(asuntoNotificacion(25, 'Sitio institucional'), '[Equipo Seis] Consulta #25 - Sitio institucional');
+  assert.equal(asuntoNotificacion(25, 'Sitio institucional'), '[Reflection Tech] Consulta #25 - Sitio institucional');
   assert.equal(Array.from(asuntoNotificacion(25, 'á'.repeat(200))).length, 160);
 });
 

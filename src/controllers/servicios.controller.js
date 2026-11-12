@@ -23,7 +23,7 @@ export const serviciosController = {
     try {
       const servicios = await serviciosService.listarPublicos();
       return res.render('servicios/index', {
-        tituloPagina: 'Servicios - Equipo Seis',
+        tituloPagina: 'Servicios - Reflection Tech',
         servicios
       });
     } catch (err) {
@@ -36,7 +36,7 @@ export const serviciosController = {
     try {
       const resultado = await serviciosService.listarAdmin({ page: 1, pageSize: 50 });
       return res.render('servicios/admin', {
-        tituloPagina: 'Administración de Servicios - Equipo Seis',
+        tituloPagina: 'Administración de Servicios - Reflection Tech',
         servicios: resultado.data,
         meta: resultado.meta
       });
