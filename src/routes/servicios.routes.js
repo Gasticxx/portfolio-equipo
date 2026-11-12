@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { serviciosController } from '../controllers/servicios.controller.js';
-import { requireAdminView, requireAdminApi } from '../middlewares/auth.js';
-import { verifyCsrf } from '../middlewares/csrf.js';
+import { requerirRolView, requerirRolApi } from '../middlewares/auth.js';
+import { verificarCsrf } from '../middlewares/csrf.js';
 
 export const serviciosRouter = Router();
 
@@ -10,11 +10,11 @@ serviciosRouter.get('/servicios', serviciosController.vistaServicios);
 serviciosRouter.get('/api/servicios', serviciosController.apiListarPublicos);
 
 // Vista administrativa protegida por rol administrador (Apartado 7 y 9)
-serviciosRouter.get('/admin/servicios', requireAdminView, serviciosController.vistaAdminServicios);
+serviciosRouter.get('/admin/servicios', requerirRolView, serviciosController.vistaAdminServicios);
 
 // API administrativa CRUD protegida por rol administrador y CSRF en escrituras (Apartado 13)
-serviciosRouter.get('/api/admin/servicios', requireAdminApi, serviciosController.apiListarAdmin);
-serviciosRouter.get('/api/admin/servicios/:id', requireAdminApi, serviciosController.apiObtenerPorId);
-serviciosRouter.post('/api/admin/servicios', requireAdminApi, verifyCsrf, serviciosController.apiCrear);
-serviciosRouter.put('/api/admin/servicios/:id', requireAdminApi, verifyCsrf, serviciosController.apiActualizar);
-serviciosRouter.delete('/api/admin/servicios/:id', requireAdminApi, verifyCsrf, serviciosController.apiEliminar);
+serviciosRouter.get('/api/admin/servicios', requerirRolApi, serviciosController.apiListarAdmin);
+serviciosRouter.get('/api/admin/servicios/:id', requerirRolApi, serviciosController.apiObtenerPorId);
+serviciosRouter.post('/api/admin/servicios', requerirRolApi, verificarCsrf, serviciosController.apiCrear);
+serviciosRouter.put('/api/admin/servicios/:id', requerirRolApi, verificarCsrf, serviciosController.apiActualizar);
+serviciosRouter.delete('/api/admin/servicios/:id', requerirRolApi, verificarCsrf, serviciosController.apiEliminar);
