@@ -33,6 +33,7 @@ import {
   mostrarMiCuenta,
 } from "./controllers/auth.controller.js";
 import { usuariosRouter } from "./routes/usuarios.routes.js";
+import { serviciosRouter } from "./routes/servicios.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -142,6 +143,8 @@ app.use(consultas.paginas);
 // Las rutas de autenticación y consultas se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
 app.use(interfazRouter);
+// Servicios aporta las APIs y su panel administrativo; I3 conserva la vista pública.
+app.use(serviciosRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);

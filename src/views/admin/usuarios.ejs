@@ -1,0 +1,19 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/consultas.css">
+<section class="encabezado-pagina">
+  <p class="eyebrow">ADMINISTRACIÓN</p>
+  <h1>Usuarios<span>.</span></h1>
+  <p>Buscá cuentas registradas y cambiá su acceso.</p>
+</section>
+<section class="glass formulario" aria-labelledby="titulo-usuarios">
+  <h2 id="titulo-usuarios">Cuentas registradas</h2>
+  <form id="filtros-usuarios" class="row g-3" role="search">
+    <div class="col-md-6"><label class="form-label" for="usuarios-q">Nombre o email</label><input class="form-control" id="usuarios-q" name="q" minlength="2" maxlength="80"></div>
+    <div class="col-md-3"><label class="form-label" for="usuarios-activo">Estado</label><select class="form-select" id="usuarios-activo" name="activo"><option value="">Todos</option><option value="true">Activos</option><option value="false">Bloqueados</option></select></div>
+    <div class="col-md-3 d-flex align-items-end"><button class="btn btn-primary" type="submit">Buscar</button></div>
+  </form>
+  <p id="usuarios-mensaje" role="status" aria-live="polite" class="mt-3"></p>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Nombre</th><th>Email</th><th>Estado</th><th>Alta</th><th>Acción</th></tr></thead><tbody id="usuarios-resultados"></tbody></table></div>
+  <nav aria-label="Paginación de usuarios"><ul id="usuarios-paginacion" class="pagination"></ul></nav>
+</section>
+<script src="/js/admin-usuarios.js" defer></script>
