@@ -1,0 +1,30 @@
+﻿#modal-servicio {
+  border: 1px solid rgba(140, 145, 232, 0.35);
+  border-radius: 16px;
+  padding: 0;
+  max-width: 540px;
+  width: calc(100% - 2rem);
+  background: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+}
+#modal-servicio::backdrop {
+  background: rgba(10, 15, 30, 0.65);
+  backdrop-filter: blur(3px);
+}
+.tema-oscuro #modal-servicio {
+  background: #182238;
+  color: #f1f5f9;
+}
+.tema-oscuro #modal-servicio .form-control,
+.tema-oscuro #modal-servicio .form-select {
+  background-color: #0f172a;
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+.tema-oscuro #modal-servicio .form-text {
+  color: #94a3b8;
+}
+.descripcion-truncada {
+  max-width: 420px;
+}
