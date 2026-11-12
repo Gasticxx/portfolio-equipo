@@ -16,22 +16,61 @@ export const tableroRepository = {
   },
 
   // Crea una tarea nueva.
+
+  // Crea una tarea respetando el límite de 50.
   async crear(demoId, usuarioId, titulo) {
-    const sql = `
-      INSERT INTO app.tareas_demo
-        (demo_id, usuario_id, titulo)
-      VALUES ($1, $2, $3)
-      RETURNING id, titulo, estado
-    `;
+    const cliente = await pool.connect();
 
-    const { rows } = await pool.query(sql, [
-      demoId,
-      usuarioId,
-      titulo
-    ]);
+    try {
+      // Iniciar una transacción.
+      await cliente.query('BEGIN');
 
-    return rows[0];
+      // Bloquear las creaciones simultáneas
+      // para este usuario y esta demostración.
+      await cliente.query(
+        'SELECT pg_advisory_xact_lock($1, $2)',
+        [demoId, usuarioId]
+      );
+
+      // Contar las tareas existentes.
+      const conteo = await cliente.query(
+        `SELECT COUNT(*)::INTEGER AS total
+         FROM app.tareas_demo
+         WHERE demo_id = $1 AND usuario_id = $2`,
+        [demoId, usuarioId]
+      );
+
+      // Rechazar la creación si alcanzó el límite.
+      if (conteo.rows[0].total >= 50) {
+        await cliente.query('ROLLBACK');
+        return null;
+      }
+
+      // Insertar la nueva tarea.
+      const resultado = await cliente.query(
+        `INSERT INTO app.tareas_demo
+           (demo_id, usuario_id, titulo)
+         VALUES ($1, $2, $3)
+         RETURNING id, titulo, estado`,
+        [demoId, usuarioId, titulo]
+      );
+
+      // Confirmar los cambios.
+      await cliente.query('COMMIT');
+
+      return resultado.rows[0];
+
+    } catch (error) {
+      // Deshacer la transacción si ocurre un error.
+      await cliente.query('ROLLBACK');
+      throw error;
+
+    } finally {
+      // Devolver la conexión al pool.
+      cliente.release();
+    }
   },
+
 
   // Cambia el estado de una tarea del usuario.
   async cambiar(demoId, usuarioId, tareaId, nuevoEstado) {
