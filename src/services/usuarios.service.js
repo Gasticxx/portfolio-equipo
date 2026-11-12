@@ -1,4 +1,8 @@
-import { buscarUsuariosRegistrados } from "../repositories/usuarios.repository.js";
+import {
+  buscarUsuariosRegistrados,
+  obtenerUsuarioRegistrado,
+  cambiarEstadoUsuarioRegistrado,
+} from "../repositories/usuarios.repository.js";
 
 export async function listarUsuarios({ page, pageSize, q, activo }) {
   const offset = (page - 1) * pageSize;
@@ -19,3 +23,7 @@ export async function listarUsuarios({ page, pageSize, q, activo }) {
     },
   };
 }
+
+export const obtenerUsuario = (id) => obtenerUsuarioRegistrado(id);
+export const actualizarEstadoUsuario = (id, activo) =>
+  cambiarEstadoUsuarioRegistrado(id, activo);

@@ -1,7 +1,9 @@
-import { registroSchema, loginSchema } from "../validators/auth.validator.js";
+import { registroSchema, loginSchema, cambioPasswordSchema } from "../validators/auth.validator.js";
 import {
   crearUsuarioRegistrado,
   buscarUsuarioPorEmail,
+  obtenerHashPassword,
+  actualizarPassword,
 } from "../repositories/auth.repository.js";
 import {
   generarHash,
@@ -73,4 +75,12 @@ export async function autenticarUsuario(pool, datosLogin) {
     rol: usuario.rol,
     versionSesion: usuario.version_sesion,
   };
+}
+
+export async function cambiarContrasena(pool, usuarioId, datos) {
+  const { passwordActual, password } = cambioPasswordSchema.parse(datos);
+  const hashActual = await obtenerHashPassword(pool, usuarioId);
+  if (!hashActual || !(await verificarContrasena(passwordActual, hashActual))) return false;
+  const nuevoHash = await generarHash(password);
+  return actualizarPassword(pool, usuarioId, nuevoHash);
 }

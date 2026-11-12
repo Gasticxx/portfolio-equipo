@@ -2,7 +2,8 @@
 
 Responsable: integrante 4.
 Revisor principal: integrante 2.
-Estado: borrador pendiente de revisión e implementación.
+Estado: matriz implementada parcialmente; validada localmente el 12/11/2026. Revisar
+los permisos de cada módulo contra la versión integrada antes del cierre.
 
 Este documento define quién puede acceder a cada función del
 portfolio. Las reglas deben aplicarse tanto a las pantallas
@@ -69,6 +70,8 @@ Los enlaces públicos comunes son Inicio, Equipo, Servicios,
 Proyectos y Contacto.
 
 El enlace Administración se muestra únicamente a administradores.
+El tablero `/admin` enlaza a Usuarios, Servicios, Métricas y Consultas; informa
+que los paneles de Proyectos y Demos todavía no están integrados.
 
 El enlace Consultas se muestra a operadores y administradores.
 
@@ -95,9 +98,9 @@ Las siguientes rutas corresponden a solicitudes GET de páginas HTML.
 | /operador/consultas     | Operador o administrador                           |
 | /operador/consultas/:id | Operador o administrador                           |
 | /admin                  | Administrador                                      |
-| /admin/proyectos        | Administrador                                      |
-| /admin/demos            | Administrador                                      |
-| /admin/servicios        | Administrador                                      |
+| /admin/proyectos        | Pendiente de integración I5                        |
+| /admin/demos            | Pendiente de integración I5                        |
+| /admin/servicios        | Administrador; ruta integrada localmente, revisión I1 pendiente |
 | /admin/usuarios         | Administrador                                      |
 | /admin/metricas         | Administrador                                      |
 
@@ -125,10 +128,16 @@ Ninguna respuesta devuelve contraseñas ni hashes.
 
 ## Lecturas protegidas de proyectos y demos
 
-| Método | Ruta               | Regla                                              |
-| ------ | ------------------ | -------------------------------------------------- |
-| GET    | /api/proyectos/:id | Sesión válida y proyecto publicado                 |
-| GET    | /api/demos/:id     | Sesión válida, demo publicada y proyecto publicado |
+| Método | Ruta | Regla |
+| --- | --- | --- |
+| GET | `/proyectos` | Público; muestra tarjetas publicadas |
+| GET | `/proyectos/:slug` | Sesión válida y proyecto publicado |
+| GET | `/demos` | Sesión válida; muestra demos publicadas |
+| GET | `/demos/:id` | Sesión válida, demo publicada y proyecto publicado |
+| GET | `/demos/:id/recurso.js` | Sesión válida, demo publicada y proyecto publicado |
+
+Estas páginas y recursos están montados en `src/routes/demos.routes.js`.
+No encontré APIs `/api/proyectos/:id` ni `/api/demos/:id` en esta versión.
 
 El listado público de proyectos entrega las tarjetas
 permitidas, sin incluir el detalle privado.
@@ -206,6 +215,41 @@ sesiones anteriores.
 La rehabilitación conserva esa versión. La persona debe
 iniciar sesión nuevamente; no recupera sesiones revocadas.
 
+### Administración de cuentas registradas
+
+| Ruta | Método | Permiso | CSRF | Resultado |
+| --- | --- | --- | --- | --- |
+| `/api/admin/usuarios` | GET | Administrador | No | Listado filtrable y paginado de cuentas `registrado` |
+| `/api/admin/usuarios/:id` | GET | Administrador | No | Detalle de cuenta registrada |
+| `/api/admin/usuarios/:id` | PATCH | Administrador | Sí | Cambia `{ "activo": boolean }` |
+| `/admin/usuarios` | GET | Administrador | No | Panel de búsqueda y cambio de estado |
+
+Las APIs devuelven `401` sin sesión y `403` con rol insuficiente. El listado acepta
+`page`, `pageSize`, `q` y `activo`; solo devuelve cuentas `registrado`, sin hashes.
+La búsqueda cubre nombre y email.
+
+### Creación y recuperación controladas
+
+`npm run cuenta:crear` solicita nombre, email, rol privilegiado y contraseña por
+terminal. La contraseña se oculta durante la entrada y no se imprime ni se guarda
+en Git. No existe una API para crear cuentas privilegiadas.
+
+`npm run cuenta:recuperar` solicita email, contraseña temporal y confirmación por
+terminal. Actualiza el hash y aumenta `version_sesion` en una transacción. La
+contraseña temporal se entrega al titular por un canal privado; el titular debe
+cambiarla en Mi cuenta.
+
+El cambio de contraseña en `PATCH /api/auth/password` exige contraseña actual y
+CSRF. Tanto el cambio como la recuperación aumentan `version_sesion`.
+
+### Sesiones y expiración
+
+La cookie `equipo.sid` es `HttpOnly`, `SameSite=Lax`, `Path=/` y solo usa `Secure`
+en producción. La sesión vence por 30 minutos de inactividad y tiene un máximo
+absoluto de 8 horas. Cada petición autenticada vuelve a consultar estado, rol y
+`version_sesion` en PostgreSQL. Bloquear, cambiar o recuperar la contraseña
+invalida sesiones anteriores. Rehabilitar una cuenta no restaura esas sesiones.
+
 ## Respuestas ante accesos rechazados
 
 | Situación                                                     | Respuesta            |
@@ -244,6 +288,30 @@ implementan en el sprint 2.
 - Coordinación del esquema con I5.
 - Completar las rutas de operaciones de demos y otros módulos.
 - Documentar la configuración implementada de cookies y sesiones.
-- Documentar la creación controlada de cuentas de prueba.
-- Registrar pruebas y evidencias.
-- Comprobar que la documentación coincida con la versión integrada.
+- Revisar con I1 la integración del router de Servicios en esta rama y con I2
+  la matriz final de permisos antes de integrar.
+- No hay rutas API `/api/proyectos/:id` ni `/api/demos/:id`: esos requests dieron
+  `404`. El acceso implementado es por páginas y recursos bajo `/proyectos/:slug`
+  y `/demos/:id`.
+- Cuando I5 publique la demo, probar proyecto, demo y `recurso.js` con y sin sesión.
+- Repetir la evidencia en la versión integrada y registrar el SHA revisado.
+
+### Evidencia local registrada
+
+En `portfolio_test`, el 12/11/2026, `npm test` pasó con 114 pruebas y sin fallos.
+Las pruebas de usuarios verifican `401` anónimo, `403` para operador y registrado,
+`200` para administrador, filtros/paginación, CSRF, bloqueo, rehabilitación y
+revocación de sesiones, login incorrecto y sesión vencida. El cambio de contraseña
+se probó contra PostgreSQL. Métricas respondió 401 sin sesión, 403 a operador y
+registrado, y 200 a administrador. Los CLI `cuenta:crear` y `cuenta:recuperar` se probaron
+con cuentas desechables: se confirmó el rol creado, el hash nuevo y
+`version_sesion = 2`; luego se eliminaron las cuentas.
+Servicios quedó montado: API pública `200`, API administrativa `401` sin sesión,
+`403` para operador/registrado, `200` para administrador; las escrituras rechazan
+CSRF ausente. El panel administrativo responde `200` para administrador.
+
+Las pruebas de rutas de proyecto y demo cubren acceso de registrado, operador y
+administrador, rechazo de anónimo en páginas, `401` en `recurso.js`, IDs inválidos,
+rol no admitido y ocultamiento de demos no publicadas. También se comprobó con la
+semilla real de `portfolio_test` que una demo no publicada no entrega su página ni
+`recurso.js`. La demo publicada de I5 aún requiere validación coordinada.

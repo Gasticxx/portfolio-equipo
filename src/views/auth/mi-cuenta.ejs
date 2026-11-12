@@ -21,6 +21,18 @@
       <div><dt>Tipo de cuenta</dt><dd><%= ({registrado:'Cuenta registrada',operador:'Operador',administrador:'Administrador'})[usuarioActual.rol] || usuarioActual.rol %></dd></div>
     </dl>
     <div class="cuenta-acciones"><a class="btn btn-primary" href="/demos">Ver demos interactivas <span aria-hidden="true">↗</span></a><a class="enlace-flecha" href="/proyectos">Explorar proyectos <span aria-hidden="true">→</span></a></div>
+    <hr>
+    <form id="form-cambio-password" class="formulario" novalidate>
+      <h3>Cambiar contraseña</h3>
+      <label for="password-actual">Contraseña actual</label>
+      <input class="form-control" id="password-actual" name="passwordActual" type="password" autocomplete="current-password" required>
+      <label for="password-nueva">Contraseña nueva</label>
+      <input class="form-control" id="password-nueva" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+      <label for="password-confirmar">Confirmar contraseña nueva</label>
+      <input class="form-control" id="password-confirmar" name="passwordConfirm" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+      <button class="btn btn-primary mt-3" type="submit">Actualizar contraseña</button>
+      <p id="password-mensaje" role="status" aria-live="polite"></p>
+    </form>
   </article>
 
   <div class="cuenta-arte" aria-hidden="true">
@@ -36,5 +48,7 @@
     <span class="cuenta-destello cuenta-destello-uno">✳</span><span class="cuenta-destello cuenta-destello-dos">+</span>
   </div>
 </section>
+
+<script src="/js/auth/cambiar-password.js" defer></script>
 
 <%- include("../partials/i3/pie") %>

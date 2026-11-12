@@ -4,6 +4,7 @@ import {
   iniciarSesion,
   cerrarSesion,
   obtenerUsuarioActual,
+  actualizarContrasena,
 } from "../controllers/auth.controller.js";
 import { requerirAutenticacion } from "../middlewares/auth.js";
 import { verificarCsrf } from "../middlewares/csrf.js";
@@ -25,5 +26,6 @@ authRouter.post("/logout", requerirAutenticacion, verificarCsrf, cerrarSesion);
 
 // Exigimos autenticación antes de devolver los datos del usuario.
 authRouter.get("/me", requerirAutenticacion, obtenerUsuarioActual);
+authRouter.patch("/password", requerirAutenticacion, verificarCsrf, actualizarContrasena);
 
 export default authRouter;

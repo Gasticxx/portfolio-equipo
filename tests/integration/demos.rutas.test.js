@@ -50,6 +50,16 @@ test('Un registrado puede recorrer proyecto, visualizador y motor publicado', as
   assert.equal(script.headers['cache-control'], 'no-store');
 });
 
+test('Operador y administrador también requieren sesión y pueden acceder al proyecto, demo y recurso publicado', async t => {
+  for (const rol of ['operador', 'administrador']) {
+    baseSimulada(t, { rol });
+    await request(app).get('/proyectos/portfolio-equipo').set('Cookie', cookie).expect(200);
+    await request(app).get('/demos/2').set('Cookie', cookie).expect(200);
+    await request(app).get('/demos/2/recurso.js').set('Cookie', cookie).expect(200);
+    t.mock.restoreAll();
+  }
+});
+
 test('Demos sin publicar o IDs inválidos no entregan página ni código', async t => {
   baseSimulada(t, { publicada: false });
   for (const ruta of ['/demos/2', '/demos/2/recurso.js', '/demos/0', '/demos/no-existe/recurso.js']) {
