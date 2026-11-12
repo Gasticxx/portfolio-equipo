@@ -21,6 +21,18 @@
       <div><dt>Tipo de cuenta</dt><dd><%= ({registrado:'Cuenta registrada',operador:'Operador',administrador:'Administrador'})[usuarioActual.rol] || usuarioActual.rol %></dd></div>
     </dl>
     <div class="cuenta-acciones"><a class="btn btn-primary" href="/demos">Ver demos interactivas <span aria-hidden="true">↗</span></a><a class="enlace-flecha" href="/proyectos">Explorar proyectos <span aria-hidden="true">→</span></a></div>
+    <hr>
+    <form id="form-cambio-password" class="formulario" novalidate>
+      <h3>Cambiar contraseña</h3>
+      <label for="password-actual">Contraseña actual</label>
+      <input class="form-control" id="password-actual" name="passwordActual" type="password" autocomplete="current-password" required>
+      <label for="password-nueva">Contraseña nueva</label>
+      <input class="form-control" id="password-nueva" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+      <label for="password-confirmar">Confirmar contraseña nueva</label>
+      <input class="form-control" id="password-confirmar" name="passwordConfirm" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
+      <button class="btn btn-primary mt-3" type="submit">Actualizar contraseña</button>
+      <p id="password-mensaje" role="status" aria-live="polite"></p>
+    </form>
   </article>
 
   <div class="cuenta-arte" aria-hidden="true">
@@ -28,7 +40,7 @@
     <div class="cuenta-halo"></div>
     <div class="cuenta-orbita cuenta-orbita-uno"><i></i></div>
     <div class="cuenta-orbita cuenta-orbita-dos"><i></i></div>
-    <div class="cuenta-sello"><span>6</span><small>IDEAS QUE<br>CONECTAN.</small></div>
+    <div class="cuenta-sello"><span>RT</span><small>IDEAS QUE<br>CONECTAN.</small></div>
     <div class="cuenta-tarjeta cuenta-tarjeta-codigo"><span class="cuenta-mini-etiqueta">DE LA IDEA AL CÓDIGO</span><strong>&lt;/&gt;</strong><div class="cuenta-lineas"><i></i><i></i><i></i></div><span class="cuenta-pie-tarjeta">CONSTRUIR ES APRENDER <b>↗</b></span></div>
     <div class="cuenta-tarjeta cuenta-tarjeta-ideas"><span class="cuenta-mini-etiqueta">DISTINTAS MIRADAS</span><svg viewBox="0 0 100 70" fill="none"><path d="M10 50 35 15 60 50Z"/><circle cx="65" cy="35" r="24"/><path d="M25 60H90"/></svg><span class="cuenta-pie-tarjeta">UN MISMO EQUIPO <b>✳</b></span></div>
     <span class="cuenta-nota cuenta-nota-arriba">DISEÑO + CÓDIGO</span>
@@ -36,5 +48,7 @@
     <span class="cuenta-destello cuenta-destello-uno">✳</span><span class="cuenta-destello cuenta-destello-dos">+</span>
   </div>
 </section>
+
+<script src="/js/auth/cambiar-password.js" defer></script>
 
 <%- include("../partials/i3/pie") %>

@@ -32,13 +32,15 @@ import {
   mostrarRegistro,
   mostrarMiCuenta,
 } from "./controllers/auth.controller.js";
+import { usuariosRouter } from "./routes/usuarios.routes.js";
+import { serviciosRouter } from "./routes/servicios.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const app = express();
 // Los parciales compartidos usan las rutas de la aplicación principal.
-app.locals.baseUi = '';
+app.locals.baseUi = "";
 
 // 1. Configuración de proxy y deshabilitar x-powered-by (Apartado 17)
 app.disable("x-powered-by");
@@ -87,6 +89,20 @@ app.use(
 // Paso 5: Cookie-parser firmado con VISIT_SECRET
 app.use(cookieParser(env.VISIT_SECRET));
 
+// Health check antes de sessionMiddleware y analyticsMiddleware (Apartado 21 y pedido de I6):
+// No requiere sesión, no cuenta visitas y responde siempre JSON 200 {"ok":true} o 503 {"ok":false}.
+app.get("/health", async (_req, res) => {
+  try {
+    const dbOk = await checkDbHealth();
+    if (!dbOk) {
+      return res.status(503).json({ ok: false });
+    }
+    return res.status(200).json({ ok: true });
+  } catch {
+    return res.status(503).json({ ok: false });
+  }
+});
+
 // Paso 6: Recuperamos la sesión desde PostgreSQL.
 app.use(sessionMiddleware);
 
@@ -110,18 +126,7 @@ app.get("/mi-cuenta", mostrarMiCuenta);
 app.use("/api/auth", authRouter);
 
 app.use(metricasRouter);
-
-app.get("/health", async (_req, res) => {
-  try {
-    const dbOk = await checkDbHealth();
-    if (!dbOk) {
-      return res.status(503).json({ ok: false });
-    }
-    return res.status(200).json({ ok: true });
-  } catch {
-    return res.status(503).json({ ok: false });
-  }
-});
+app.use(usuariosRouter);
 
 // El módulo de consultas usa los permisos, CSRF y límites del equipo.
 const consultas = crearModuloConsultas({
@@ -138,6 +143,8 @@ app.use(consultas.paginas);
 // Las rutas de autenticación y consultas se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
 app.use(interfazRouter);
+// Servicios aporta las APIs y su panel administrativo; I3 conserva la vista pública.
+app.use(serviciosRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);

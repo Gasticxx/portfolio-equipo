@@ -36,7 +36,8 @@ export const serviciosController = {
     try {
       const resultado = await serviciosService.listarAdmin({ page: 1, pageSize: 50 });
       return res.render('servicios/admin', {
-        tituloPagina: 'Administración de Servicios - Reflection Tech',
+        titulo: 'Administración de Servicios',
+        rutaActual: '/admin/servicios',
         servicios: resultado.data,
         meta: resultado.meta
       });
