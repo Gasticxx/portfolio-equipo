@@ -6,7 +6,7 @@ export const equipoController = {
     try {
       const { miembros, servicios } = await equipoService.obtenerDatosInicio();
       return res.render('pages/inicio', {
-        tituloPagina: 'Equipo Seis - Portfolio Fullstack',
+        tituloPagina: 'Reflection Tech - Portfolio Fullstack',
         miembros,
         servicios
       });
@@ -20,7 +20,7 @@ export const equipoController = {
     try {
       const miembros = await equipoService.listarEquipo();
       return res.render('equipo/index', {
-        tituloPagina: 'Nuestro Equipo - Equipo Seis',
+        tituloPagina: 'Nuestro Equipo - Reflection Tech',
         miembros
       });
     } catch (err) {
@@ -38,7 +38,7 @@ export const equipoController = {
         });
       }
       return res.render('equipo/detalle', {
-        tituloPagina: `${miembro.nombre} - Equipo Seis`,
+        tituloPagina: `${miembro.nombre} - Reflection Tech`,
         miembro
       });
     } catch (err) {

@@ -1,0 +1,14 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+const root=process.cwd();
+const runtime='C:/Users/Vivobook Slim/.cache/codex-runtimes/codex-primary-runtime/dependencies';
+process.env.RUNTIME_NODE_MODULES=runtime+'/node/node_modules';
+const skill='C:/Users/Vivobook Slim/.codex/plugins/cache/openai-primary-runtime/presentations/26.1110.11613/skills/presentations';
+const {finalizePresentation}=await import(pathToFileURL(skill+'/container_tools/artifact_tool_utils.mjs').href);
+const stamp=Date.now(),finalPath=path.join(root,`output/presentacion/validado-${stamp}.pptx`);
+await finalizePresentation({workspaceDir:root,candidatePath:path.join(root,'tmp/quitar-aviso/candidate.pptx'),finalPath,pythonExecutable:runtime+'/python/python.exe',integrityValidatorPath:skill+'/container_tools/inspect_presentation_package_integrity.py',layoutValidatorPath:skill+'/container_tools/inspect_presentation_layout_geometry.py',layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-heading-fit'],fontPolicy:{basis:'design',families:['Segoe UI']},verifyArtifactToolImport:true,receiptPath:path.join(root,`tmp/quitar-aviso/validation-${stamp}.json`)});
+await fs.copyFile(finalPath,'output/presentacion/Anteproyecto_Reflection_Tech.pptx');
+await fs.unlink(finalPath);
+await fs.copyFile('tmp/quitar-aviso/final.pdf','output/presentacion/Anteproyecto_Reflection_Tech.pdf');
+console.log('Archivos finales actualizados');

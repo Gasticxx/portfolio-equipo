@@ -47,7 +47,7 @@ export const CORREO = Object.freeze({
   cuerpoMax: 6000,
   errorCodigoMax: 60,
   proveedorIdMax: 300,
-  prefijoAsunto: '[Equipo Seis]'
+  prefijoAsunto: '[Reflection Tech]'
 });
 
 export const TEXTO_CONSENTIMIENTO = 'Acepto que el equipo use estos datos para responder esta consulta.';

@@ -1,6 +1,6 @@
-# Equipo Seis — Portfolio Fullstack
+# Reflection Tech — Portfolio Fullstack
 
-Aplicación web fullstack del **Equipo Seis**, desarrollada con Node.js 24 LTS, Express 5, EJS 3, PostgreSQL 17 y Bootstrap 5.
+Aplicación web fullstack del **Reflection Tech**, desarrollada con Node.js 24 LTS, Express 5, EJS 3, PostgreSQL 17 y Bootstrap 5.
 
 ## Requisitos de entorno
 
@@ -101,7 +101,7 @@ La versión publicada se ejecuta en un **Web Service Free de Render** conectado 
 
 ## Arquitectura del Sistema y Módulos por Integrante (I2 10 — Requisito R11)
 
-La aplicación **Equipo Seis** sigue una arquitectura en capas sobre **Node.js 24.22.2 (ESM)**, **Express 5**, **EJS 3** y **PostgreSQL 17** (esquema `app`), separando estrictamente rutas (`src/routes`), controladores HTTP (`src/controllers`), validadores Zod (`src/validators`), lógica de negocio y transacciones (`src/services`) y consultas SQL parametrizadas (`src/repositories`):
+La aplicación **Reflection Tech** sigue una arquitectura en capas sobre **Node.js 24.22.2 (ESM)**, **Express 5**, **EJS 3** y **PostgreSQL 17** (esquema `app`), separando estrictamente rutas (`src/routes`), controladores HTTP (`src/controllers`), validadores Zod (`src/validators`), lógica de negocio y transacciones (`src/services`) y consultas SQL parametrizadas (`src/repositories`):
 
 1. **Orden del Pipeline HTTP (`src/app.js`):**
    `requestId` y log estructurado -> `helmet` (CSP estricta sin scripts inline) -> archivos estáticos (`src/public`) -> parsers JSON/URL-encoded limitados a 32 KiB -> `cookie-parser` firmado (`VISIT_SECRET`) -> sesión en PostgreSQL (`app.sesiones`, `equipo.sid`) -> verificación de usuario vigente (`activo` y `version_sesion`) -> límites de abuso en PostgreSQL (`app.limites`) y analítica de visitas (`analytics.js`) -> rutas de pantallas y API (`/api/*`) -> manejadores 404 y de errores sin filtración de SQL ni stack traces.

@@ -2,7 +2,7 @@
   "name": "portfolio-equipo",
   "version": "1.0.0",
   "private": true,
-  "description": "Aplicación web fullstack del **Equipo Seis**, desarrollada con Node.js 24 LTS, Express 5, EJS 3, PostgreSQL 17 y Bootstrap 5.",
+  "description": "Aplicación web fullstack del **Reflection Tech**, desarrollada con Node.js 24 LTS, Express 5, EJS 3, PostgreSQL 17 y Bootstrap 5.",
   "main": "src/server.js",
   "type": "module",
   "engines": {
@@ -25,7 +25,7 @@
     "url": "git+https://github.com/Gasticxx/portfolio-equipo.git"
   },
   "keywords": [],
-  "author": "Equipo Seis",
+  "author": "Reflection Tech",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Gasticxx/portfolio-equipo/issues"
