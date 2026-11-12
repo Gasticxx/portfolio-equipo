@@ -32,13 +32,15 @@ import {
   mostrarRegistro,
   mostrarMiCuenta,
 } from "./controllers/auth.controller.js";
+import { usuariosRouter } from "./routes/usuarios.routes.js";
+import { serviciosRouter } from "./routes/servicios.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const app = express();
 // Los parciales compartidos usan las rutas de la aplicación principal.
-app.locals.baseUi = '';
+app.locals.baseUi = "";
 
 // 1. Configuración de proxy y deshabilitar x-powered-by (Apartado 17)
 app.disable("x-powered-by");
@@ -124,6 +126,7 @@ app.get("/mi-cuenta", mostrarMiCuenta);
 app.use("/api/auth", authRouter);
 
 app.use(metricasRouter);
+app.use(usuariosRouter);
 
 // El módulo de consultas usa los permisos, CSRF y límites del equipo.
 const consultas = crearModuloConsultas({
@@ -140,6 +143,8 @@ app.use(consultas.paginas);
 // Las rutas de autenticación y consultas se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
 app.use(interfazRouter);
+// Servicios aporta las APIs y su panel administrativo; I3 conserva la vista pública.
+app.use(serviciosRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);

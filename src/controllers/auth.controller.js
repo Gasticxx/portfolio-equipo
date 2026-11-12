@@ -4,6 +4,7 @@ import { AppError } from "../middlewares/errors.js";
 import {
   registrarUsuario,
   autenticarUsuario,
+  cambiarContrasena,
 } from "../services/auth.service.js";
 import { obtenerTokenCsrf } from "../middlewares/csrf.js";
 import { env } from "../config/env.js";
@@ -339,4 +340,18 @@ export function mostrarMiCuenta(req, res) {
     rutaActual: "/mi-cuenta",
     usuarioActual: req.user,
   });
+}
+
+export async function actualizarContrasena(req, res, next) {
+  try {
+    const actualizada = await cambiarContrasena(pool, req.user.id, req.body);
+    if (!actualizada) return next(new AppError(401, "CREDENCIALES_INVALIDAS", "La contraseña actual es incorrecta."));
+    await new Promise((resolve, reject) => req.session.destroy((error) => error ? reject(error) : resolve()));
+    res.clearCookie(CONSTANTS.SESSION.COOKIE_NAME, { httpOnly: true, sameSite: "lax", secure: env.IS_PROD, path: "/" });
+    res.setHeader("Cache-Control", "no-store");
+    return res.status(200).json({ ok: true, data: { actualizada: true } });
+  } catch (error) {
+    if (error instanceof ZodError) return next(new AppError(422, "VALIDACION", "Revisá los campos indicados.", obtenerErroresPorCampo(error)));
+    return next(error);
+  }
 }
