@@ -1,34 +1,6 @@
 <%- include('../partials/i3/cabecera') %>
 
-<style>
-  #modal-servicio {
-    border: 1px solid rgba(140, 145, 232, 0.35);
-    border-radius: 16px;
-    padding: 0;
-    max-width: 540px;
-    width: calc(100% - 2rem);
-    background: #ffffff;
-    color: #1e293b;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
-  }
-  #modal-servicio::backdrop {
-    background: rgba(10, 15, 30, 0.65);
-    backdrop-filter: blur(3px);
-  }
-  .tema-oscuro #modal-servicio {
-    background: #182238;
-    color: #f1f5f9;
-  }
-  .tema-oscuro #modal-servicio .form-control,
-  .tema-oscuro #modal-servicio .form-select {
-    background-color: #0f172a;
-    color: #f8fafc;
-    border-color: rgba(148, 163, 184, 0.35);
-  }
-  .tema-oscuro #modal-servicio .form-text {
-    color: #94a3b8;
-  }
-</style>
+<link rel="stylesheet" href="/css/servicios-admin.css">
 
 <section class="seccion" id="panel-admin-servicios" data-csrf-token="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -90,7 +62,7 @@
               <td><%= s.orden %></td>
               <td>
                 <div class="fw-semibold"><%= s.nombre %></div>
-                <div class="small text-secondary text-truncate" style="max-width: 420px;"><%= s.descripcion %></div>
+                <div class="small text-secondary text-truncate descripcion-truncada"><%= s.descripcion %></div>
               </td>
               <td><span class="badge text-bg-secondary text-uppercase"><%= s.categoria %></span></td>
               <td>
@@ -207,6 +179,5 @@
   </dialog>
 </section>
 
-<script src="/vendor/bootstrap.bundle.min.js" defer></script>
 <script src="/js/servicios-admin.js" defer></script>
 <%- include('../partials/i3/pie') %>

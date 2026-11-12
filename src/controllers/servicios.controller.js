@@ -29,8 +29,13 @@ export const serviciosController = {
         rutaActual: '/servicios',
         servicios
       });
-    } catch (err) {
-      return next(err);
+    } catch {
+      return res.render('servicios/index', {
+        titulo: 'Servicios',
+        tituloPagina: 'Servicios - Reflection Tech',
+        rutaActual: '/servicios',
+        servicios: []
+      });
     }
   },
 

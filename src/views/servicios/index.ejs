@@ -1,40 +1,32 @@
-<%- include('../partials/header', { tituloPagina }) %>
+<%- include('../partials/i3/cabecera') %>
 
-<main class="container py-4">
-  <header class="mb-4">
-    <h1 class="fw-bold">Servicios Profesionales</h1>
-    <p class="text-secondary mb-0">
-      Conocé las soluciones que ofrecemos como equipo fullstack y solicitá una cotización a medida.
-    </p>
-  </header>
+<section class="encabezado-pagina">
+  <a class="regreso" href="/">
+    <span class="regreso-icono" aria-hidden="true">←</span>
+    <span>Volver al inicio</span>
+  </a>
+  <p class="eyebrow">CAPACIDADES</p>
+  <h1>Lo que podemos construir<span>.</span></h1>
+  <p>Conocé nuestras capacidades y servicios.</p>
+</section>
 
+<div class="rejilla seccion">
   <% if (!servicios || servicios.length === 0) { %>
-    <div class="alert alert-secondary" role="status">
-      No hay servicios activos disponibles en este momento.
-    </div>
+    <article class="glass servicio">
+      <p class="eyebrow">SIN SERVICIOS</p>
+      <h2>No hay servicios activos disponibles</h2>
+      <p>En este momento no hay servicios publicados en el catálogo.</p>
+    </article>
   <% } else { %>
-    <div class="row g-4">
-      <% servicios.forEach((s) => { %>
-        <div class="col-12 col-md-6 col-lg-4">
-          <article class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <span class="badge text-bg-secondary align-self-start mb-2 text-uppercase">
-                <%= s.categoria %>
-              </span>
-              <h2 class="h5 fw-bold mb-2"><%= s.nombre %></h2>
-              <p class="card-text text-secondary flex-grow-1"><%= s.descripcion %></p>
-              <a
-                href="/contacto?tipo=cotizacion&servicioId=<%= s.id %>"
-                class="btn btn-primary w-100 mt-3"
-              >
-                Solicitar cotización
-              </a>
-            </div>
-          </article>
-        </div>
-      <% }) %>
-    </div>
+    <% servicios.forEach((s) => { %>
+      <article class="glass servicio revelar">
+        <p class="eyebrow"><%= s.categoria ? s.categoria.toUpperCase() : 'SERVICIO' %></p>
+        <h2><%= s.nombre %></h2>
+        <p><%= s.descripcion %></p>
+        <a class="enlace-flecha" href="/contacto?tipo=cotizacion&servicioId=<%= s.id %>">Consultar →</a>
+      </article>
+    <% }) %>
   <% } %>
-</main>
+</div>
 
-<%- include('../partials/footer') %>
+<%- include('../partials/i3/pie') %>
