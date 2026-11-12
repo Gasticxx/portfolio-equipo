@@ -74,5 +74,15 @@ export const loginSchema = z.strictObject({
   password: passwordSchema,
 });
 
+export const cambioPasswordSchema = z.strictObject({
+  passwordActual: passwordSchema,
+  password: passwordSchema,
+  passwordConfirm: z.string(),
+}).refine((datos) => datos.password === datos.passwordConfirm, {
+  path: ["passwordConfirm"], error: "Las contraseñas deben coincidir.",
+}).refine((datos) => datos.password !== datos.passwordActual, {
+  path: ["password"], error: "La contraseña nueva debe ser distinta.",
+});
+
 // El logout recibe un objeto vacío y rechaza campos adicionales.
 export const logoutSchema = z.strictObject({});
