@@ -131,14 +131,28 @@ test('GET /api/admin/metricas: operador y registrado reciben 403; administrador 
   assert.equal(response.status, 200);
 });
 
-test('demo semilla no publicada: recurso da 401 anónimo y página/recurso dan 404 con sesión', async () => {
-  const { rows } = await pool.query("SELECT id FROM app.demos WHERE tipo='algoritmos' AND publicada=false ORDER BY id LIMIT 1");
-  assert.ok(rows.length, 'portfolio_test debe conservar una demo semilla no publicada');
-  const ruta = `/demos/${rows[0].id}`;
-  assert.equal((await request(app).get(`${ruta}/recurso.js`)).status, 401);
-  const auth = await sesion(ids.registrado[0]);
-  assert.equal((await request(app).get(ruta).set('Cookie', auth.cookie)).status, 404);
-  assert.equal((await request(app).get(`${ruta}/recurso.js`).set('Cookie', auth.cookie)).status, 404);
+test('demo no publicada: recurso da 401 anónimo y página/recurso dan 404 con sesión', async () => {
+  const proyecto = await pool.query(
+    `INSERT INTO app.proyectos (slug,titulo,resumen,descripcion,estado,publicado)
+     VALUES ($1,'Fixture de prueba','Proyecto de prueba','Fixture aislado para probar recursos no publicados.','desarrollo',false)
+     RETURNING id`,
+    [`i4-demo-${sufijo}`],
+  );
+  const demo = await pool.query(
+    `INSERT INTO app.demos (proyecto_id,titulo,descripcion,tipo,publicada)
+     VALUES ($1,'Demo privada','Fixture de demo no publicada.','algoritmos',false) RETURNING id`,
+    [proyecto.rows[0].id],
+  );
+  try {
+    const ruta = `/demos/${demo.rows[0].id}`;
+    assert.equal((await request(app).get(`${ruta}/recurso.js`)).status, 401);
+    const auth = await sesion(ids.registrado[0]);
+    assert.equal((await request(app).get(ruta).set('Cookie', auth.cookie)).status, 404);
+    assert.equal((await request(app).get(`${ruta}/recurso.js`).set('Cookie', auth.cookie)).status, 404);
+  } finally {
+    await pool.query('DELETE FROM app.demos WHERE id=$1', [demo.rows[0].id]);
+    await pool.query('DELETE FROM app.proyectos WHERE id=$1', [proyecto.rows[0].id]);
+  }
 });
 
 test('Servicios: API pública accesible; panel y CRUD exclusivos de administrador con CSRF en escrituras', async () => {

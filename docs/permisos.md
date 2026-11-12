@@ -312,6 +312,5 @@ CSRF ausente. El panel administrativo responde `200` para administrador.
 
 Las pruebas de rutas de proyecto y demo cubren acceso de registrado, operador y
 administrador, rechazo de anónimo en páginas, `401` en `recurso.js`, IDs inválidos,
-rol no admitido y ocultamiento de demos no publicadas. También se comprobó con la
-semilla real de `portfolio_test` que una demo no publicada no entrega su página ni
-`recurso.js`. La demo publicada de I5 aún requiere validación coordinada.
+rol no admitido y ocultamiento de demos no publicadas con fixtures propios que se
+eliminan al terminar. La demo publicada de I5 aún requiere validación coordinada.
