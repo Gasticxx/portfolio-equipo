@@ -7,7 +7,7 @@
   <p role="status" aria-live="polite" data-tablero-estado></p>
   <div class="tablero"><% for(const [estado,nombre] of [['pendiente','Pendiente'],['progreso','En progreso'],['completada','Completada']]) { %><section class="columna" aria-label="<%= nombre %>"><h2><%= nombre %></h2><div data-columna="<%= estado %>"></div></section><% } %></div>
   <dialog data-eliminar-dialogo aria-labelledby="eliminar-titulo"><h2 id="eliminar-titulo">¿Eliminar esta tarea?</h2><p data-eliminar-nombre></p><form method="dialog" class="acciones"><button class="btn btn-glass" value="cancelar" autofocus>Cancelar</button><button class="btn btn-danger" value="eliminar">Eliminar</button></form></dialog>
-</section><% if (typeof recursoJs === 'string') { %><script type="module" src="<%= recursoJs %>"></script><% } else { %><script src="/i3/muestras/recursos/tablero.js" defer></script><% } %>
+</section><% if (typeof recursoJs === 'string') { %><script src="/js/tablero.adapter.js" defer></script><script src="<%= recursoJs %>" defer></script><% } else { %><script src="/js/tablero.js" defer></script><% } %>
 <% } else { %>
 <section class="glass servicio seccion" data-visualizador>
   <% if (typeof recursoJs === 'string') { %><p>Buscá la primera aparición de un valor u ordená la lista de menor a mayor. Podés pausar y avanzar un paso por vez.</p><% } else { %><p>Los controles reproducen secuencias de ejemplo. En la demo integrada, I5 provee los pasos para los valores ingresados.</p><% } %>
