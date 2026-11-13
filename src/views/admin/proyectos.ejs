@@ -1,0 +1,120 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/proyectos.css">
+<section class="proyecto-hero">
+<div>
+  <a class="regreso" href="/admin">← Volver a administración</a>
+  <p class="eyebrow">ESTUDIO DEL EQUIPO / ADMINISTRACIÓN</p>
+  <h1>Ideas que<br>se vuelven <span>proyectos.</span></h1>
+  <p class="proyecto-hero-bajada">Cada proyecto cuenta una historia. Dale forma con sus tecnologías, sus protagonistas y lo que construyeron juntos.</p>
+  <div class="acciones">
+  <button class="btn btn-primary" id="proyecto-nuevo" type="button">Nuevo proyecto +</button>
+  <a class="btn btn-glass" href="/proyectos">Explorar el portfolio ↗</a></div>
+  <p class="proyecto-hero-nota"><span class="proyecto-punto" aria-hidden="true"></span>Contenido conectado a la base del equipo.</p>
+</div>
+<div class="proyecto-escena" aria-hidden="true">
+  <div class="proyecto-escena-halo"></div>
+  <svg class="proyecto-mapa" viewBox="0 0 600 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="proyecto-cristal" x1="110" y1="110" x2="490" y2="350" gradientUnits="userSpaceOnUse"><stop class="proyecto-cristal-inicio"/><stop offset="1" class="proyecto-cristal-fin"/></linearGradient>
+      <linearGradient id="proyecto-acento" x1="140" y1="0" x2="460" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#6d8ef4"/><stop offset=".55" stop-color="#a58bdf"/><stop offset="1" stop-color="#50b3af"/></linearGradient>
+    </defs>
+    <ellipse class="proyecto-mapa-orbita" cx="300" cy="220" rx="260" ry="165"/>
+    <g class="proyecto-conexiones"><path d="M76 89C74 153 111 157 155 170"/><path d="M526 84C551 157 504 185 463 200"/><path d="M525 351C515 311 491 304 460 295"/></g>
+    <path class="proyecto-carpeta-dorso" d="M110 143V118Q110 100 128 100H232L258 126H477Q496 126 496 145V319Q496 338 477 338H129Q110 338 110 319Z"/>
+    <rect class="proyecto-carpeta" x="110" y="137" width="386" height="211" rx="24" fill="url(#proyecto-cristal)"/>
+    <path class="proyecto-carpeta-brillo" d="M135 138H470"/>
+    <text class="proyecto-mapa-eyebrow" x="139" y="169">UN PROYECTO, MUCHAS IDEAS</text>
+    <text class="proyecto-mapa-titulo" x="139" y="205">Del plan a la entrega.</text>
+    <path class="proyecto-etapas-linea" d="M160 247H440"/>
+    <g class="proyecto-etapa"><circle cx="160" cy="247" r="16"/><path d="m154 247 4 4 8-9"/><text x="160" y="284">IDEA</text></g>
+    <g class="proyecto-etapa"><circle cx="300" cy="247" r="16"/><path d="m293 247 4 4 9-9"/><text x="300" y="284">CONSTRUCCIÓN</text></g>
+    <g class="proyecto-etapa"><circle cx="440" cy="247" r="16"/><path d="m433 247 4 4 9-9"/><text x="440" y="284">ENTREGA</text></g>
+    <g transform="translate(160 247)"><g class="proyecto-avance"><rect x="-21" y="-21" width="42" height="42" rx="13"/><path d="m-8 0 6 6L9-6"/></g></g>
+    <rect class="proyecto-progreso-base" x="140" y="311" width="326" height="5" rx="2.5"/>
+    <rect class="proyecto-progreso" x="140" y="311" width="326" height="5" rx="2.5" fill="url(#proyecto-acento)"/>
+    <g class="proyecto-nodo" transform="translate(76 79)"><circle r="33"/><circle class="proyecto-nodo-rostro" cy="-6" r="8"/><path d="M-15 18v-3c0-15 30-15 30 0v3"/><text y="54">EQUIPO</text></g>
+    <g class="proyecto-nodo" transform="translate(525 79)"><circle r="33"/><path d="m-9-9-10 9 10 9m18-18 10 9-10 9M4-14-4 14"/><text y="54">TECNOLOGÍAS</text></g>
+    <g class="proyecto-nodo" transform="translate(525 352)"><circle r="33"/><path d="M-11-13h22v27h-22Zm5 8H6M-6 2H6M-6 9H1"/><text y="54">APORTES</text></g>
+    <g class="proyecto-mapa-pie"><circle cx="174" cy="384" r="4"/><text x="187" y="388">PERSONAS + IDEAS + UN PLAN EN COMÚN</text></g>
+  </svg>
+</div>
+</section>
+<p id="proyectos-mensaje" role="status" aria-live="polite" class="alerta alerta-aviso">Cargando proyectos…</p>
+<section class="glass proyecto-panel seccion" aria-labelledby="proyectos-lista-titulo">
+  <div class="proyecto-cabecera"><div><p class="eyebrow">EL PORTFOLIO</p><h2 id="proyectos-lista-titulo">Proyectos del equipo</h2></div><a class="enlace-flecha" href="/proyectos">Ver catálogo ↗</a></div>
+  <form id="proyectos-filtros" class="proyecto-filtros">
+    <div class="campo"><label for="proyecto-busqueda">Buscar por título</label><input class="form-control" type="search" id="proyecto-busqueda" name="q" maxlength="80" placeholder="Nombre del proyecto"></div>
+    <div class="campo"><label for="proyecto-filtro-publicado">Visibilidad</label><select class="form-select" id="proyecto-filtro-publicado" name="publicado"><option value="">Todos</option><option value="true">Publicados</option><option value="false">Borradores</option></select></div>
+    <div class="campo"><label for="proyecto-page-size">Por página</label><select class="form-select" id="proyecto-page-size" name="pageSize"><option>10</option><option>25</option><option>50</option></select></div>
+    <button class="btn btn-glass" type="submit">Aplicar filtros</button>
+  </form>
+  <div id="proyectos-lista" class="proyecto-lista"></div>
+  <nav class="proyecto-paginacion" aria-label="Páginas de proyectos"><button class="btn btn-glass" id="proyectos-anterior" type="button" disabled>← Anterior</button><span id="proyectos-pagina"></span><button class="btn btn-glass" id="proyectos-siguiente" type="button" disabled>Siguiente →</button></nav>
+</section>
+<section class="glass proyecto-panel seccion" id="proyecto-editor" aria-labelledby="proyecto-form-titulo" hidden>
+  <div class="proyecto-cabecera"><div><p class="eyebrow">FICHA DEL PROYECTO</p><h2 id="proyecto-form-titulo">Nuevo proyecto</h2></div><button class="btn btn-glass" id="proyecto-cancelar" type="button">Cerrar editor</button></div>
+  <div class="proyecto-vista-viva" aria-labelledby="proyecto-vista-etiqueta">
+    <div class="proyecto-vista-arte"><span aria-hidden="true">✳</span><img id="proyecto-vista-imagen" alt="" hidden></div>
+    <div class="proyecto-vista-contenido">
+      <div class="proyecto-vista-arriba"><p class="eyebrow" id="proyecto-vista-etiqueta">VISTA PREVIA EN VIVO</p><span class="proyecto-badge" id="proyecto-vista-publicado">Borrador</span></div>
+      <h3 id="proyecto-vista-titulo">Tu próximo proyecto</h3>
+      <p id="proyecto-vista-resumen">Tu idea, las personas que la construyen y todo lo que hace falta para contarla.</p>
+      <div id="proyecto-vista-tecnologias" class="proyecto-vista-tecnologias"></div>
+      <p class="proyecto-vista-ruta" id="proyecto-vista-ruta">/proyectos/tu-proyecto</p>
+      <p class="proyecto-vista-meta" id="proyecto-vista-meta"></p>
+    </div>
+  </div>
+  <nav class="proyecto-editor-nav" aria-label="Secciones del editor"><a href="#proyecto-informacion">01 · Información</a><a href="#proyecto-tecnologias-bloque">02 · Tecnologías</a><a href="#proyecto-portada-bloque">03 · Portada</a><a href="#proyecto-aportes-bloque">04 · Aportes</a></nav>
+  <form id="proyecto-form" novalidate>
+    <fieldset id="proyecto-campos">
+      <legend class="visually-hidden">Datos y relaciones del proyecto</legend>
+      <div class="proyecto-grid" id="proyecto-informacion">
+        <div class="campo"><label for="proyecto-titulo">Título</label><input class="form-control" id="proyecto-titulo" name="titulo" minlength="3" maxlength="100" required></div>
+        <div class="campo"><label for="proyecto-slug">Slug de la URL</label><input class="form-control" id="proyecto-slug" name="slug" minlength="3" maxlength="80" pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby="proyecto-slug-ayuda" required><small id="proyecto-slug-ayuda">Minúsculas, números y guiones. Cambiarlo modifica el enlace al proyecto.</small></div>
+        <div class="campo proyecto-ancho"><label for="proyecto-resumen">Resumen para el catálogo</label><textarea class="form-control" id="proyecto-resumen" name="resumen" minlength="20" maxlength="250" rows="2" aria-describedby="proyecto-resumen-ayuda" required></textarea><div class="proyecto-campo-pie"><small id="proyecto-resumen-ayuda">Entre 20 y 250 caracteres.</small><span id="proyecto-resumen-contador">0 / 250</span></div></div>
+        <div class="campo proyecto-ancho"><label for="proyecto-descripcion">Descripción completa</label><textarea class="form-control" id="proyecto-descripcion" name="descripcion" minlength="50" maxlength="5000" rows="5" aria-describedby="proyecto-descripcion-ayuda" required></textarea><div class="proyecto-campo-pie"><small id="proyecto-descripcion-ayuda">Texto plano, entre 50 y 5000 caracteres.</small><span id="proyecto-descripcion-contador">0 / 5000</span></div></div>
+        <div class="campo"><label for="proyecto-estado">Estado del desarrollo</label><select class="form-select" id="proyecto-estado" name="estado"><option value="desarrollo">En desarrollo</option><option value="terminado">Terminado</option></select><small>Para marcarlo como terminado, todos los aportes deben estar comprobados y tener evidencia.</small></div>
+        <div class="campo"><label for="proyecto-repositorio">Repositorio (opcional)</label><input class="form-control" id="proyecto-repositorio" name="repositorioUrl" type="url" pattern="https://.*" maxlength="300" placeholder="https://github.com/equipo/proyecto"><small>El enlace estará disponible en el detalle para cuentas autenticadas.</small></div>
+        <div class="campo proyecto-ancho"><label class="proyecto-check"><input name="publicado" type="checkbox"> Publicar este proyecto</label><small>Al despublicarlo se ocultan el proyecto y sus demos, conservando sus datos.</small></div>
+      </div>
+      <fieldset class="proyecto-bloque" id="proyecto-tecnologias-bloque"><legend>Tecnologías del proyecto</legend><p>Elegí entre 1 y 15 del catálogo compartido.</p><div id="proyecto-tecnologias" class="proyecto-tecnologias"></div></fieldset>
+      <section class="proyecto-bloque" id="proyecto-portada-bloque" aria-labelledby="portada-titulo">
+        <h3 id="portada-titulo">Portada del proyecto</h3>
+        <div class="proyecto-portada-editor">
+          <div><img id="portada-preview" class="proyecto-preview" alt="Vista previa de la portada seleccionada" hidden><p id="portada-vacia">Proyecto sin portada.</p></div>
+          <div>
+            <div class="campo"><label for="proyecto-portada">Portada guardada</label><select class="form-select" id="proyecto-portada" name="portadaId"><option value="">Sin portada</option></select></div>
+            <div class="campo"><label for="proyecto-imagen">Subir una portada nueva</label><input class="form-control" id="proyecto-imagen" type="file" accept="image/jpeg,image/png,image/webp"><small>JPEG, PNG o WebP estático. Hasta 5 MiB, de 64 a 4096 píxeles por lado y hasta 16 millones de píxeles. Se guarda como WebP.</small></div>
+            <div class="acciones"><button class="btn btn-glass" id="portada-subir" type="button">Subir imagen</button><button class="btn btn-glass" id="portada-quitar" type="button">Quitar de esta ficha</button><button class="btn btn-danger" id="portada-eliminar" type="button">Eliminar archivo sin uso</button></div>
+            <small>Subir guarda el archivo. Para aplicarlo al proyecto, guardá la ficha. Quitar una portada no elimina el archivo.</small>
+          </div>
+        </div>
+      </section>
+      <section class="proyecto-bloque" id="proyecto-aportes-bloque" aria-labelledby="aportes-titulo">
+        <div class="proyecto-cabecera"><div><h3 id="aportes-titulo">Participantes y aportes</h3><p>Elegí un aporte para editarlo. Los demás conservan sus cambios.</p></div><button class="btn btn-glass" id="aporte-agregar" type="button">Agregar aporte +</button></div>
+        <div class="proyecto-aportes-trabajo">
+          <aside class="proyecto-aportes-lateral"><p class="eyebrow">EL EQUIPO EN ACCIÓN</p><p id="aportes-conteo"></p><nav id="aportes-indice" aria-label="Elegir aporte para editar"></nav><small>Hasta 30 aportes, con integrante, tecnologías y evidencia.</small></aside>
+          <div><p id="aportes-vacio" class="proyecto-aportes-vacio" hidden>Agregá un aporte para sumar un integrante al proyecto.</p><div id="proyecto-aportes"></div></div>
+        </div>
+      </section>
+      <section id="proyecto-demos" class="proyecto-bloque" aria-label="Demos asociadas" hidden></section>
+      <p id="proyecto-reemplazo" class="alerta alerta-aviso" hidden>Al guardar se reemplazarán las tecnologías y los aportes por el conjunto completo de este formulario.</p>
+      <div class="proyecto-guardar-barra"><p id="proyecto-guardado-estado" class="proyecto-guardado-estado" role="status">Sin cambios pendientes</p><div class="acciones"><button class="btn btn-primary" type="submit" id="proyecto-guardar">Guardar proyecto →</button><button class="btn btn-glass" type="button" id="proyecto-descartar">Cancelar edición</button></div><small>La vista previa cambia mientras escribís. Guardá el proyecto para aplicar los cambios.</small></div>
+    </fieldset>
+  </form>
+  <div id="proyecto-errores" class="alerta alerta-error" role="alert" hidden></div>
+  <noscript>Para administrar proyectos necesitás habilitar JavaScript.</noscript>
+</section>
+<dialog id="proyecto-confirmacion" aria-labelledby="confirmacion-titulo"><form method="dialog"><h2 id="confirmacion-titulo">Confirmar operación</h2><p id="confirmacion-texto"></p><div class="acciones"><button class="btn btn-glass" value="cancelar" autofocus>Cancelar</button><button class="btn btn-primary" id="confirmacion-aceptar" value="aceptar">Confirmar</button></div></form></dialog>
+<template id="aporte-template">
+  <fieldset class="proyecto-aporte"><legend>Aporte</legend><div class="proyecto-grid">
+    <div class="campo"><label>Integrante<select class="form-select" data-campo="miembroId" required></select></label></div>
+    <div class="campo"><label>Título del aporte<input class="form-control" data-campo="titulo" minlength="3" maxlength="100" required></label></div>
+    <div class="campo proyecto-ancho"><label>Descripción del aporte<textarea class="form-control" data-campo="descripcion" minlength="20" maxlength="1000" rows="3" required></textarea></label></div>
+    <div class="campo"><label>Estado<select class="form-select" data-campo="estado"><option value="asignado">Asignado</option><option value="desarrollo">En desarrollo</option><option value="comprobado">Comprobado</option></select></label></div>
+    <div class="campo"><label>URL de evidencia<input class="form-control" data-campo="evidenciaUrl" type="url" pattern="https://.*" maxlength="300" placeholder="https://github.com/equipo/proyecto/pull/1"></label><small>Obligatoria para aportes comprobados.</small></div>
+    <fieldset class="proyecto-ancho"><legend>Tecnologías del aporte (1 a 10)</legend><div class="proyecto-tecnologias" data-tecnologias></div></fieldset>
+  </div><button class="btn btn-glass" data-quitar-aporte type="button">Quitar aporte</button></fieldset>
+</template>
+<script src="/js/proyectos-admin.js" defer></script>
+<%- include('../partials/i3/pie') %>

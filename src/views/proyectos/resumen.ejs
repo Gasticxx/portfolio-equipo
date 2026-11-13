@@ -1,0 +1,4 @@
+<%- include('../partials/i3/cabecera') %>
+<section class="encabezado-pagina"><a class="regreso" href="/proyectos">← Volver a proyectos</a><p class="eyebrow">PROYECTO COLECTIVO</p><h1><%= titulo %><span>.</span></h1><p>Conocé el proyecto que reúne al equipo, sus tecnologías y las demos publicadas.</p></section>
+<section class="seccion"><% if (disponible) { %><div class="rejilla"><%- include('../partials/catalogo-proyectos', { proyectos }) %></div><% } else { %><p class="alerta alerta-aviso" role="status">No pudimos consultar el proyecto del equipo. Volvé a intentar en unos minutos.</p><% } %></section>
+<%- include('../partials/i3/pie') %>

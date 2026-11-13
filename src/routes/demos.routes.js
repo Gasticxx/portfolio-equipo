@@ -27,20 +27,6 @@ demosRouter.get('/demos', autorizar, async (_req, res) => {
   res.render('demos/index', { titulo: 'Demos interactivas', rutaActual: '/demos', demos: rows, disponible: true });
 });
 
-demosRouter.get('/proyectos/:slug', autorizar, async (req, res, next) => {
-  const { rows } = await pool.query(
-    'SELECT id, titulo, descripcion FROM app.proyectos WHERE slug = $1 AND publicado = true',
-    [req.params.slug],
-  );
-  const proyecto = rows[0];
-  if (!proyecto) return next();
-  const resultado = await pool.query(
-    "SELECT id, titulo, descripcion FROM app.demos WHERE proyecto_id = $1 AND publicada = true ORDER BY orden, id",
-    [proyecto.id],
-  );
-  res.render('proyectos/detalle', { titulo: proyecto.titulo, rutaActual: '/proyectos', proyecto, demos: resultado.rows });
-});
-
 async function cargarDemo(req, res, next) {
   if (!/^[1-9]\d*$/.test(req.params.id) || !Number.isSafeInteger(Number(req.params.id))) return next('route');
   const { rows } = await pool.query(
