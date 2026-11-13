@@ -51,7 +51,7 @@ const passwordSchema = z
     { error: "La contraseña debe tener entre 12 y 128 caracteres." },
   )
   .refine((password) => Buffer.byteLength(password, "utf8") <= 256, {
-    error: "La contraseña puede ocupar hasta 256 bytes UTF-8.",
+    error: "La contraseña es demasiado larga por los caracteres especiales que contiene. Usá menos caracteres o emojis.",
   });
 
 // Solo admitimos los cuatro campos del formulario de registro.

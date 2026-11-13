@@ -22,7 +22,7 @@ demosRouter.get('/demos', autorizar, async (_req, res) => {
   const { rows } = await pool.query(`
     SELECT d.id, d.titulo, d.descripcion, d.tipo, p.titulo AS proyecto_titulo
     FROM app.demos d JOIN app.proyectos p ON p.id = d.proyecto_id
-    WHERE d.publicada = true AND p.publicado = true AND d.tipo = 'algoritmos'
+    WHERE d.publicada = true AND p.publicado = true
     ORDER BY p.titulo, d.orden, d.id`);
   res.render('demos/index', { titulo: 'Demos interactivas', rutaActual: '/demos', demos: rows, disponible: true });
 });
@@ -35,7 +35,7 @@ demosRouter.get('/proyectos/:slug', autorizar, async (req, res, next) => {
   const proyecto = rows[0];
   if (!proyecto) return next();
   const resultado = await pool.query(
-    "SELECT id, titulo, descripcion FROM app.demos WHERE proyecto_id = $1 AND publicada = true AND tipo = 'algoritmos' ORDER BY orden, id",
+    "SELECT id, titulo, descripcion FROM app.demos WHERE proyecto_id = $1 AND publicada = true ORDER BY orden, id",
     [proyecto.id],
   );
   res.render('proyectos/detalle', { titulo: proyecto.titulo, rutaActual: '/proyectos', proyecto, demos: resultado.rows });
@@ -44,9 +44,9 @@ demosRouter.get('/proyectos/:slug', autorizar, async (req, res, next) => {
 async function cargarDemo(req, res, next) {
   if (!/^[1-9]\d*$/.test(req.params.id) || !Number.isSafeInteger(Number(req.params.id))) return next('route');
   const { rows } = await pool.query(
-    `SELECT d.id, d.titulo, d.descripcion, p.slug AS proyecto_slug
+    `SELECT d.id, d.titulo, d.descripcion, d.tipo, p.slug AS proyecto_slug
      FROM app.demos d JOIN app.proyectos p ON p.id = d.proyecto_id
-     WHERE d.id = $1 AND d.publicada = true AND p.publicado = true AND d.tipo = 'algoritmos'`,
+     WHERE d.id = $1 AND d.publicada = true AND p.publicado = true`,
     [req.params.id],
   );
   if (!rows[0]) return next('route');
@@ -56,13 +56,17 @@ async function cargarDemo(req, res, next) {
 
 demosRouter.get('/demos/:id', autorizar, cargarDemo, (req, res) => {
   res.render('i3/demo', {
-    titulo: res.locals.demo.titulo, vista: 'algoritmos', rutaActual: '/proyectos',
+    titulo: res.locals.demo.titulo, vista: res.locals.demo.tipo, demoId: res.locals.demo.id, rutaActual: '/proyectos',
     recursoJs: `/demos/${res.locals.demo.id}/recurso.js`,
     regresoProyecto: `/proyectos/${res.locals.demo.proyecto_slug}`,
   });
 });
 
 demosRouter.get('/demos/:id/recurso.js', autorizar, cargarDemo, async (_req, res) => {
+  if (res.locals.demo.tipo === 'tablero') {
+    const interfaz = await readFile(new URL('../ui-i3/demos/tablero-integrado.js', import.meta.url), 'utf8');
+    return res.type('application/javascript').send(interfaz);
+  }
   const [motor, interfaz] = await Promise.all([
     readFile(new URL('../ui-i3/demos/algoritmos-motor.js', import.meta.url), 'utf8'),
     readFile(new URL('../ui-i3/demos/algoritmos.js', import.meta.url), 'utf8'),

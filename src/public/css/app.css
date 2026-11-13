@@ -73,7 +73,7 @@ h1>span,h2>span{
   outline-offset:5px
 }
 .contenedor{
-  width:min(1200px,calc(100% - 48px));
+  width:calc(100% - clamp(32px,6vw,128px));
   margin-inline:auto
 }
 .ambiente{
@@ -1548,3 +1548,33 @@ dialog::backdrop{
 @media(prefers-reduced-motion:reduce) {
   .nav-ilustracion,.nav-ilustracion * { animation:none!important; transition:none!important; }
 }
+
+/* Paneles y avisos comparten la paleta de la interfaz. */
+.interfaz-i3 .alert { border-radius:12px; border-width:1px 1px 1px 4px; padding:20px 24px; }
+.interfaz-i3 .alert-success { color:var(--color-exito); background:#f0fdf4; border-color:currentColor; }
+.interfaz-i3 .alert-danger { color:var(--color-error); background:#fef2f2; border-color:currentColor; }
+.interfaz-i3 .alert-warning { color:var(--color-aviso); background:#fffbeb; border-color:currentColor; }
+.interfaz-i3.tema-oscuro .alert-success { background:#193c32; }
+.interfaz-i3.tema-oscuro .alert-danger { background:#492b39; }
+.interfaz-i3.tema-oscuro .alert-warning { background:#203354; color:#d4e3ff; }
+.interfaz-i3 .alerta-exito { border-color:var(--color-exito); }
+.interfaz-i3 .alerta-error { border-color:var(--color-error); }
+.interfaz-i3 .table {
+  --bs-table-bg:transparent; --bs-table-color:var(--color-texto);
+  --bs-table-border-color:var(--color-borde);
+  --bs-table-hover-color:var(--color-texto); --bs-table-hover-bg:var(--vidrio);
+  --bs-table-striped-color:var(--color-texto); --bs-table-striped-bg:var(--vidrio);
+}
+.interfaz-i3 .table-light { --bs-table-bg:var(--color-superficie); --bs-table-color:var(--color-texto); }
+.interfaz-i3 .card { background:var(--vidrio); color:var(--color-texto); border-color:var(--color-borde); }
+.interfaz-i3 .text-secondary { color:var(--color-secundario)!important; }
+.interfaz-i3 .pagination { flex-wrap:wrap; gap:4px; }
+.interfaz-i3 .page-link { background:var(--color-superficie); color:var(--color-primario); border-color:var(--color-borde); }
+.interfaz-i3 .page-item.active .page-link { background:var(--color-primario); color:var(--color-fondo); }
+.admin-demos-layout { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:24px; align-items:start; }
+.admin-demos-layout>* { min-width:0; }
+.demo-admin-item { padding-block:20px; border-top:1px solid var(--color-borde); overflow-wrap:anywhere; }
+.demo-admin-item h3 { font-size:22px; }
+.admin-demos-layout .acciones { flex-wrap:wrap; }
+@media(max-width:991px) { .admin-demos-layout { grid-template-columns:1fr; } }
+@media(max-width:575px) { .admin-demos-layout .formulario { padding:20px; } }

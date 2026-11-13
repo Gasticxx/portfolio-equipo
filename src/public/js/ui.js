@@ -85,6 +85,10 @@
   temaSistema.addEventListener('change', () => { if (!temaGuardado) aplicarTema(temaSistema.matches); });
   // Ilustraciones locales: decorativas, sin interceptar enlaces ni agregar tabulaciones.
   const dibujos = {
+    '/mi-cuenta':'<circle cx="32" cy="22" r="10"/><path d="M12 54v-7q0-14 20-14t20 14v7"/><path class="detalle" d="m41 19 4 4 8-8"/>',
+    '/operador/consultas':'<path d="M8 12h48v32H29L17 54V44H8Z"/><path class="detalle" d="M18 23h28M18 32h19"/>',
+    '/admin':'<rect x="9" y="9" width="18" height="18" rx="4"/><rect x="37" y="9" width="18" height="18" rx="4"/><rect x="9" y="37" width="18" height="18" rx="4"/><path class="detalle" d="M37 46h18m-9-9v18"/>',
+    '/demos':'<rect x="9" y="10" width="46" height="44" rx="7"/><path d="M9 23h46M22 5v11m20-11v11"/><path class="detalle" d="m27 32 13 7-13 7Z"/>',
     '/':'<path d="M12 31 32 13l20 18M18 27v25h28V27M28 52V37h9v15"/><path class="detalle" d="m44 14 2-5 2 5 5 2-5 2-2 5-2-5-5-2Z"/>',
     '/equipo':'<circle cx="32" cy="23" r="7"/><circle cx="14" cy="28" r="6"/><circle cx="50" cy="28" r="6"/><path d="M21 51V41q0-10 11-10t11 10v10M5 50V41q0-8 9-8l9 6m36 11V41q0-8-9-8l-9 6"/><path class="detalle" d="M14 43q18 16 36 0"/>',
     '/servicios':'<rect x="9" y="15" width="46" height="36" rx="5"/><path d="M9 25h46m-37-5h1m5 0h1m5 0h1M24 33l-6 6 6 6m16-12 6 6-6 6m-5-13-6 15"/>',

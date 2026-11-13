@@ -61,8 +61,8 @@ test('GET usuarios: 401 anónimo; 403 operador y registrado; 200 administrador, 
   const auth = await sesion(ids.administrador[0]);
   const panel = await request(app).get('/admin').set('Cookie', auth.cookie);
   assert.equal(panel.status, 200);
-  for (const ruta of ['/admin/usuarios', '/admin/servicios', '/admin/metricas', '/operador/consultas']) assert.ok(panel.text.includes(`href="${ruta}"`));
-  assert.match(panel.text, /Proyectos y demos/);
+  for (const ruta of ['/admin/usuarios', '/admin/servicios', '/admin/metricas', '/operador/consultas', '/admin/demos']) assert.ok(panel.text.includes(`href="${ruta}"`));
+  assert.match(panel.text, /Demos interactivas/);
   const panelUsuarios = await request(app).get('/admin/usuarios').set('Cookie', auth.cookie);
   assert.equal(panelUsuarios.status, 200);
   assert.match(panelUsuarios.text, /Cuentas registradas/);

@@ -12,11 +12,7 @@
     <h2>Conocé nuestro trabajo.</h2>
     <p>Completá tus datos para comenzar.</p>
 
-    <%- include("../partials/i3/alerta", {
-      tipo: "aviso",
-      tituloAlerta: "Antes de registrarte",
-      mensaje: "La contraseña debe tener entre 12 y 128 caracteres y ocupar hasta 256 bytes UTF-8."
-    }) %>
+    <p>Elegí una contraseña larga que no uses en otras cuentas.</p>
   </aside>
 
   <form
@@ -49,7 +45,7 @@
       etiqueta: "Contraseña",
       tipo: "password",
       limite: 128,
-      ayuda: "Entre 12 y 128 caracteres. Se admiten espacios.",
+      ayuda: "Entre 12 y 128 caracteres. Podés usar espacios; muchos emojis pueden reducir el máximo permitido.",
       valor: ""
     }) %>
 
