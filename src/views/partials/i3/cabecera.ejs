@@ -19,7 +19,7 @@
   <div class="ambiente" aria-hidden="true"></div>
   <header class="cabecera">
     <div class="contenedor barra">
-      <a class="marca" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %><%= typeof baseUi === 'string' && !baseUi ? '/' : '' %>"><span class="marca-icono" aria-hidden="true">6</span> equipo<span class="marca-seis">seis</span><span class="marca-punto">.</span></a>
+      <a class="marca" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %><%= typeof baseUi === 'string' && !baseUi ? '/' : '' %>"><span class="marca-icono" aria-hidden="true">R</span> Reflection <span class="marca-seis">Tech</span><span class="marca-punto">.</span></a>
       <button class="menu-boton btn btn-outline-primary" aria-expanded="false" aria-controls="navegacion">Menú <span aria-hidden="true">☰</span></button>
       <nav id="navegacion" class="navegacion" aria-label="Navegación principal">
         <% for (const [ruta, etiqueta] of [['/i3','Inicio'],['/i3/equipo','Equipo'],['/i3/servicios','Servicios'],['/i3/proyectos','Proyectos'],['/i3/contacto','Contacto']]) { %>

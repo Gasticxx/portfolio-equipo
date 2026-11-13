@@ -1,6 +1,8 @@
-<%- include('../partials/header', { tituloPagina }) %>
+<%- include('../partials/i3/cabecera') %>
 
-<main class="container py-4">
+<link rel="stylesheet" href="/css/servicios-admin.css">
+
+<section class="seccion" id="panel-admin-servicios" data-csrf-token="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
       <h1 class="h2 fw-bold mb-1">Gestión de Servicios</h1>
@@ -60,7 +62,7 @@
               <td><%= s.orden %></td>
               <td>
                 <div class="fw-semibold"><%= s.nombre %></div>
-                <div class="small text-secondary text-truncate" style="max-width: 420px;"><%= s.descripcion %></div>
+                <div class="small text-secondary text-truncate descripcion-truncada"><%= s.descripcion %></div>
               </td>
               <td><span class="badge text-bg-secondary text-uppercase"><%= s.categoria %></span></td>
               <td>
@@ -94,88 +96,88 @@
     </table>
   </div>
 
-  <!-- Modal accesible para Crear / Editar (Apartado 8 y 13) -->
-  <div class="modal fade" id="modal-servicio" tabindex="-1" aria-labelledby="modal-servicio-titulo" aria-hidden="true">
-    <div class="modal-dialog">
-      <form id="form-servicio" class="modal-content" novalidate>
-        <div class="modal-header">
-          <h2 class="modal-title h5 fw-bold" id="modal-servicio-titulo">Nuevo servicio</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="servicio-id" />
+  <!-- Diálogo modal nativo accesible para Crear / Editar (Apartado 8 y 13) -->
+  <dialog id="modal-servicio" aria-labelledby="modal-servicio-titulo">
+    <form id="form-servicio" class="p-4" novalidate>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 fw-bold mb-0" id="modal-servicio-titulo">Nuevo servicio</h2>
+        <button type="button" id="btn-cerrar-modal" class="btn btn-sm btn-outline-secondary" aria-label="Cerrar">✕</button>
+      </div>
 
-          <div class="mb-3">
-            <label for="servicio-nombre" class="form-label">Nombre del servicio</label>
+      <div>
+        <input type="hidden" id="servicio-id" />
+
+        <div class="mb-3">
+          <label for="servicio-nombre" class="form-label">Nombre del servicio</label>
+          <input
+            type="text"
+            id="servicio-nombre"
+            class="form-control"
+            required
+            minlength="3"
+            maxlength="80"
+            aria-describedby="ayuda-nombre error-nombre"
+          />
+          <div id="ayuda-nombre" class="form-text">Entre 3 y 80 caracteres.</div>
+          <div id="error-nombre" class="invalid-feedback"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="servicio-categoria" class="form-label">Categoría</label>
+          <select id="servicio-categoria" class="form-select" required aria-describedby="error-categoria">
+            <option value="web">Web</option>
+            <option value="mantenimiento">Mantenimiento</option>
+            <option value="asesoria">Asesoría</option>
+          </select>
+          <div id="error-categoria" class="invalid-feedback"></div>
+        </div>
+
+        <div class="mb-3">
+          <label for="servicio-descripcion" class="form-label">Descripción</label>
+          <textarea
+            id="servicio-descripcion"
+            class="form-control"
+            rows="4"
+            required
+            minlength="20"
+            maxlength="1000"
+            aria-describedby="ayuda-descripcion error-descripcion"
+          ></textarea>
+          <div id="ayuda-descripcion" class="form-text">Texto plano de 20 a 1000 caracteres.</div>
+          <div id="error-descripcion" class="invalid-feedback"></div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-6">
+            <label for="servicio-orden" class="form-label">Orden (1 a 100)</label>
             <input
-              type="text"
-              id="servicio-nombre"
+              type="number"
+              id="servicio-orden"
               class="form-control"
+              min="1"
+              max="100"
+              value="1"
               required
-              minlength="3"
-              maxlength="80"
-              aria-describedby="ayuda-nombre error-nombre"
+              aria-describedby="error-orden"
             />
-            <div id="ayuda-nombre" class="form-text">Entre 3 y 80 caracteres.</div>
-            <div id="error-nombre" class="invalid-feedback"></div>
+            <div id="error-orden" class="invalid-feedback"></div>
           </div>
-
-          <div class="mb-3">
-            <label for="servicio-categoria" class="form-label">Categoría</label>
-            <select id="servicio-categoria" class="form-select" required aria-describedby="error-categoria">
-              <option value="web">Web</option>
-              <option value="mantenimiento">Mantenimiento</option>
-              <option value="asesoria">Asesoría</option>
-            </select>
-            <div id="error-categoria" class="invalid-feedback"></div>
-          </div>
-
-          <div class="mb-3">
-            <label for="servicio-descripcion" class="form-label">Descripción</label>
-            <textarea
-              id="servicio-descripcion"
-              class="form-control"
-              rows="4"
-              required
-              minlength="20"
-              maxlength="1000"
-              aria-describedby="ayuda-descripcion error-descripcion"
-            ></textarea>
-            <div id="ayuda-descripcion" class="form-text">Texto plano de 20 a 1000 caracteres.</div>
-            <div id="error-descripcion" class="invalid-feedback"></div>
-          </div>
-
-          <div class="row g-3">
-            <div class="col-6">
-              <label for="servicio-orden" class="form-label">Orden (1 a 100)</label>
-              <input
-                type="number"
-                id="servicio-orden"
-                class="form-control"
-                min="1"
-                max="100"
-                value="1"
-                required
-                aria-describedby="error-orden"
-              />
-              <div id="error-orden" class="invalid-feedback"></div>
-            </div>
-            <div class="col-6 d-flex align-items-center pt-4">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="servicio-activo" checked />
-                <label class="form-check-label" for="servicio-activo">Servicio activo</label>
-              </div>
+          <div class="col-6 d-flex align-items-center pt-4">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="servicio-activo" checked />
+              <label class="form-check-label" for="servicio-activo">Servicio activo</label>
             </div>
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" id="btn-guardar-servicio" class="btn btn-primary">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</main>
+      </div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" id="btn-cancelar-modal" class="btn btn-outline-secondary">Cancelar</button>
+        <button type="submit" id="btn-guardar-servicio" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+</section>
 
 <script src="/js/servicios-admin.js" defer></script>
-<%- include('../partials/footer') %>
+<%- include('../partials/i3/pie') %>

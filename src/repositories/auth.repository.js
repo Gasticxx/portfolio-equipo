@@ -60,3 +60,17 @@ export async function buscarUsuarioPorEmail(pool, email) {
 
   return resultado.rows[0] ?? null;
 }
+
+export async function obtenerHashPassword(pool, usuarioId) {
+  const { rows } = await pool.query('SELECT password_hash FROM app.usuarios WHERE id = $1 AND activo = true', [usuarioId]);
+  return rows[0]?.password_hash ?? null;
+}
+
+export async function actualizarPassword(pool, usuarioId, passwordHash) {
+  const { rows } = await pool.query(
+    `UPDATE app.usuarios SET password_hash = $2, version_sesion = version_sesion + 1, updated_at = now()
+     WHERE id = $1 AND activo = true RETURNING id`,
+    [usuarioId, passwordHash],
+  );
+  return rows.length === 1;
+}
