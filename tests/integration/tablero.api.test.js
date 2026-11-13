@@ -13,6 +13,7 @@ const sesiones = [];
 let proyectoCreado;
 let demoCreada = false;
 let baseLocalValidada = false;
+let publicacionOriginal;
 
 async function sesion(usuario, { autenticadoEn = Date.now(), vencida = false } = {}) {
   const sid = crypto.randomUUID();
@@ -45,7 +46,7 @@ before(async () => {
     [`i4-tablero-${crypto.randomUUID()}@test.invalid`, rol]);
     usuarios.push(rows[0]);
   }
-  // La implementación de I5 usa DEMO_ID=1: no se modifica su tipo ni se reemplaza un registro existente.
+  // La ruta heredada usa la demo 1; se conserva y restaura su publicación.
   const existente = await pool.query('SELECT id FROM app.demos WHERE id=1');
   if (!existente.rows.length) {
     const { rows } = await pool.query(`INSERT INTO app.proyectos
@@ -62,6 +63,10 @@ before(async () => {
     }
     demoCreada = true;
   }
+  const actual = await pool.query('SELECT d.publicada,d.proyecto_id,p.publicado FROM app.demos d JOIN app.proyectos p ON p.id=d.proyecto_id WHERE d.id=1');
+  publicacionOriginal = actual.rows[0];
+  await pool.query('UPDATE app.demos SET publicada=true WHERE id=1');
+  await pool.query('UPDATE app.proyectos SET publicado=true WHERE id=$1', [publicacionOriginal.proyecto_id]);
 });
 
 after(async () => {
@@ -72,6 +77,10 @@ after(async () => {
     await pool.query('DELETE FROM app.tareas_demo WHERE usuario_id=ANY($1::int[])', [ids]);
     await pool.query('DELETE FROM app.accesos WHERE usuario_id=ANY($1::int[])', [ids]);
     await pool.query('DELETE FROM app.usuarios WHERE id=ANY($1::int[])', [ids]);
+    if (publicacionOriginal) {
+      await pool.query('UPDATE app.demos SET publicada=$1 WHERE id=1', [publicacionOriginal.publicada]);
+      await pool.query('UPDATE app.proyectos SET publicado=$1 WHERE id=$2', [publicacionOriginal.publicado, publicacionOriginal.proyecto_id]);
+    }
     if (demoCreada) await pool.query('DELETE FROM app.demos WHERE id=1');
     if (proyectoCreado) await pool.query('DELETE FROM app.proyectos WHERE id=$1', [proyectoCreado]);
   } finally {

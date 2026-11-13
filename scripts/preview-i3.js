@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { integrantes } from '../src/ui-i3/equipo.js';
+import { fotosRouter } from '../src/routes/fotos.routes.js';
 
 const raiz=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 export function crearPreview(){
@@ -12,6 +13,7 @@ export function crearPreview(){
   app.use(helmet({contentSecurityPolicy:{directives:{'upgrade-insecure-requests':null,scriptSrc:["'self'"],styleSrc:["'self'"],imgSrc:["'self'",'data:']}}}));
   app.set('views',path.join(raiz,'src/views'));app.set('view engine','ejs');
   app.use(express.static(path.join(raiz,'src/public')));
+  app.use(fotosRouter);
   app.use((_req,res,next)=>{res.locals.usuarioActual=null;res.set('Cache-Control','no-store');next();});
   app.get('/',(_req,res)=>res.redirect('/i3'));
   app.get('/i3',(_req,res)=>res.render('i3/inicio',{titulo:'Inicio',rutaActual:'/i3',integrantes}));

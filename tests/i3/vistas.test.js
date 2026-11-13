@@ -16,12 +16,22 @@ test('todos los recorridos renderizan y sus enlaces locales resuelven',async()=>
     assert.doesNotMatch(respuesta.text,/<script(?![^>]*\bsrc=)[^>]*>/);
     for(const match of respuesta.text.matchAll(/(?:href|src)="(\/[^"#]*)"/g))enlaces.add(match[1]);
   }
-  for(const ruta of enlaces)await request(app).get(ruta).expect(200);
+  // Las fotos remotas se verifican aparte; la suite no requiere credenciales de producción.
+  for(const ruta of enlaces)if(!ruta.startsWith('/media/integrantes/'))await request(app).get(ruta).expect(200);
 });
-test('seis fichas tienen espacios para fotos, sin inventar identidad',async()=>{
+test('seis fichas muestran los nombres reales y conservan el respaldo de foto',async()=>{
   const {text}=await request(app).get('/i3/equipo').expect(200);
   assert.equal((text.match(/Espacio para tu foto/g)||[]).length,6);
-  for(let i=1;i<=6;i++)assert.match(text,new RegExp(`Integrante ${i}`));
+  for(const nombre of ['Ignacio Ucciardello','Gaston Exequiel Lopez Iñigo','Astorga Balbuena Lucas Alberto','Facundo Casal','Mendoza, Mateo Aaron.','Facundo Sánchez Francés'])assert.ok(text.includes(nombre));
+});
+
+test('perfil integra presentación, formación, tecnologías y enlaces de la ficha',async()=>{
+  const {text}=await request(app).get('/i3/equipo/I3').expect(200);
+  assert.ok(text.includes('el sistema visual, los componentes EJS'));
+  assert.ok(text.includes('Formación académica en curso.'));
+  assert.ok(text.includes('HTML · CSS · JavaScript'));
+  assert.ok(text.includes('https://github.com/lucasastorga05-art'));
+  assert.doesNotMatch(text,/href="null"/);
 });
 test('perfiles desconocidos y recursos privados no se exponen',async()=>{
   for(const ruta of ['/i3/equipo/I7','/demos/1','/demos/1/recurso.js','/ui-i3/equipo.js','/.env','/app.js'])await request(app).get(ruta).expect(404);

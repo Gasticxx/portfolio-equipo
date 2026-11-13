@@ -35,6 +35,8 @@ import {
 } from "./controllers/auth.controller.js";
 import { usuariosRouter } from "./routes/usuarios.routes.js";
 import { serviciosRouter } from "./routes/servicios.routes.js";
+import { fotosRouter } from "./routes/fotos.routes.js";
+import { demosAdminRouter } from "./routes/demos-admin.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,6 +82,7 @@ app.use(
 
 // Paso 3: Archivos estáticos públicos antes de la sesión
 app.use(express.static(path.join(__dirname, "public")));
+app.use(fotosRouter);
 
 // Paso 4: Parsers limitados a 32 KiB
 app.use(express.json({ limit: CONSTANTS.JSON_BODY_LIMIT }));
@@ -143,6 +146,7 @@ app.use(consultas.paginas);
 
 // Las rutas de autenticación, consultas y servicios se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
+app.use(demosAdminRouter);
 app.use(tableroRouter);
 app.use(serviciosRouter);
 app.use(interfazRouter);
