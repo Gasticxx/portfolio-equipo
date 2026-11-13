@@ -128,8 +128,7 @@
       divTitulo.className = 'fw-semibold';
       divTitulo.textContent = s.nombre;
       const divDesc = document.createElement('div');
-      divDesc.className = 'small text-secondary text-truncate';
-      divDesc.style.maxWidth = '420px';
+      divDesc.className = 'small text-secondary text-truncate descripcion-truncada';
       divDesc.textContent = s.descripcion;
       tdNombre.append(divTitulo, divDesc);
 

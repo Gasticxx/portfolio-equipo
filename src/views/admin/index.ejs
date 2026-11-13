@@ -1,26 +1,39 @@
 <%- include('../partials/i3/cabecera') %>
-<link rel="stylesheet" href="/css/consultas.css">
-
-<section class="encabezado-pagina">
-  <a class="regreso" href="/mi-cuenta">← Volver a mi cuenta</a>
-  <p class="eyebrow">PANEL DE CONTROL</p>
-  <h1>Administración<span>.</span></h1>
-  <p>Elegí una sección para gestionar el portfolio.</p>
-</section>
-
-<section class="seccion" aria-label="Secciones de administración">
-  <div class="row row-cols-1 row-cols-md-2 g-4">
-    <div class="col"><a class="glass d-block h-100 p-4 text-decoration-none" href="/admin/proyectos"><h2>Proyectos</h2><p>Gestionar contenido, portadas, tecnologías y aportes del equipo.</p><span class="enlace-flecha">Abrir proyectos →</span></a></div>
-    <div class="col"><a class="glass d-block h-100 p-4 text-decoration-none" href="/admin/usuarios"><h2>Usuarios</h2><p>Buscar cuentas registradas y cambiar su estado.</p><span class="enlace-flecha">Abrir usuarios →</span></a></div>
-    <div class="col"><a class="glass d-block h-100 p-4 text-decoration-none" href="/admin/servicios"><h2>Servicios</h2><p>Crear, editar y eliminar los servicios publicados.</p><span class="enlace-flecha">Abrir servicios →</span></a></div>
-    <div class="col"><a class="glass d-block h-100 p-4 text-decoration-none" href="/admin/metricas"><h2>Métricas</h2><p>Consultar visitas, accesos, registros y consultas.</p><span class="enlace-flecha">Abrir métricas →</span></a></div>
-    <div class="col"><a class="glass d-block h-100 p-4 text-decoration-none" href="/operador/consultas"><h2>Consultas</h2><p>Revisar y responder consultas recibidas.</p><span class="enlace-flecha">Abrir consultas →</span></a></div>
-  </div>
-  <div class="glass p-4 mt-4" aria-labelledby="admin-pendiente">
-    <h2 id="admin-pendiente">Demos interactivas</h2>
-    <p>Crear, editar y publicar demos en los proyectos existentes.</p>
-    <a class="btn btn-primary" href="/admin/demos">Gestionar demos →</a>
-  </div>
-</section>
+<link rel="stylesheet" href="/css/admin.css">
+<div class="admin-hub">
+  <section class="admin-encabezado" aria-labelledby="admin-titulo">
+    <div>
+      <a class="regreso" href="/mi-cuenta">← Volver a mi cuenta</a>
+      <p class="eyebrow">REFLECTION / PANEL DE CONTROL</p>
+      <h1 id="admin-titulo">Administración<span>.</span></h1>
+      <p class="admin-bajada">Todo lo que el equipo construye, en un mismo lugar.<br> Elegí una herramienta y seguí dándole forma al portfolio.</p>
+    </div>
+    <div class="admin-sello"><span class="admin-sello-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8.5 11.5 2.5 2.5 4.5-5"/></svg></span><span>ESPACIO DEL EQUIPO<strong>Acceso de administrador</strong></span></div>
+  </section>
+  <section class="admin-herramientas" aria-labelledby="admin-herramientas-titulo">
+    <div class="admin-seccion-cabecera"><h2 id="admin-herramientas-titulo">Tus herramientas</h2><p>Seis accesos. Un mismo espacio de trabajo.</p></div>
+    <% const accesos = [
+      { clave: 'proyectos', titulo: 'Proyectos', ruta: '/admin/proyectos', categoria: 'CONTENIDO', descripcion: 'Dale forma a los proyectos, sus portadas, tecnologías y aportes del equipo.', icono: 'M8 23v29h48V19H32l-6-7H8v11ZM25 41l5 5 12-13' },
+      { clave: 'usuarios', titulo: 'Usuarios', ruta: '/admin/usuarios', categoria: 'PERSONAS', descripcion: 'Buscá cuentas registradas, revisá sus datos y administrá su acceso.', icono: 'M40 21a8 8 0 1 1-16 0 8 8 0 0 1 16 0ZM15 53v-7c0-16 34-16 34 0v7M46 17a6 6 0 0 1 0 12M52 35c5 2 7 6 7 11v5' },
+      { clave: 'servicios', titulo: 'Servicios', ruta: '/admin/servicios', categoria: 'CAPACIDADES', descripcion: 'Creá, editá y organizá los servicios que el equipo ofrece al mundo.', icono: 'M9 17h46v35H9ZM23 17v-6h18v6M9 30c14 9 32 9 46 0M28 30h8v9h-8Z' },
+      { clave: 'metricas', titulo: 'Métricas', ruta: '/admin/metricas', categoria: 'ACTIVIDAD', descripcion: 'Explorá visitas, accesos, registros y consultas para conocer el alcance del sitio.', icono: 'M10 10v44h46M20 42V31M32 42V23M44 42V16M17 23l12-9 11 3L53 6' },
+      { clave: 'consultas', titulo: 'Consultas', ruta: '/operador/consultas', categoria: 'COMUNICACIÓN', descripcion: 'Revisá los mensajes recibidos, respondé y acompañá cada consulta.', icono: 'M8 11h48v33H29L17 55V44H8ZM18 22h28M18 32h19' },
+      { clave: 'demos', titulo: 'Demos interactivas', ruta: '/admin/demos', categoria: 'EXPERIENCIAS', descripcion: 'Organizá, editá y publicá las experiencias interactivas de cada proyecto.', icono: 'M9 11h46v43H9ZM9 23h46M17 17h1M24 17h1M31 17h1M27 31l14 8-14 8Z' },
+    ]; %>
+    <ul id="admin-accesos" class="admin-accesos">
+      <% accesos.forEach((acceso, indice) => { %>
+        <li>
+          <a class="glass admin-acceso" href="<%= acceso.ruta %>" aria-labelledby="admin-<%= acceso.clave %>-titulo admin-<%= acceso.clave %>-accion" aria-describedby="admin-<%= acceso.clave %>-descripcion">
+            <span class="admin-acceso-cabecera"><span class="admin-icono" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path pathLength="1" d="<%= acceso.icono %>"/></svg></span><span class="admin-numero" aria-hidden="true"><%= String(indice + 1).padStart(2, '0') %> <span>↗</span></span></span>
+            <span class="admin-categoria"><%= acceso.categoria %></span>
+            <h3 id="admin-<%= acceso.clave %>-titulo"><%= acceso.titulo %></h3>
+            <p id="admin-<%= acceso.clave %>-descripcion"><%= acceso.descripcion %></p>
+            <span class="admin-acceso-accion" id="admin-<%= acceso.clave %>-accion"><span>Abrir sección</span><span class="admin-flecha" aria-hidden="true">↗</span></span>
+          </a>
+        </li>
+      <% }); %>
+    </ul>
+  </section>
+</div>
 
 <%- include('../partials/i3/pie') %>

@@ -1,14 +1,26 @@
 <%- include('../partials/i3/cabecera') %>
 <link rel="stylesheet" href="/css/consultas.css">
+<link rel="stylesheet" href="/css/consultas-operador.css">
 <%
   const claseEnvio = { aceptado: 'text-bg-success', error: 'text-bg-danger', desconocido: 'text-bg-warning', pendiente: 'text-bg-secondary', enviando: 'text-bg-info' };
   const fecha = new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Argentina/Buenos_Aires' });
 %>
-<section class="encabezado-pagina">
+<div class="operador-ui">
+<section class="operador-hero">
+  <div>
   <a class="regreso" href="<%= usuarioActual?.rol === 'administrador' ? '/admin' : '/mi-cuenta' %>">← Volver al panel</a>
   <p class="eyebrow">PANEL DEL OPERADOR</p>
   <h1>Consultas<span>.</span></h1>
-  <p>Mensajes recibidos desde Contacto, con su estado de seguimiento y el resultado del aviso por email.</p>
+  <p class="operador-lema">Cada mensaje, una conversación.</p>
+  <p class="operador-bajada">Escuchá lo que necesitan, acompañá cada consulta y convertí el primer contacto en una buena experiencia.</p>
+  <p class="operador-hero-nota">Mensajes, seguimiento y respuestas en un mismo lugar.</p>
+  </div>
+  <div class="operador-conversacion" aria-hidden="true">
+    <div class="operador-conexion"></div>
+    <div class="operador-burbuja operador-burbuja-entrada"><span class="operador-avatar">↗</span><div><span>EL PRIMER CONTACTO</span><strong>Todo empieza<br>con una idea.</strong><div class="operador-lineas"><i></i><i></i></div></div></div>
+    <div class="operador-burbuja operador-burbuja-respuesta"><span class="operador-avatar">R</span><div><span>DEL OTRO LADO, EL EQUIPO</span><strong>Estamos para<br>darle forma.</strong><div class="operador-escribiendo"><i></i><i></i><i></i></div></div></div>
+    <p class="operador-conversacion-pie">ESCUCHAR · ENTENDER · RESPONDER</p>
+  </div>
 </section>
 
 <section class="seccion-i6">
@@ -39,9 +51,9 @@
         <% opciones.estadosEnvio.forEach((e) => { %><option value="<%= e %>" <%= filtros.notificacionEstado === e ? 'selected' : '' %>><%= etiquetas.estadoEnvio[e] %></option><% }) %>
       </select>
     </div>
-    <div class="acciones">
-      <button type="submit" class="btn btn-primary">Filtrar</button>
-      <a class="btn btn-glass" href="/operador/consultas">Limpiar</a>
+    <div class="acciones operador-filtros-acciones">
+      <button type="submit" class="btn btn-primary">Aplicar filtros →</button>
+      <a class="btn btn-glass" href="/operador/consultas">Limpiar filtros</a>
     </div>
   </form>
 
@@ -56,11 +68,11 @@
   <% if (consultas.length === 0) { %>
     <%- include('../partials/i3/estado', { estado: 'vacio', tituloEstado: meta.total === 0 ? 'No hay consultas' : 'Página sin resultados', mensaje: meta.total === 0 ? 'Ninguna consulta coincide con los filtros.' : 'Volvé a la primera página.' }) %>
   <% } else { %>
-    <div class="table-responsive glass" role="region" aria-label="Consultas recibidas" tabindex="0">
+    <div class="table-responsive glass operador-tabla" role="region" aria-label="Consultas recibidas" tabindex="0">
       <table class="table tabla-i3">
         <caption>Consultas recibidas, más recientes primero</caption>
         <thead>
-          <tr><th scope="col">#</th><th scope="col">Fecha</th><th scope="col">Nombre</th><th scope="col">Tipo</th><th scope="col">Asunto</th><th scope="col">Estado</th><th scope="col">Notificación</th></tr>
+          <tr><th scope="col">#</th><th scope="col">Fecha</th><th scope="col">Nombre</th><th scope="col">Tipo</th><th scope="col">Asunto</th><th scope="col">Estado</th><th scope="col">Notificación</th><th scope="col">Acción</th></tr>
         </thead>
         <tbody>
           <% consultas.forEach((c) => { %>
@@ -72,6 +84,7 @@
               <td><a href="/operador/consultas/<%= c.id %>"><%= c.asunto %></a></td>
               <td><span class="badge text-bg-light border"><%= etiquetas.estadoConsulta[c.estado] %></span></td>
               <td><% if (c.notificacionEstado) { %><span class="badge <%= claseEnvio[c.notificacionEstado] %>"><%= etiquetas.estadoEnvio[c.notificacionEstado] %></span><% } else { %>—<% } %></td>
+              <td><a class="btn btn-glass operador-abrir" href="/operador/consultas/<%= c.id %>" aria-label="Abrir consulta #<%= c.id %>: <%= c.asunto %>">Abrir ↗</a></td>
             </tr>
           <% }) %>
         </tbody>
@@ -91,6 +104,7 @@
     </nav>
   <% } %>
 </section>
+</div>
 
 <script type="module" src="/js/operador.js"></script>
 <%- include('../partials/i3/pie') %>
