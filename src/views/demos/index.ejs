@@ -1,27 +1,51 @@
 <%- include('../partials/i3/cabecera') %>
-<section class="encabezado-pagina">
-  <a class="regreso" href="/mi-cuenta">← Volver a mi cuenta</a>
-  <p class="eyebrow">EXPLORÁ LO QUE CONSTRUIMOS</p>
-  <h1>Demos interactivas<span>.</span></h1>
-  <p>Un espacio para probar ideas, explorar algoritmos y aprender haciendo.</p>
-</section>
-<section class="seccion" aria-label="Demos disponibles">
+<link rel="stylesheet" href="/css/demos-publicas.css">
+<% const tiposDemo = { tablero: { nombre: 'Tablero personal', idea: 'Organizá tus ideas' }, algoritmos: { nombre: 'Ordenamiento y búsqueda', idea: 'Descubrí la lógica' }, ondas: { nombre: 'Laboratorio de ondas', idea: 'Encontrá tu frecuencia' }, calendario: { nombre: 'Calendario', idea: 'Explorá el tiempo' } }; %>
+<div class="demos-publicas">
+  <section class="demos-hero" aria-labelledby="demos-titulo">
+    <div class="demos-presentacion">
+      <a class="regreso" href="/mi-cuenta"><span class="regreso-icono" aria-hidden="true">←</span>Volver a mi cuenta</a>
+      <p class="eyebrow">REFLECTION / EXPERIENCIAS EN MOVIMIENTO</p>
+      <h1 id="demos-titulo">Demos<br><span>interactivas.</span></h1>
+      <p>Las ideas se entienden mejor cuando las probás. Un espacio para explorar, experimentar y aprender haciendo.</p>
+      <a class="btn btn-primary" href="#demos-coleccion">Elegí una experiencia <span aria-hidden="true">↓</span></a>
+      <span class="demos-hero-nota">Tu curiosidad pone todo en marcha.</span>
+    </div>
+    <div class="demos-escena" aria-hidden="true">
+      <div class="demos-escena-orbita"></div>
+      <div class="demos-mosaico"><% ['tablero','algoritmos','ondas','calendario'].forEach(tipo => { %><div class="demos-mini demos-mini-<%= tipo %>"><%- include('../partials/demos-ilustracion', {tipo}) %></div><% }) %></div>
+      <span class="demos-play"><svg viewBox="0 0 32 32" fill="none"><path d="m12 8 13 8-13 8V8Z"/></svg></span>
+      <span class="demos-escena-nota">TOCÁ. PROBÁ. DESCUBRÍ.</span>
+    </div>
+  </section>
+  <section class="demos-coleccion" id="demos-coleccion" aria-labelledby="demos-coleccion-titulo">
+    <div class="demos-coleccion-cabecera"><div><p class="eyebrow">DEL CÓDIGO A LA EXPERIENCIA</p><h2 id="demos-coleccion-titulo">Elegí por dónde empezar<span>.</span></h2><p>Cada demo, una forma distinta de descubrir lo que podemos crear.</p></div><% if (disponible && demos.length) { %><span class="demos-cantidad"><strong><%= String(demos.length).padStart(2, '0') %></strong><%= demos.length === 1 ? 'experiencia disponible' : 'experiencias disponibles' %></span><% } %></div>
   <% if (!disponible) { %>
+    <div class="demos-estado">
     <%- include('../partials/i3/estado', { estado: 'error', tituloEstado: 'Las demos están temporalmente fuera de línea', mensaje: 'No pudimos cargar las demos en este momento. Tu cuenta sigue disponible; podés volver a intentarlo más tarde.' }) %>
     <div class="acciones"><a class="btn btn-primary" href="/demos">Volver a intentar</a><a class="btn btn-glass" href="/mi-cuenta">Ir a mi cuenta</a></div>
+    </div>
   <% } else if (!demos.length) { %>
+    <div class="demos-estado">
     <%- include('../partials/i3/estado', { estado: 'vacio', tituloEstado: 'Próximamente, nuevas experiencias', mensaje: 'Todavía no hay demos publicadas. Cuando el equipo publique una, vas a encontrarla acá.' }) %>
     <a class="btn btn-primary" href="/proyectos">Explorar proyectos ↗</a>
+    </div>
   <% } else { %>
-    <div class="rejilla">
-      <% demos.forEach(demo => { %>
-        <article class="glass servicio revelar">
-          <p class="eyebrow"><%= demo.proyecto_titulo %></p>
-          <h2><%= demo.titulo %></h2><p><%= demo.descripcion %></p>
-          <a class="btn btn-primary" href="/demos/<%= demo.id %>">Abrir demo ↗</a>
+    <div class="demos-tarjetas">
+      <% demos.forEach((demo, i) => { const tipo = tiposDemo[demo.tipo] || {nombre: 'Demo interactiva', idea: 'Probá algo nuevo'}; %>
+        <article class="demo-publica revelar">
+          <div class="demo-publica-visual" aria-hidden="true"><span class="demo-publica-numero"><%= String(i + 1).padStart(2, '0') %> / EXPLORAR</span><%- include('../partials/demos-ilustracion', {tipo: demo.tipo}) %><span class="demo-publica-idea"><%= tipo.idea %></span></div>
+          <div class="demo-publica-contenido">
+            <span class="demo-publica-tipo"><span aria-hidden="true"></span><%= tipo.nombre %></span>
+            <h3><%= demo.titulo %></h3><p class="demo-publica-descripcion"><%= demo.descripcion %></p>
+            <p class="demo-publica-proyecto"><span>UN PROYECTO DE</span><%= demo.proyecto_titulo %></p>
+            <a class="btn btn-glass demo-publica-abrir" href="/demos/<%= demo.id %>" aria-label="Abrir demo: <%= demo.titulo %>">Abrir demo <span aria-hidden="true">↗</span></a>
+          </div>
         </article>
       <% }) %>
     </div>
   <% } %>
-</section>
+  </section>
+  <% if (disponible && demos.length) { %><aside class="demos-cierre"><span class="demos-cierre-simbolo" aria-hidden="true">✳</span><div><h2>Aprender también es jugar.</h2><p>Probá una idea, cambiá una variable y mirá qué pasa.</p></div><a class="enlace-flecha" href="/proyectos">Conocé los proyectos <span aria-hidden="true">↗</span></a></aside><% } %>
+</div>
 <%- include('../partials/i3/pie') %>

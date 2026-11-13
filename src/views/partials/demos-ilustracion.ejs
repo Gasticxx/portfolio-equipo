@@ -1,0 +1,26 @@
+<svg class="demo-ilustracion" viewBox="0 0 360 210" fill="none" aria-hidden="true" focusable="false">
+  <% if (tipo === 'tablero') { %>
+    <% [24,136,248].forEach((x, i) => { %><rect class="demo-dibujo-panel" x="<%= x %>" y="26" width="88" height="158" rx="12"/><path class="demo-dibujo-linea" d="M<%= x+14 %> 44h35"/><rect class="demo-dibujo-pieza" x="<%= x+11 %>" y="60" width="66" height="25" rx="6"/><% if (i < 2) { %><rect class="demo-dibujo-pieza" x="<%= x+11 %>" y="135" width="66" height="25" rx="6"/><% } %><% }) %>
+    <g class="demo-tablero-tarea"><rect class="demo-dibujo-acento" x="35" y="94" width="66" height="30" rx="7"/><path class="demo-dibujo-linea-fuerte" d="M46 105h34m-34 9h23"/></g>
+    <path class="demo-tablero-check" d="m273 107 7 7 13-16"/>
+  <% } else if (tipo === 'algoritmos') { %>
+    <path class="demo-dibujo-guia" d="M36 67h288M36 117h288M36 167h288"/>
+    <g class="demo-alg-barra demo-alg-uno"><rect class="demo-alg-pieza" x="62" y="77" width="42" height="90" rx="8"/></g>
+    <g class="demo-alg-barra demo-alg-dos"><rect class="demo-alg-pieza" x="122" y="127" width="42" height="40" rx="8"/></g>
+    <g class="demo-alg-barra demo-alg-tres"><rect class="demo-alg-pieza" x="182" y="37" width="42" height="130" rx="8"/></g>
+    <g class="demo-alg-barra demo-alg-cuatro"><rect class="demo-alg-pieza" x="242" y="102" width="42" height="65" rx="8"/></g>
+    <path class="demo-dibujo-linea" d="M36 181h288"/>
+  <% } else if (tipo === 'ondas') { %>
+    <path class="demo-dibujo-guia" d="M24 105h312M104 24v162M256 24v162"/>
+    <% [0,1,2].forEach(i => { %><circle class="demo-onda demo-onda-izquierda demo-onda-<%= i %>" cx="104" cy="105" r="53"/><circle class="demo-onda demo-onda-derecha demo-onda-<%= i %>" cx="256" cy="105" r="53"/><% }) %>
+    <circle class="demo-onda-fuente" cx="104" cy="105" r="7"/><circle class="demo-onda-fuente" cx="256" cy="105" r="7"/>
+    <path class="demo-onda-eje" d="M180 35v140"/>
+  <% } else if (tipo === 'calendario') { %>
+    <rect class="demo-dibujo-panel" x="74" y="25" width="212" height="163" rx="15"/>
+    <path class="demo-dibujo-linea" d="M74 62h212M116 17v20m128-20v20M156 44h48"/>
+    <% for (let i = 0; i < 21; i++) { %><rect class="demo-calendario-celda" x="<%= 96 + (i % 7)*25 %>" y="<%= 79 + Math.floor(i/7)*32 %>" width="18" height="18" rx="5"/><% } %>
+    <g class="demo-calendario-dia"><rect class="demo-dibujo-acento" x="121" y="111" width="18" height="18" rx="5"/><path class="demo-dibujo-linea-fuerte" d="m125 120 3 3 6-7"/></g>
+  <% } else { %>
+    <rect class="demo-dibujo-panel" x="64" y="30" width="232" height="150" rx="18"/><path class="demo-dibujo-linea" d="M64 64h232"/><path class="demo-dibujo-linea-fuerte" d="m165 88 36 22-36 22V88Z"/>
+  <% } %>
+</svg>
