@@ -47,7 +47,7 @@ export const MIEMBROS = FILAS_MIEMBROS.map(([orden, nombre, especialidad]) => ({
 
 export const PROYECTO = {
   slug: 'portfolio-equipo',
-  titulo: 'Portfolio del equipo Equipo Seis',
+  titulo: 'Portfolio de Reflection Tech',
   resumen:
     'Portfolio colectivo con seis perfiles, proyectos protegidos, demos interactivas y gestión de consultas, usuarios y métricas.',
   descripcion:

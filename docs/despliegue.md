@@ -1,4 +1,4 @@
-# Guía de Publicación, Continuidad, Respaldo y Operación — Equipo Seis (I2 08 e I2 09)
+# Guía de Publicación, Continuidad, Respaldo y Operación — Reflection Tech (I2 08 e I2 09)
 
 Este documento define el procedimiento oficial de publicación en Render, conexión con Supabase PostgreSQL y Storage, correo transaccional con Brevo, política de conservación y recuperación ante desastres según el Apartado 21 de la especificación.
 
@@ -29,7 +29,7 @@ En el panel de Render (`Environment`) se cargan únicamente las variables de eje
 | `SUPABASE_STORAGE_BUCKET`   | `portfolio-media` (bucket privado para portadas WebP)                                                                                         | I5                   |
 | `BREVO_API_KEY`             | Clave privada de API v3 de Brevo (`https://api.brevo.com/v3/smtp/email`)                                                                      | I6                   |
 | `MAIL_FROM_EMAIL`           | Remitente verificado en el panel de Brevo                                                                                                     | I6                   |
-| `MAIL_FROM_NAME`            | `Equipo Seis`                                                                                                                                 | I6                   |
+| `MAIL_FROM_NAME`            | `Reflection Tech`                                                                                                                             | I6                   |
 | `CONTACT_TO_EMAIL`          | Casilla real de recepción de notificaciones del equipo                                                                                        | I6                   |
 
 > Cómo obtener y comprobar las cuatro variables de Brevo sin exponer secretos: `docs/consultas.md` §8 (I6).

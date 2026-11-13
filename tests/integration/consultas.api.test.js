@@ -94,7 +94,7 @@ describe('Módulo de consultas (I6)', { skip: omitir }, () => {
     const notif = brevo.llamadas[0].body;
     assert.deepEqual(notif.to, [{ email: ENV_PRUEBA.CONTACT_TO_EMAIL }]);
     assert.deepEqual(notif.replyTo, { email: 'ana@example.com', name: 'Ana Pérez' });
-    assert.equal(notif.subject, '[Equipo Seis] Consulta #1 - Consulta de prueba');
+    assert.equal(notif.subject, '[Reflection Tech] Consulta #1 - Consulta de prueba');
   });
 
   test('la respuesta pública nunca incluye email ni mensaje', async () => {
@@ -275,7 +275,7 @@ describe('Módulo de consultas (I6)', { skip: omitir }, () => {
     const envio = brevo.llamadas.at(-1).body;
     assert.deepEqual(envio.to, [{ email: 'cliente@example.com', name: 'Ana Pérez' }]);
     assert.deepEqual(envio.replyTo, { email: ENV_PRUEBA.MAIL_FROM_EMAIL, name: ENV_PRUEBA.MAIL_FROM_NAME });
-    assert.equal(envio.subject, `[Equipo Seis] Respuesta a consulta #${id}`);
+    assert.equal(envio.subject, `[Reflection Tech] Respuesta a consulta #${id}`);
 
     const detalle = (await op.get(`/api/operador/consultas/${id}`)).body.data;
     assert.equal(detalle.estado, 'respondida');

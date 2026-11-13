@@ -44,7 +44,7 @@ jobs:
       SUPABASE_STORAGE_BUCKET: portfolio-media
       BREVO_API_KEY: ci_dummy_brevo_api_key
       MAIL_FROM_EMAIL: no-reply@example.com
-      MAIL_FROM_NAME: Equipo Seis
+      MAIL_FROM_NAME: Reflection Tech
       CONTACT_TO_EMAIL: equipo@example.com
 
     steps:

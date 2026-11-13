@@ -11,7 +11,7 @@ import { crearEmailService } from '../../src/services/email.service.js';
 export const ENV_PRUEBA = {
   BREVO_API_KEY: 'xkeysib-prueba',
   MAIL_FROM_EMAIL: 'equipo@equipo.test',
-  MAIL_FROM_NAME: 'Equipo Seis',
+  MAIL_FROM_NAME: 'Reflection Tech',
   CONTACT_TO_EMAIL: 'casilla@equipo.test',
   SESSION_SECRET: 'secreto-de-prueba-para-hmac',
   APP_ORIGIN: 'http://localhost:3000'

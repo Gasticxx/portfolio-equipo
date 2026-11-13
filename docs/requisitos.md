@@ -1,4 +1,4 @@
-# Matriz de Requisitos y Cobertura (Equipo Seis)
+# Matriz de Requisitos y Cobertura (Reflection Tech)
 
 | Código | Requisito | Tarjetas Asociadas | Responsable | Revisor | Casos de Aceptación | Estado | Evidencia (PR / Test) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

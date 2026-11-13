@@ -9,7 +9,7 @@ import {
 
 test('generarClaveHmacLimite: devuelve HMAC hexadecimal de 64 caracteres sin exponer IP ni email en claro', () => {
     const ip = '192.168.1.55';
-    const email = 'Estudiante@EquipoSeis.com';
+    const email = 'Estudiante@ReflectionTech.com';
     const claveIp = generarClaveHmacLimite('login_ip', ip, 'secreto_test');
     const claveEmail = generarClaveHmacLimite('login_email', email, 'secreto_test');
 
