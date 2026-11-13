@@ -4,19 +4,27 @@
 
 <section class="seccion" id="panel-admin-servicios" data-csrf-token="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
   <a class="regreso" href="/admin">← Volver a administración</a>
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-    <div>
-      <h1 class="h2 fw-bold mb-1">Gestión de Servicios</h1>
-      <p class="text-secondary mb-0">Creá, editá y eliminá los servicios ofertados en el portfolio.</p>
+  <div class="servicios-hero">
+    <div class="servicios-hero-texto">
+      <p class="eyebrow">REFLECTION / CAPACIDADES DEL EQUIPO</p>
+      <h1>Lo que hacemos.<br><span>Lo que ofrecemos.</span></h1>
+      <p class="servicios-bajada">Convertí las capacidades del equipo en propuestas que conecten. Organizá, editá y presentá los servicios del portfolio.</p>
+      <div class="acciones"><button type="button" id="btn-nuevo-servicio" class="btn btn-primary">Nuevo servicio <span aria-hidden="true">+</span></button><a class="btn btn-glass" href="/servicios">Ver catálogo ↗</a></div>
+      <p class="servicios-nota">Una propuesta clara empieza con una buena presentación.</p>
     </div>
-    <button type="button" id="btn-nuevo-servicio" class="btn btn-primary">
-      Nuevo servicio
-    </button>
+    <div class="servicios-arte" aria-hidden="true">
+      <div class="servicios-arte-anillo"></div>
+      <div class="servicios-ficha"><div class="servicios-ficha-barra"><span>REFLECTION / ESTUDIO</span><span>✳</span></div><strong>Ideas que<br>se convierten<br>en soluciones<span>.</span></strong><div class="servicios-ficha-lineas"><i></i><i></i><i></i></div><span class="servicios-ficha-pie">DISEÑAR · CONSTRUIR · ACOMPAÑAR</span></div>
+      <span class="servicios-capacidad servicios-capacidad-web"><b>&lt;/&gt;</b> Desarrollo web</span>
+      <span class="servicios-capacidad servicios-capacidad-soporte"><b>↻</b> Mantenimiento</span>
+      <span class="servicios-capacidad servicios-capacidad-asesoria"><b>✧</b> Asesoría técnica</span>
+    </div>
   </div>
 
   <div id="alerta-admin-servicios" class="alert d-none" role="status" aria-live="polite"></div>
 
-  <form id="form-filtros-servicios" class="row g-3 mb-4" novalidate>
+  <div class="servicios-lista-cabecera"><div><p class="eyebrow">EL CATÁLOGO DEL EQUIPO</p><h2>Gestión de servicios</h2></div><span>Creá. Organizá. Compartí.</span></div>
+  <form id="form-filtros-servicios" class="glass row g-3 mb-4 servicios-filtros" novalidate>
     <div class="col-12 col-md-6">
       <label for="filtro-q" class="form-label">Buscar por nombre</label>
       <input
@@ -41,9 +49,9 @@
     </div>
   </form>
 
-  <div class="table-responsive card shadow-sm">
+  <div class="table-responsive glass servicios-tabla">
     <table class="table table-hover align-middle mb-0">
-      <thead class="table-light">
+      <thead>
         <tr>
           <th scope="col">Orden</th>
           <th scope="col">Nombre</th>
@@ -100,10 +108,12 @@
   <!-- Diálogo modal nativo accesible para Crear / Editar (Apartado 8 y 13) -->
   <dialog id="modal-servicio" aria-labelledby="modal-servicio-titulo">
     <form id="form-servicio" class="p-4" novalidate>
+      <p class="eyebrow servicios-editor-etiqueta">UNA CAPACIDAD, UNA PROPUESTA</p>
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="h5 fw-bold mb-0" id="modal-servicio-titulo">Nuevo servicio</h2>
         <button type="button" id="btn-cerrar-modal" class="btn btn-sm btn-outline-secondary" aria-label="Cerrar">✕</button>
       </div>
+      <p class="servicios-editor-ayuda">Contá qué ofrece el equipo. Los servicios activos aparecen en el catálogo público.</p>
 
       <div>
         <input type="hidden" id="servicio-id" />

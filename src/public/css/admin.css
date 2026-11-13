@@ -1,0 +1,69 @@
+.admin-hub {
+  --admin-cristal:linear-gradient(135deg,#ffffffa8,#eaf1fd75);
+  --admin-borde:#ffffffce;
+  --admin-acento:#6a82bd;
+  --admin-boton:#ffffff50;
+  padding-bottom:48px;
+}
+.admin-encabezado {display:flex;justify-content:space-between;align-items:center;gap:32px;padding:44px 0 36px}
+.admin-encabezado .regreso {display:inline-block;margin-bottom:26px}
+.admin-encabezado .eyebrow {font-size:11px;letter-spacing:1.8px;margin:10px 0 14px}
+.admin-encabezado h1 {font-size:clamp(38px,4.6vw,64px);letter-spacing:-2.5px;margin-bottom:18px}
+.admin-bajada {font-size:15px;line-height:1.8;margin-bottom:0}
+.admin-sello {display:flex;align-items:center;gap:14px;padding:18px 22px;border:1px solid var(--color-borde);border-radius:18px;background:#b7c9ec14;flex-shrink:0}
+.admin-sello-icono {display:grid;place-items:center;width:38px;height:42px;color:var(--color-primario)}
+.admin-sello-icono svg {width:30px;height:30px}
+.admin-sello>span:last-child {font-size:9px;letter-spacing:1.2px;color:var(--color-secundario)}
+.admin-sello strong {display:block;font-size:12px;letter-spacing:0;font-weight:500;margin-top:5px;color:var(--color-texto)}
+.admin-seccion-cabecera {display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:20px 0;margin-bottom:4px;border-top:1px solid var(--color-borde)}
+.admin-seccion-cabecera h2 {font-size:20px;letter-spacing:-.5px;margin:0}
+.admin-seccion-cabecera p {font-size:12px;margin:0}
+.admin-accesos {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:20px;list-style:none;padding:0;margin:0}
+.admin-accesos>li {min-width:0;animation:admin-entrada .55s ease both}
+.admin-accesos>li:nth-child(2) {animation-delay:.05s}.admin-accesos>li:nth-child(3) {animation-delay:.1s}
+.admin-accesos>li:nth-child(4) {animation-delay:.15s}.admin-accesos>li:nth-child(5) {animation-delay:.2s}.admin-accesos>li:nth-child(6) {animation-delay:.25s}
+.interfaz-i3 #admin-accesos .admin-acceso {
+  display:flex;flex-direction:column;height:100%;min-height:310px;position:relative;isolation:isolate;overflow:hidden;
+  padding:26px;border-radius:22px;border:1px solid var(--admin-borde);background:var(--admin-cristal);
+  color:var(--color-texto);text-decoration:none;box-shadow:inset 0 1px 0 #ffffffa6,0 8px 28px #2947780b;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.admin-acceso::before {content:'';position:absolute;z-index:-1;width:240px;height:240px;border-radius:50%;right:-100px;top:-130px;background:radial-gradient(circle,#9daee93d,transparent 70%);opacity:.6;pointer-events:none;transition:opacity .3s}
+.admin-acceso::after {content:'';position:absolute;inset:-30% -100%;background:linear-gradient(115deg,transparent 40%,#ffffff60 50%,transparent 60%);transform:translateX(-55%);opacity:0;pointer-events:none}
+.admin-acceso-cabecera {display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
+.admin-icono {display:grid;place-items:center;width:56px;height:56px;border-radius:17px;border:1px solid #8eabd64d;background:linear-gradient(140deg,#bed1f147,#ddd0ee21);color:var(--admin-acento);transition:transform .3s ease,background .3s ease}
+.admin-icono svg {width:37px;height:37px}.admin-icono path {stroke-dasharray:1;stroke-dashoffset:0}
+.admin-numero {display:flex;gap:12px;font-size:10px;letter-spacing:1px;font-variant-numeric:tabular-nums;color:var(--color-secundario)}
+.admin-numero>span {opacity:.5;font-size:17px;transition:opacity .25s}
+.admin-categoria {font-size:9px;letter-spacing:1.6px;font-weight:600;color:var(--color-secundario);margin-bottom:10px}
+.admin-acceso h3 {font-size:25px;letter-spacing:-.6px;margin:0 0 12px;overflow-wrap:anywhere}
+.admin-acceso>p {font-size:13px;line-height:1.8;margin-bottom:24px}
+.admin-acceso-accion {display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:46px;width:100%;margin-top:auto;padding:9px 10px 9px 16px;border:1px solid var(--color-borde);border-radius:13px;background:var(--admin-boton);font-size:12px;font-weight:600;transition:background .25s,border-color .25s}
+.admin-flecha {display:grid;place-items:center;width:28px;height:28px;border:1px solid #8eabd63d;border-radius:9px;color:var(--color-primario);background:#9ab5e815;font-size:17px;transition:transform .25s ease,background .25s ease}
+.interfaz-i3 #admin-accesos .admin-acceso:is(:hover,:focus-visible) {transform:translateY(-5px);border-color:#8fa9dc;box-shadow:inset 0 1px 0 #ffffffc2,0 18px 40px #29477824}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible)::before {opacity:1}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible)::after {animation:admin-reflejo .75s ease-out}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible) .admin-icono {transform:rotate(-6deg) scale(1.06);background:#a1b9e731}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible) .admin-icono path {animation:admin-trazo .65s ease both}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible) .admin-numero>span {opacity:1}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible) .admin-acceso-accion {background:#91ade426;border-color:#8fa9dc}
+#admin-accesos .admin-acceso:is(:hover,:focus-visible) .admin-flecha {transform:translate(2px,-2px);background:#91ade42b}
+.interfaz-i3 #admin-accesos .admin-acceso:active {transform:translateY(-1px) scale(.99)}
+.tema-oscuro .admin-hub {--admin-cristal:linear-gradient(135deg,#2a3c58bf,#262c47b8);--admin-borde:#839ac05c;--admin-acento:#b4c9f2;--admin-boton:#15203933}
+.interfaz-i3.tema-oscuro #admin-accesos .admin-acceso {box-shadow:inset 0 1px 0 #adc3ee1a,0 8px 28px #060d241a}
+.interfaz-i3.tema-oscuro #admin-accesos .admin-acceso:is(:hover,:focus-visible) {border-color:#99b3e6;box-shadow:inset 0 1px 0 #adc3ee33,0 18px 40px #060d244d}
+@keyframes admin-entrada {from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes admin-reflejo {0%{opacity:0;transform:translateX(-55%)}20%{opacity:1}100%{opacity:0;transform:translateX(55%)}}
+@keyframes admin-trazo {from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.interfaz-i3:is(.movimiento-pausado,.efectos-pausados) #admin-accesos *,
+.interfaz-i3:is(.movimiento-pausado,.efectos-pausados) #admin-accesos *::before,
+.interfaz-i3:is(.movimiento-pausado,.efectos-pausados) #admin-accesos *::after {animation-play-state:paused;transition:none}
+.interfaz-i3:is(.movimiento-pausado,.efectos-pausados) #admin-accesos :is(.admin-acceso,.admin-icono,.admin-flecha) {transform:none}
+@media(max-width:1099px) {.admin-accesos{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-encabezado{align-items:flex-start}.admin-sello{padding:14px;gap:8px}.admin-sello strong{font-size:11px}}
+@media(max-width:800px) {.admin-encabezado{flex-direction:column;gap:24px;padding-top:30px}.admin-sello{padding:12px 18px}.admin-seccion-cabecera{align-items:flex-start;flex-direction:column;gap:8px}}
+@media(max-width:575px) {.admin-accesos{grid-template-columns:1fr;gap:16px}.interfaz-i3 #admin-accesos .admin-acceso{min-height:295px;padding:23px}.admin-encabezado h1{font-size:38px;letter-spacing:-1.8px}.admin-bajada{font-size:14px}.admin-bajada br{display:none}.admin-acceso-cabecera{margin-bottom:18px}.admin-acceso h3{font-size:24px}}
+@media(prefers-reduced-motion:reduce) {
+  .admin-hub *,.admin-hub *::after{animation:none!important;transition:none!important}
+  .interfaz-i3 #admin-accesos :is(.admin-acceso,.admin-icono,.admin-flecha){transform:none!important}
+}

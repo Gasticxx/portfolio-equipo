@@ -1,11 +1,13 @@
 <%- include('../partials/i3/cabecera') %>
 <link rel="stylesheet" href="/css/consultas.css">
+<link rel="stylesheet" href="/css/consultas-operador.css">
 <%
   const claseEnvio = { aceptado: 'text-bg-success', error: 'text-bg-danger', desconocido: 'text-bg-warning', pendiente: 'text-bg-secondary', enviando: 'text-bg-info' };
   const fecha = new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Argentina/Buenos_Aires' });
   const f = (iso) => (iso ? fecha.format(new Date(iso)) : '—');
   const c = consulta;
 %>
+<div class="operador-ui operador-detalle">
 <section class="encabezado-pagina" data-consulta-id="<%= c.id %>">
   <a class="regreso" href="/operador/consultas">← Volver a consultas</a>
   <p class="eyebrow">CONSULTA · <%= etiquetas.tipo[c.tipo].toUpperCase() %></p>
@@ -15,13 +17,17 @@
 
 <div id="operador-estado" class="alerta" role="status" aria-live="polite" tabindex="-1" hidden></div>
 
-<div class="acciones acciones-i6" aria-label="Cambiar estado">
+<div class="glass operador-herramientas" aria-label="Acciones de la consulta">
+  <div><span class="eyebrow">SEGUIMIENTO</span><strong><%= etiquetas.estadoConsulta[c.estado] %></strong></div>
+  <div class="acciones">
+  <% if (c.puedeResponder) { %><a class="btn btn-primary" href="#titulo-responder">Escribir respuesta ↓</a><% } %>
   <% c.transicionesPermitidas.forEach((destino) => { %>
     <button type="button" class="btn btn-glass" data-accion="estado" data-estado="<%= destino %>">
       <%= c.estado === 'cerrada' && destino === 'en_proceso' ? 'Reabrir consulta' : etiquetas.accionEstado[destino] %>
     </button>
   <% }) %>
   <% if (c.estado === 'respondida') { %><small class="nota-i6">“Cerrar” finaliza el seguimiento; se puede reabrir.</small><% } %>
+  </div>
 </div>
 
 <div class="detalle-i6">
@@ -40,6 +46,21 @@
   </section>
 
   <div class="columna-i6">
+
+
+    <section class="glass panel-i6" aria-labelledby="titulo-responder">
+      <h2 id="titulo-responder">Responder</h2>
+      <% if (!c.puedeResponder) { %>
+        <%- include('../partials/i3/alerta', { tipo: 'aviso', tituloAlerta: 'Consulta cerrada', mensaje: 'Reabrila para enviar una nueva respuesta.' }) %>
+      <% } else { %>
+        <p class="nota-i6">Se envía a <strong class="text-break"><%= c.email %></strong> desde la casilla del equipo, como texto plano.</p>
+        <form id="form-respuesta" novalidate data-min="<%= limites.mensaje.min %>" data-max="<%= limites.mensaje.max %>">
+          <%- include('../partials/i3/campo', { id: 'respuesta', etiqueta: 'Mensaje de respuesta', tipo: 'textarea', limite: limites.mensaje.max, ayuda: `Entre ${limites.mensaje.min} y ${limites.mensaje.max} caracteres.`, valor: '' }) %>
+          <p id="contador-respuesta" class="contador-i6">0 / <%= limites.mensaje.max %></p>
+          <button type="submit" id="btn-responder" class="btn btn-primary">Enviar respuesta →</button>
+        </form>
+      <% } %>
+    </section>
     <section class="glass panel-i6" aria-labelledby="titulo-historial">
       <h2 id="titulo-historial">Historial de respuestas</h2>
       <% if (c.respuestas.length === 0) { %>
@@ -56,27 +77,13 @@
         </ol>
       <% } %>
     </section>
-
-    <section class="glass panel-i6" aria-labelledby="titulo-responder">
-      <h2 id="titulo-responder">Responder</h2>
-      <% if (!c.puedeResponder) { %>
-        <%- include('../partials/i3/alerta', { tipo: 'aviso', tituloAlerta: 'Consulta cerrada', mensaje: 'Reabrila para enviar una nueva respuesta.' }) %>
-      <% } else { %>
-        <p class="nota-i6">Se envía a <strong class="text-break"><%= c.email %></strong> desde la casilla del equipo, como texto plano.</p>
-        <form id="form-respuesta" novalidate data-min="<%= limites.mensaje.min %>" data-max="<%= limites.mensaje.max %>">
-          <%- include('../partials/i3/campo', { id: 'respuesta', etiqueta: 'Mensaje de respuesta', tipo: 'textarea', limite: limites.mensaje.max, ayuda: `Entre ${limites.mensaje.min} y ${limites.mensaje.max} caracteres.`, valor: '' }) %>
-          <p id="contador-respuesta" class="contador-i6">0 / <%= limites.mensaje.max %></p>
-          <button type="submit" id="btn-responder" class="btn btn-primary">Enviar respuesta →</button>
-        </form>
-      <% } %>
-    </section>
   </div>
 </div>
 
 <section class="seccion-i6" aria-labelledby="titulo-envios">
   <h2 id="titulo-envios">Envíos de email</h2>
   <p class="nota-i6">“Aceptado” significa que Brevo admitió el mensaje; la recepción se comprueba en la casilla. Hasta 3 intentos por envío, con al menos 60 segundos entre intentos.</p>
-  <div class="table-responsive glass" role="region" aria-label="Envíos de email" tabindex="0">
+  <div class="table-responsive glass operador-tabla" role="region" aria-label="Envíos de email" tabindex="0">
     <table class="table tabla-i3">
       <caption>Envíos de email de esta consulta</caption>
       <thead><tr><th scope="col">Clase</th><th scope="col">Destinatario</th><th scope="col">Estado</th><th scope="col">Intentos</th><th scope="col">Detalle</th><th scope="col">Acción</th></tr></thead>
@@ -112,6 +119,7 @@
     </table>
   </div>
 </section>
+</div>
 
 <script type="module" src="/js/operador.js"></script>
 <%- include('../partials/i3/pie') %>

@@ -16,9 +16,6 @@ if (filtros) {
     const qs = params.toString();
     window.location.assign(`/operador/consultas${qs ? `?${qs}` : ''}`);
   });
-  for (const select of filtros.querySelectorAll('select')) {
-    select.addEventListener('change', () => filtros.requestSubmit());
-  }
 }
 
 // ------------------------------------------------------------------ Detalle
