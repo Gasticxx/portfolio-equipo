@@ -55,6 +55,7 @@ test('navegación muestra acciones por rol sin sustituir autorización',async()=
     const html=await ejs.renderFile(path.resolve('src/views/partials/i3/cabecera.ejs'),{titulo:'Prueba',rutaActual:'/i3',usuarioActual:rol?{rol}:null});
     assert.equal(html.includes('>Registrarse</a>'),rol===null);
     assert.equal(html.includes('>Mi cuenta</a>'),rol!==null);
+    assert.equal(html.includes('>Demos</a>'),rol!==null);
     assert.equal(html.includes('>Consultas</a>'),['operador','administrador'].includes(rol));
     assert.equal(html.includes('>Administración</a>'),rol==='administrador');
   }

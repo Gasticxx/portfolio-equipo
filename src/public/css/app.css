@@ -73,7 +73,7 @@ h1>span,h2>span{
   outline-offset:5px
 }
 .contenedor{
-  width:min(1200px,calc(100% - 48px));
+  width:calc(100% - clamp(32px,6vw,128px));
   margin-inline:auto
 }
 .ambiente{

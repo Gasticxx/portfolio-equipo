@@ -1,0 +1,26 @@
+<section class="calendario-demo glass servicio seccion" data-calendario>
+  <div class="calendario-cabecera">
+    <div><p class="eyebrow">EL TIEMPO, PASO A PASO</p><h2>Construí tu calendario.</h2><p>Elegí un mes, recorré sus días y descubrí el algoritmo que los ordena. Funciona entre 1900 y 2400.</p></div>
+    <button class="btn btn-glass" type="button" data-cal-hoy>Mes actual</button>
+  </div>
+  <form class="calendario-controles" data-cal-form>
+    <div class="campo"><label for="cal-mes">Mes</label><select class="form-select" id="cal-mes" name="mes"><% ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].forEach((mes,i)=>{ %><option value="<%= i+1 %>"><%= mes %></option><% }) %></select></div>
+    <div class="campo"><label for="cal-anio">Año</label><input class="form-control" id="cal-anio" name="anio" type="number" min="1900" max="2400" step="1" required></div>
+    <button type="submit" class="btn btn-primary">Ver calendario</button>
+  </form>
+  <p class="error-campo" data-cal-error role="alert"></p>
+  <div class="calendario-layout">
+    <div>
+      <div class="calendario-navegacion"><button type="button" class="btn btn-glass" data-cal-anterior aria-label="Mes anterior">←</button><h3 data-cal-titulo></h3><button type="button" class="btn btn-glass" data-cal-siguiente aria-label="Mes siguiente">→</button></div>
+      <table class="calendario-tabla"><caption class="visually-hidden" data-cal-caption></caption><thead><tr><% for(const dia of ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom']) { %><th scope="col"><%= dia %></th><% } %></tr></thead><tbody data-cal-dias></tbody></table>
+      <p class="calendario-seleccion" data-cal-seleccion role="status" aria-live="polite">Seleccioná un día para ver la fecha completa.</p>
+    </div>
+    <aside class="calendario-algoritmo" aria-label="Explicación del algoritmo">
+      <p class="eyebrow">¿CÓMO SE CALCULA?</p><h3>Un algoritmo, tres decisiones.</h3>
+      <ol><li data-cal-bisiesto></li><li data-cal-inicio></li><li data-cal-progreso></li></ol>
+      <div class="acciones"><button type="button" class="btn btn-primary" data-cal-play>Animar cálculo</button><button type="button" class="btn btn-glass" data-cal-pausa disabled>Pausar</button><button type="button" class="btn btn-glass" data-cal-paso>Un paso</button><button type="button" class="btn btn-glass" data-cal-completar>Completar</button></div>
+      <p class="nota-i6">Un año es bisiesto si es divisible por 4, excepto los múltiplos de 100 que no son divisibles por 400.</p>
+    </aside>
+  </div>
+</section>
+<script type="module" src="<%= recursoJs %>"></script>

@@ -5,6 +5,7 @@
   const fecha = new Intl.DateTimeFormat('es-AR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Argentina/Buenos_Aires' });
 %>
 <section class="encabezado-pagina">
+  <a class="regreso" href="<%= usuarioActual?.rol === 'administrador' ? '/admin' : '/mi-cuenta' %>">← Volver al panel</a>
   <p class="eyebrow">PANEL DEL OPERADOR</p>
   <h1>Consultas<span>.</span></h1>
   <p>Mensajes recibidos desde Contacto, con su estado de seguimiento y el resultado del aviso por email.</p>

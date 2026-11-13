@@ -35,6 +35,7 @@
           <a class="acceso" href="<%= enVistaPrevia ? '/i3/login' : '/login' %>">Ingresar <span aria-hidden="true">↗</span></a>
           <a class="btn btn-primary" href="<%= enVistaPrevia ? '/i3/registro' : '/registro' %>">Registrarse</a>
         <% } else { %>
+          <a href="/demos" <%- rutaActual === '/demos' ? 'aria-current="page"' : '' %>>Demos</a>
           <a href="/mi-cuenta">Mi cuenta</a>
           <% if (['operador','administrador'].includes(usuarioActual.rol)) { %><a href="/operador/consultas">Consultas</a><% } %>
           <% if (usuarioActual.rol === 'administrador') { %><a href="/admin">Administración</a><% } %>
@@ -44,4 +45,4 @@
       <button class="tema-boton btn btn-glass" type="button" aria-label="Cambiar tema" aria-pressed="false" hidden></button>
     </div>
   </header>
-  <main id="contenido" tabindex="-1" class="contenedor">
+  <main id="contenido" tabindex="-1" class="contenedor <%= /^\/(admin|operador)(\/|$)|^\/mi-cuenta$/.test(rutaActual) ? 'pagina-privada' : '' %>">
