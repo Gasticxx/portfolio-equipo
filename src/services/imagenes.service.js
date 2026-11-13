@@ -1,79 +1,25 @@
-
 import sharp from 'sharp';
+import { AppError } from '../middlewares/errors.js';
 
-// Tamaño máximo permitido: 5 MiB.
-const MAX_BYTES = 5 * 1024 * 1024;
-
-// Dimensiones permitidas para la imagen original.
-const MIN_DIMENSION = 64;
-const MAX_DIMENSION = 4096;
-
-// Tamaño máximo de la imagen procesada.
-const MAX_SALIDA = 2400;
-
-// Formatos de entrada permitidos.
-const FORMATOS = ['jpeg', 'png', 'webp'];
+export const MAX_IMAGEN_BYTES = 5 * 1024 * 1024;
 
 export async function procesarImagen(buffer) {
-  // Verificar que recibimos un archivo.
-  if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
-    throw new Error('No se recibió una imagen válida.');
+  if (!Buffer.isBuffer(buffer) || !buffer.length) throw new AppError(422, 'IMAGEN_INVALIDA', 'Elegí una imagen JPEG, PNG o WebP.');
+  if (buffer.length > MAX_IMAGEN_BYTES) throw new AppError(413, 'ARCHIVO_GRANDE', 'La imagen supera los 5 MiB.');
+  try {
+    const imagen = sharp(buffer, { limitInputPixels: 16_000_000, animated: true, failOn: 'warning' });
+    const info = await imagen.metadata();
+    if (!['jpeg', 'png', 'webp'].includes(info.format) || (info.pages || 1) !== 1
+      || !info.width || !info.height || info.width < 64 || info.height < 64 || info.width > 4096 || info.height > 4096) {
+      throw new Error('Formato o dimensiones no admitidos');
+    }
+    const { data, info: salida } = await imagen.rotate()
+      .resize({ width: 2400, height: 2400, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 80 }).toBuffer({ resolveWithObject: true });
+    if (data.length > MAX_IMAGEN_BYTES) throw new AppError(413, 'ARCHIVO_GRANDE', 'La imagen procesada supera los 5 MiB.');
+    return { buffer: data, mime: 'image/webp', bytes: data.length, ancho: salida.width, alto: salida.height };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(422, 'IMAGEN_INVALIDA', 'Usá JPEG, PNG o WebP estático de 64 a 4096 píxeles por lado y hasta 16 millones de píxeles.');
   }
-
-  // Comprobar el tamaño original.
-  if (buffer.length > MAX_BYTES) {
-    throw new Error('La imagen supera el límite de 5 MiB.');
-  }
-
-  // Leer la información real del archivo.
-  const imagen = sharp(buffer, {
-    limitInputPixels: 16_000_000,
-    failOn: 'error'
-  });
-
-  const metadata = await imagen.metadata();
-
-  // Validar formato y dimensiones.
-  if (!FORMATOS.includes(metadata.format)) {
-    throw new Error('Formato no permitido. Usá JPEG, PNG o WebP.');
-  }
-
-  if (
-    !metadata.width ||
-    !metadata.height ||
-    metadata.width < MIN_DIMENSION ||
-    metadata.height < MIN_DIMENSION ||
-    metadata.width > MAX_DIMENSION ||
-    metadata.height > MAX_DIMENSION
-  ) {
-    throw new Error('Las dimensiones deben estar entre 64 y 4096 píxeles.');
-  }
-
-  // Convertir a WebP y reducir si supera 2400 píxeles.
-  const resultado = await sharp(buffer, {
-    limitInputPixels: 16_000_000,
-    failOn: 'error'
-  })
-    .rotate()
-    .resize({
-      width: MAX_SALIDA,
-      height: MAX_SALIDA,
-      fit: 'inside',
-      withoutEnlargement: true
-    })
-    .webp({ quality: 80 })
-    .toBuffer({ resolveWithObject: true });
-
-  // Verificar el tamaño de salida.
-  if (resultado.data.length > MAX_BYTES) {
-    throw new Error('La imagen procesada supera el límite de 5 MiB.');
-  }
-
-  return {
-    buffer: resultado.data,
-    mime: 'image/webp',
-    bytes: resultado.data.length,
-    ancho: resultado.info.width,
-    alto: resultado.info.height
-  };
 }

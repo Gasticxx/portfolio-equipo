@@ -1,0 +1,8 @@
+<%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/proyectos.css">
+<section class="encabezado-pagina"><p class="eyebrow">03 / PROYECTOS</p><h1>Proyectos con propósito<span>.</span></h1><p>Conocé lo que estamos construyendo, sus tecnologías y los aportes del equipo.</p></section>
+<section class="seccion proyecto-catalogo" aria-label="Proyectos publicados">
+<% if (!disponible) { %><p class="alerta alerta-aviso" role="status">Los proyectos están temporalmente fuera de línea. Volvé a intentar en unos minutos.</p>
+<% } else { %><div class="rejilla"><%- include('../partials/catalogo-proyectos', { proyectos }) %></div><% } %>
+</section>
+<%- include('../partials/i3/pie') %>

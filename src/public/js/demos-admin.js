@@ -17,6 +17,7 @@
       headers['X-CSRF-Token'] = body.data.csrfToken; headers['Content-Type'] = 'application/json';
     }
     const response = await fetch(url, { method, credentials: 'same-origin', cache: 'no-store', headers, ...(datos !== undefined ? { body: JSON.stringify(datos) } : {}) });
+    if (response.status === 204) return null;
     const body = await response.json();
     if (!response.ok) {
       const error = new Error(response.status === 401 ? 'Tu sesión venció. Volvé a ingresar para continuar.' : body.error?.message || 'No se pudo completar la operación.');
@@ -109,6 +110,14 @@
     editar.setAttribute('aria-label', `Editar ${demo.titulo}`);
     editar.addEventListener('click', () => tarea(async () => { if (!await descartar()) return; await cargarCatalogos(); abrir((await api(`/api/admin/demos/${demo.id}`)).data); }));
     acciones.append(editar);
+    const eliminar = nodo('button', 'Eliminar', 'btn btn-glass'); eliminar.type = 'button';
+    eliminar.addEventListener('click', () => tarea(async () => {
+      if (!await confirmar('Eliminar demo', `Se eliminará «${demo.titulo}» y todas sus tareas guardadas. Esta acción es definitiva. Para conservar los datos, cancelá y despublicá la demo.`)) return;
+      await api(`/api/admin/demos/${demo.id}`, 'DELETE');
+      if (actual?.id === demo.id) cerrar();
+      await cargarCatalogos(); await cargar(); mensaje('Demo eliminada junto con sus tareas.', 'exito');
+    }));
+    acciones.append(eliminar);
     if (publicada) { const enlace = nodo('a', 'Abrir demo →', 'enlace-flecha'); enlace.href = `/demos/${demo.id}`; acciones.append(enlace); }
     el.append(acciones); return el;
   }

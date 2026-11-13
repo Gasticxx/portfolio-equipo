@@ -2,6 +2,9 @@
 
 Este documento fija los contratos de integración entre el servidor base (I2) y los módulos de I1, I3, I4, I5 e I6 según la especificación oficial.
 
+La gestión completa de proyectos y portadas está documentada en
+[Gestión de proyectos](gestion-proyectos.md), integrada con el editor actual de demos.
+
 El contrato de edición, filtros, publicación y protección de tareas de demos está
 documentado en [Gestión de demos](gestion-demos.md), incluyendo la transición del
 listado anterior al formato paginado y los campos camelCase.

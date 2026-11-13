@@ -1,10 +1,21 @@
 <%- include('../partials/i3/cabecera') %>
+<link rel="stylesheet" href="/css/proyectos.css">
 <section class="encabezado-pagina">
   <a class="regreso" href="/proyectos">← Volver a proyectos</a>
   <p class="eyebrow">PROYECTO DEL EQUIPO</p>
   <h1><%= proyecto.titulo %><span>.</span></h1>
-  <p><%= proyecto.descripcion %></p>
+  <p class="proyecto-detalle-texto"><%= proyecto.descripcion %></p>
+  <% if (proyecto.portadaId) { %><img class="proyecto-detalle-portada" src="/media/<%= proyecto.portadaId %>" alt="Portada de <%= proyecto.titulo %>"><% } %>
+  <% if (typeof tecnologias !== 'undefined') { %>
+    <div class="proyecto-meta"><span class="etiqueta"><%= proyecto.estado === 'terminado' ? 'Terminado' : 'En desarrollo' %></span><% if (proyecto.repositorioUrl) { %><a href="<%= proyecto.repositorioUrl %>" target="_blank" rel="noopener noreferrer">Ver repositorio ↗</a><% } %></div>
+    <div class="etiquetas"><% tecnologias.filter(t => proyecto.tecnologiaIds.includes(t.id)).forEach(t => { %><span><%= t.nombre %></span><% }) %></div>
+  <% } %>
 </section>
+<% if (typeof miembros !== 'undefined') { %><section class="glass proyecto-panel seccion"><p class="eyebrow">TRABAJO COMPARTIDO</p><h2>Participantes y aportes</h2>
+  <% miembros.filter(m => proyecto.aportes.some(a => a.miembroId === m.id)).forEach(m => { %><section class="proyecto-participante"><h3><a href="/equipo/I<%= m.orden %>"><%= m.nombre %></a></h3>
+    <% proyecto.aportes.filter(a => a.miembroId === m.id).forEach(a => { %><article><h4><%= a.titulo %></h4><p class="proyecto-detalle-texto"><%= a.descripcion %></p><p>Estado: <%= ({asignado:'Asignado',desarrollo:'En desarrollo',comprobado:'Comprobado'})[a.estado] %></p><div class="etiquetas"><% tecnologias.filter(t => a.tecnologiaIds.includes(t.id)).forEach(t => { %><span><%= t.nombre %></span><% }) %></div><% if(a.evidenciaUrl) { %><a class="enlace-flecha" href="<%= a.evidenciaUrl %>" target="_blank" rel="noopener noreferrer">Ver evidencia ↗</a><% } %></article><% }) %>
+  </section><% }) %>
+</section><% } %>
 <section class="seccion">
   <h2>Demos interactivas</h2>
   <% if (demos.length) { %>
@@ -13,7 +24,7 @@
         <article class="glass servicio">
           <h3><%= demo.titulo %></h3>
           <p><%= demo.descripcion %></p>
-          <a class="btn btn-primary" href="/demos/<%= demo.id %>">Abrir visualizador ↗</a>
+          <a class="btn btn-primary" href="/demos/<%= demo.id %>">Abrir demo ↗</a>
         </article>
       <% }) %>
     </div>

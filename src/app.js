@@ -25,7 +25,6 @@ import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { interfazRouter } from "./routes/interfaz.routes.js";
 import { demosRouter } from "./routes/demos.routes.js";
-import { archivosRouter } from './routes/archivos.routes.js';
 import { tableroRouter } from "./routes/tablero.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import {
@@ -38,6 +37,8 @@ import { usuariosRouter } from "./routes/usuarios.routes.js";
 import { serviciosRouter } from "./routes/servicios.routes.js";
 import { fotosRouter } from "./routes/fotos.routes.js";
 import { demosAdminRouter } from "./routes/demos-admin.routes.js";
+import { proyectosRouter } from "./routes/proyectos.routes.js";
+import { archivosRouter } from "./routes/archivos.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -147,8 +148,9 @@ app.use("/api", consultas.api);
 app.use(consultas.paginas);
 
 // Las rutas de autenticación, consultas y servicios se resuelven antes que la interfaz de I3.
-app.use(demosRouter);
+app.use(proyectosRouter);
 app.use(archivosRouter);
+app.use(demosRouter);
 app.get(scriptsTablero, requerirRol('registrado', 'operador', 'administrador'), (req, res) => {
   res.set('Cache-Control', 'no-store');
   const archivo = req.path.toLowerCase().endsWith('tablero.adapter.js') ? 'tablero-adapter.js' : 'tablero-integrado.js';

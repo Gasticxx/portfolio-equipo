@@ -70,8 +70,8 @@ Los enlaces públicos comunes son Inicio, Equipo, Servicios,
 Proyectos y Contacto.
 
 El enlace Administración se muestra únicamente a administradores.
-El tablero `/admin` enlaza a Usuarios, Servicios, Métricas y Consultas; informa
-que los paneles de Proyectos y Demos todavía no están integrados.
+El tablero `/admin` enlaza a Usuarios, Servicios, Proyectos, Demos, Métricas y
+Consultas. Proyectos permite editar contenido, tecnologías, portadas y aportes.
 
 El enlace Consultas se muestra a operadores y administradores.
 
@@ -98,8 +98,8 @@ Las siguientes rutas corresponden a solicitudes GET de páginas HTML.
 | /operador/consultas     | Operador o administrador                           |
 | /operador/consultas/:id | Operador o administrador                           |
 | /admin                  | Administrador                                      |
-| /admin/proyectos        | Pendiente de integración I5                        |
-| /admin/demos            | Pendiente de integración I5                        |
+| /admin/proyectos        | Administrador                                     |
+| /admin/demos            | Administrador                                     |
 | /admin/servicios        | Administrador; ruta integrada localmente, revisión I1 pendiente |
 | /admin/usuarios         | Administrador                                      |
 | /admin/metricas         | Administrador                                      |
@@ -182,6 +182,32 @@ Al cerrar sesión se destruye la sesión del servidor
 y se elimina la cookie correspondiente.
 
 ## Protección de escrituras
+
+### Proyectos, demos y portadas
+
+`GET /api/admin/proyectos`, su detalle y catálogos exigen administrador.
+`POST`, `PUT` y `DELETE` también exigen CSRF. La eliminación de demos usa los
+mismos controles y requiere confirmación explícita en el panel, ya que elimina
+sus tareas por cascada. Un proyecto con demos devuelve `409 PROYECTO_CON_DEMOS`.
+
+Las portadas se suben mediante `POST /api/admin/archivos`: administrador, CSRF,
+10 intentos por hora por cuenta y validación del contenido con sharp. La clave
+de Storage se conserva exclusivamente en el servidor. `GET /media/:id` entrega
+una portada si está vinculada a un proyecto publicado o la solicita un
+administrador; los demás casos reciben 404. Un archivo en uso no se elimina.
+
+El catálogo público muestra solo resúmenes, tecnologías, estado y portadas de
+proyectos publicados. Descripciones completas, repositorio, aportes detallados
+y demos se consultan con sesión en el detalle del proyecto. Los perfiles
+públicos muestran únicamente título y tecnologías de aportes comprobados de
+proyectos publicados, con enlace al detalle protegido.
+Inicio y el resumen público `/detalle` leen esos mismos datos y destacan el
+portfolio original `portfolio-equipo` mientras esté publicado. No exponen el
+detalle privado ni recurren a un proyecto estático si no hay registros publicados.
+
+Contrato, límites y evidencia: [gestión de proyectos](gestion-proyectos.md).
+
+### Regla común de CSRF
 
 Las solicitudes de escritura exigen un token CSRF válido
 en la cabecera X-CSRF-Token.

@@ -25,6 +25,11 @@ export function crearDemosAdminRouter(db = pool) {
     const id = validarDemoId(req.params.id);
     res.json({ ok: true, data: await repo.guardar(id, validarDemo(demoSchema, req.body)) });
   });
+  router.delete('/api/admin/demos/:id', verificarCsrf, async (req, res) => {
+    const result = await db.query('DELETE FROM app.demos WHERE id=$1 RETURNING id', [validarDemoId(req.params.id)]);
+    if (!result.rows.length) throw new AppError(404, 'NO_ENCONTRADO', 'La demo ya no existe.');
+    res.status(204).end();
+  });
   router.use((error, _req, _res, next) => next(esErrorDeBaseInaccesible(error) ? new AppError(503, 'SERVICIO_NO_DISPONIBLE', 'El servicio no está disponible temporalmente.') : error));
   return router;
 }
