@@ -5,6 +5,7 @@
   <div class="proyecto-portada">
     <% if (proyecto.portadaId) { %><img src="/media/<%= proyecto.portadaId %>" alt="Portada de <%= proyecto.titulo %>" loading="lazy">
     <% } else { %><span class="mini-ventana" aria-hidden="true"><span class="puntos">● ● ●</span><span class="mini-titulo">Reflection <span>Tech.</span></span><span class="mini-linea"></span><span class="mini-bloques"><i></i><i></i><i></i></span></span><% } %>
+    <% if (typeof destacarEnInicio === 'boolean' && destacarEnInicio) { %><%- include('i3/proyecto-ornamentos') %><% } %>
     <span class="estado-proyecto"><%= proyecto.estado === 'terminado' ? 'Terminado' : 'En desarrollo' %></span>
   </div>
   <div class="perfil-texto">

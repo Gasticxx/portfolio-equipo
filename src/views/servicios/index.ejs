@@ -1,32 +1,35 @@
 <%- include('../partials/i3/cabecera') %>
 
-<section class="encabezado-pagina">
-  <a class="regreso" href="/">
-    <span class="regreso-icono" aria-hidden="true">←</span>
-    <span>Volver al inicio</span>
-  </a>
-  <p class="eyebrow">CAPACIDADES</p>
-  <h1>Lo que podemos construir<span>.</span></h1>
-  <p>Conocé nuestras capacidades y servicios.</p>
-</section>
-
-<div class="rejilla seccion">
-  <% if (!servicios || servicios.length === 0) { %>
-    <article class="glass servicio">
-      <p class="eyebrow">SIN SERVICIOS</p>
-      <h2>No hay servicios activos disponibles</h2>
-      <p>En este momento no hay servicios publicados en el catálogo.</p>
-    </article>
-  <% } else { %>
-    <% servicios.forEach((s) => { %>
-      <article class="glass servicio revelar">
-        <p class="eyebrow"><%= s.categoria ? s.categoria.toUpperCase() : 'SERVICIO' %></p>
-        <h2><%= s.nombre %></h2>
-        <p><%= s.descripcion %></p>
-        <a class="enlace-flecha" href="/contacto?tipo=cotizacion&servicioId=<%= s.id %>">Consultar →</a>
-      </article>
-    <% }) %>
-  <% } %>
+<link rel="stylesheet" href="/css/presentacion.css">
+<div class="servicios-publicos">
+  <section class="servicios-hero" aria-labelledby="servicios-titulo">
+    <div><a class="regreso" href="/"><span class="regreso-icono" aria-hidden="true">←</span>Volver al inicio</a><p class="eyebrow">02 / CAPACIDADES</p><h1 id="servicios-titulo">Lo que podemos<br><span>construir.</span></h1><p>De una buena idea a una experiencia que funciona. Combinamos diseño, desarrollo y acompañamiento para darle forma a tu proyecto.</p><a class="btn btn-primary" href="#servicios-catalogo">Encontrá tu servicio <span aria-hidden="true">↓</span></a></div>
+    <div class="servicios-lienzo" aria-hidden="true">
+      <svg viewBox="0 0 480 370" fill="none">
+        <ellipse class="servicios-orbita" cx="240" cy="187" rx="210" ry="142" transform="rotate(-12 240 187)"/>
+        <path class="servicios-conexion" d="M58 290h364M100 290l40-80m200 0 40 80"/>
+        <g class="servicios-ventana"><rect class="servicios-vidrio-atras" x="108" y="56" width="280" height="210" rx="18" transform="rotate(7 248 161)"/><rect class="servicios-vidrio" x="88" y="70" width="280" height="210" rx="18"/><path class="servicios-trazo" d="M88 109h280"/><circle class="servicios-punto" cx="108" cy="90" r="3"/><circle class="servicios-punto" cx="120" cy="90" r="3"/><circle class="servicios-punto" cx="132" cy="90" r="3"/><rect class="servicios-pieza-grande" x="111" y="132" width="118" height="119" rx="9"/><path class="servicios-codigo" d="m150 166-14 13 14 13m40-26 14 13-14 13m-15-36-12 50"/><rect class="servicios-pieza" x="247" y="132" width="96" height="28" rx="7"/><rect class="servicios-pieza" x="247" y="173" width="96" height="28" rx="7"/><rect class="servicios-pieza" x="247" y="214" width="96" height="37" rx="7"/></g>
+        <g class="servicios-check"><circle class="servicios-vidrio" cx="376" cy="253" r="34"/><path class="servicios-codigo" d="m361 253 10 10 20-23"/></g>
+        <circle class="servicios-nodo" cx="58" cy="290" r="5"/><circle class="servicios-nodo" cx="240" cy="290" r="5"/><circle class="servicios-nodo" cx="422" cy="290" r="5"/>
+      </svg>
+      <span class="servicios-arte-nota servicios-arte-nota-uno">✳ Una idea</span><span class="servicios-arte-nota servicios-arte-nota-dos">&lt;/&gt; Muchas posibilidades</span>
+    </div>
+  </section>
+  <section class="servicios-catalogo" id="servicios-catalogo" aria-labelledby="servicios-catalogo-titulo">
+    <div class="servicios-titulo-seccion"><div><p class="eyebrow">CÓMO PODEMOS AYUDARTE</p><h2 id="servicios-catalogo-titulo">Una solución para cada idea<span>.</span></h2></div><span class="servicios-catalogo-nota">Hablemos de lo que necesitás <span aria-hidden="true">↘</span></span></div>
+    <% if (!servicios || servicios.length === 0) { %>
+      <div class="servicios-vacio"><p class="eyebrow">SIN SERVICIOS</p><h3>No hay servicios activos disponibles</h3><p>En este momento no hay servicios publicados en el catálogo.</p><a class="enlace-flecha" href="/contacto">Contactar al equipo <span aria-hidden="true">↗</span></a></div>
+    <% } else { %>
+      <div class="servicios-tarjetas"><% servicios.forEach((s, i) => { %>
+        <article class="servicio-publico revelar">
+          <div class="servicio-publico-cabecera"><span class="servicio-publico-icono"><%- include('../partials/i3/servicio-icono', {categoria: s.categoria}) %></span><span class="servicio-publico-numero"><%= String(i + 1).padStart(2,'0') %></span></div>
+          <p class="eyebrow"><%= ({web:'DESARROLLO WEB',mantenimiento:'MANTENIMIENTO',asesoria:'ASESORÍA'})[s.categoria] || 'SERVICIO' %></p><h3><%= s.nombre %></h3><p class="servicio-publico-descripcion"><%= s.descripcion %></p><a class="enlace-flecha" href="/contacto?tipo=cotizacion&amp;servicioId=<%= s.id %>">Consultar este servicio <span class="servicio-publico-flecha" aria-hidden="true">↗</span></a>
+        </article>
+      <% }) %></div>
+    <% } %>
+  </section>
+  <section class="servicios-proceso" aria-label="Nuestra forma de trabajar"><div><span>01</span><h3>Te escuchamos</h3><p>Todo empieza por entender tu idea.</p></div><div><span>02</span><h3>Le damos forma</h3><p>Conectamos diseño, alcance y posibilidades.</p></div><div><span>03</span><h3>Construimos juntos</h3><p>Creamos una experiencia que puedas usar.</p></div></section>
+  <section class="servicios-invitacion"><div><p class="eyebrow">EL PRIMER PASO ES UNA CONVERSACIÓN</p><h2>Tu próxima idea<br>puede empezar acá<span>.</span></h2></div><a class="btn btn-primary" href="/contacto">Contanos tu idea <span aria-hidden="true">↗</span></a></section>
 </div>
 
 <%- include('../partials/i3/pie') %>

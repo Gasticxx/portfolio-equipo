@@ -1,0 +1,22 @@
+<section class="equipo-perfil-layout" aria-label="Perfil de <%= integrante.nombre %>">
+  <aside class="equipo-perfil-identidad revelar">
+    <div class="equipo-perfil-retrato">
+      <% if (integrante.foto) { %><img src="<%= integrante.foto %>" alt="Retrato de <%= integrante.nombre %>" width="400" height="400"><% } %>
+      <div class="avatar <%= integrante.foto ? 'oculto' : '' %>" aria-label="Foto pendiente de <%= integrante.nombre %>"><span><%= integrante.codigo %></span><small>Espacio para tu foto</small></div>
+      <span class="equipo-perfil-codigo"><%= integrante.codigo %></span>
+    </div>
+    <div class="equipo-perfil-firma"><p class="eyebrow">PARTE DE REFLECTION TECH</p><h2><%= integrante.nombre %></h2><p><%= integrante.especialidad %></p></div>
+    <div class="equipo-perfil-enlaces"><% integrante.enlaces.forEach(enlace => { %><a class="btn btn-glass" href="<%= enlace.url %>" target="_blank" rel="noopener noreferrer"><%= enlace.nombre %> <span aria-hidden="true">↗</span></a><% }) %></div>
+  </aside>
+  <div class="equipo-perfil-contenido">
+    <section class="equipo-perfil-panel revelar"><p class="eyebrow">01 / MI MIRADA</p><h2>Sobre mí<span>.</span></h2><p><%= integrante.presentacion %></p><h3>Formación</h3><p><%= integrante.formacion %></p></section>
+    <section class="equipo-perfil-panel revelar"><p class="eyebrow">02 / MIS HERRAMIENTAS</p><h2>Tecnologías</h2><% if (integrante.tecnologias.length) { %><div class="equipo-tecnologias" aria-label="<%= integrante.tecnologias.join(' · ') %>"><% integrante.tecnologias.forEach(t => { %><span><%= t %></span><% }) %></div><% } else { %><p>Espacio para completar con tecnologías verificadas.</p><% } %></section>
+    <section class="equipo-perfil-panel revelar"><p class="eyebrow">03 / DEL CÓDIGO A LA PRÁCTICA</p><h2>Aportes al equipo</h2>
+      <% if (typeof aportes !== 'undefined') { %>
+        <% if (!aportesDisponibles) { %><p role="status">No se pudieron consultar los aportes. Volvé a intentar en unos minutos.</p>
+        <% } else if (!aportes.length) { %><p>Todavía no hay aportes comprobados en proyectos publicados.</p>
+        <% } else { %><ul class="equipo-aportes"><% aportes.forEach(aporte => { %><li><span class="equipo-aporte-marca" aria-hidden="true">✓</span><div><strong><%= aporte.titulo %></strong><a href="/proyectos/<%= aporte.proyectoSlug %>"><%= aporte.proyectoTitulo %> <span aria-hidden="true">↗</span></a><p><%= aporte.tecnologias.join(' · ') %></p></div></li><% }) %></ul><% } %>
+      <% } else { %><p>Responsabilidad asignada: <%= integrante.especialidad %>. Evidencias pendientes de integración.</p><% } %>
+    </section>
+  </div>
+</section>

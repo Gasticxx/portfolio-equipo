@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 
-// Las fichas son la fuente del contenido público. Se leen al arrancar.
+// Las fichas son la fuente del contenido público, incluidos los nombres completos.
 function cargarFicha(codigo) {
   const texto = readFileSync(new URL(`../../docs/integrantes/${codigo}.md`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   const campo = etiqueta => texto.match(new RegExp(`^- \\*\\*${etiqueta}:\\*\\*[ \\t]*(.*)$`, 'm'))?.[1].trim() || '';
@@ -30,4 +30,7 @@ function cargarFicha(codigo) {
   };
 }
 
-export const integrantes = Array.from({ length: 6 }, (_, indice) => cargarFicha(`I${indice + 1}`));
+export function obtenerIntegrantes() {
+  return Array.from({ length: 6 }, (_, indice) => cargarFicha(`I${indice + 1}`));
+}
+export const integrantes = obtenerIntegrantes();

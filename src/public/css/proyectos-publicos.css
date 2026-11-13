@@ -154,7 +154,7 @@
 .explorar-coleccion .perfil-texto > p:not(.eyebrow) { font-size: 15px; line-height: 1.85; margin-bottom: 22px; }
 .explorar-coleccion .etiquetas { gap: 8px; margin-bottom: 8px; }
 .explorar-coleccion .etiquetas > span { border: 1px solid var(--explorar-linea); background: var(--explorar-cristal-suave); color: var(--explorar-tinta); padding: 6px 10px; border-radius: 8px; }
-.explorar-coleccion .perfil-texto > .enlace-flecha { justify-content: space-between; color: var(--explorar-acento); border-top-color: var(--explorar-linea); margin-top: 20px; min-height: 52px; }
+.interfaz-i3 .explorar-coleccion .perfil-texto > .enlace-flecha { justify-content: center; padding: 12px 16px; color: var(--explorar-acento); border-color: var(--explorar-linea); margin-top: 20px; min-height: 52px; }
 .explorar-coleccion .perfil-texto > .enlace-flecha + p { font-size: 12px; line-height: 1.7; margin: 10px 0 0; }
 .explorar-resumen-cabecera { padding-top: 48px; max-width: 800px; }
 .interfaz-i3:is(.movimiento-pausado, .efectos-pausados) .proyectos-publicos * { animation-play-state: paused !important; transition: none !important; scroll-behavior: auto !important; }

@@ -1428,16 +1428,24 @@ dialog::backdrop{
 .equipo-carrusel .perfil-texto { padding:20px; }
 .equipo-carrusel .perfil-texto>.enlace-flecha { margin-top:16px; padding-block:12px; }
 .equipo-carrusel [inert] { pointer-events:none; }
-.equipo-controles { display:flex; justify-content:center; align-items:center; gap:16px; }
+.equipo-controles { display:grid; grid-template-columns:48px minmax(0,1fr) 48px; align-items:center; gap:16px; width:min(520px,100%); margin:20px auto 0; }
+.equipo-controles[hidden] { display:none; }
+/* Acciones de las tarjetas: caja simétrica y texto centrado en ambas direcciones. */
+.interfaz-i3 .perfil-texto>.enlace-flecha {
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  min-height:52px; padding:12px 16px; line-height:1.4; text-align:center;
+  border:1px solid var(--color-borde); border-radius:12px;
+  background:var(--vidrio);
+}
 .equipo-posicion { margin:0; text-align:center; font-size:14px; }
-.equipo-controles>.btn { position:absolute; top:42%; z-index:200; width:48px; height:48px; padding:8px; font-size:24px; border-radius:50%; }
-.equipo-anterior { left:0; }
-.equipo-siguiente { right:0; }
+.equipo-controles>.btn { display:flex; align-items:center; justify-content:center; width:48px; height:48px; padding:8px; font-size:24px; border-radius:50%; }
+.equipo-carrusel .perfil-texto :is(h3,p) { overflow-wrap:anywhere; }
+.equipo-carrusel .perfil-texto>p:not(.eyebrow) { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
 @media(max-width:767px) {
   .equipo-carrusel .equipo-escena { height:610px; }
   .equipo-controles { justify-content:center; }
   .equipo-carrusel .equipo-orbita-item { width:min(330px,calc(100% - 108px)); }
-  .equipo-controles>.btn { width:42px; height:42px; }
+  .equipo-controles>.btn { width:48px; height:48px; }
   .interfaz-i3 .formulario-layout .formulario { padding:24px; }
 }
 .interfaz-i3.movimiento-pausado .equipo-orbita-item { transition:none; }

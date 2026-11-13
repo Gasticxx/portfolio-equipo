@@ -1,0 +1,10 @@
+<section class="equipo-hero" aria-labelledby="equipo-titulo">
+  <div class="equipo-hero-texto"><a class="regreso" href="<%= typeof baseUi === 'string' ? baseUi || '/' : '/i3' %>"><span class="regreso-icono" aria-hidden="true">←</span>Volver al inicio</a><p class="eyebrow">01 / LAS PERSONAS</p><h1 id="equipo-titulo">Distintas miradas.<br><span>Un mismo equipo.</span></h1><p>Nos unen las ganas de crear. Conocé las personas, las especialidades y las ideas que hacen posible Reflection Tech.</p><div class="equipo-hero-acciones"><a class="btn btn-primary" href="#personas">Conocer al equipo <span aria-hidden="true">↓</span></a><span><strong><%= integrantes.length %></strong> maneras de aportar</span></div></div>
+  <div class="equipo-red" aria-hidden="true">
+    <svg viewBox="0 0 460 360" fill="none"><ellipse class="equipo-red-orbita" cx="230" cy="180" rx="172" ry="132"/><path class="equipo-red-conexiones" d="M230 180 104 80m126 100L356 80M230 180 58 180m172 0 172 0M230 180 104 280m126-100 126 100"/><circle class="equipo-red-orbita-interior" cx="230" cy="180" r="81"/></svg>
+    <div class="equipo-red-nucleo"><strong>RT<span>.</span></strong><small>CREAMOS JUNTOS</small></div>
+    <% integrantes.forEach((integrante, i) => { %><span class="equipo-red-nodo equipo-red-nodo-<%= i %>"><%= integrante.codigo %></span><% }) %>
+    <span class="equipo-red-nota">DISEÑO + CÓDIGO + EQUIPO</span>
+  </div>
+</section>
+<div class="equipo-separador"><span>Las personas detrás de la experiencia</span><span><%= integrantes.length %> perfiles · una identidad compartida</span></div>

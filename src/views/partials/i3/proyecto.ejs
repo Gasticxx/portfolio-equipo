@@ -2,7 +2,7 @@
 <% if (typeof contenidoDisponible !== 'boolean' || contenidoDisponible) { %><%- include('../catalogo-proyectos', { proyectos }) %><% } else { %><p>No pudimos cargar los proyectos. Volvé a intentar en unos minutos.</p><% } %>
 <% } else { %>
 <article class="glass tarjeta-proyecto revelar">
-  <div class="proyecto-portada" aria-label="Espacio para la portada del proyecto"><span class="mini-ventana"><span class="puntos">● ● ●</span><span class="mini-titulo">Reflection <span>Tech.</span></span><span class="mini-linea"></span><span class="mini-bloques"><i></i><i></i><i></i></span></span><span class="estado-proyecto">En desarrollo</span></div>
+  <div class="proyecto-portada" aria-label="Espacio para la portada del proyecto"><span class="mini-ventana"><span class="puntos">● ● ●</span><span class="mini-titulo">Reflection <span>Tech.</span></span><span class="mini-linea"></span><span class="mini-bloques"><i></i><i></i><i></i></span></span><span class="estado-proyecto">En desarrollo</span><% if (typeof destacarEnInicio === 'boolean' && destacarEnInicio) { %><%- include('proyecto-ornamentos') %><% } %></div>
   <div class="perfil-texto"><p class="eyebrow">PROYECTO COLECTIVO / 01</p><h3>Portfolio del equipo</h3><p>Un espacio para presentar al equipo, sus tecnologías y sus aportes reales.</p><div class="etiquetas"><span>Express</span><span>EJS</span><span>PostgreSQL</span></div><a class="enlace-flecha" href="<%= typeof baseUi === 'string' ? baseUi : '/i3' %>/detalle">Explorar proyecto <span aria-hidden="true">↗</span></a><% if (typeof baseUi === 'string') { %><p>Ingresá a tu cuenta para acceder a las demos publicadas.</p><a class="btn btn-primary" href="/demos">Ver demos interactivas</a><% } %></div>
 </article>
 
