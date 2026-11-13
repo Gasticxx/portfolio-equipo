@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import { AppError } from '../middlewares/errors.js';
 
 export const tableroRepository = {
 
@@ -24,6 +25,12 @@ export const tableroRepository = {
     try {
       // Iniciar una transacción.
       await cliente.query('BEGIN');
+
+      // Conserva el tipo y la publicación mientras se crea la tarea. La edición
+      // administrativa toma FOR UPDATE sobre esta misma demo antes de trasladarla.
+      const demo = await cliente.query(`SELECT d.id FROM app.demos d JOIN app.proyectos p ON p.id=d.proyecto_id
+        WHERE d.id=$1 AND d.tipo='tablero' AND d.publicada=true AND p.publicado=true FOR KEY SHARE OF d,p`, [demoId]);
+      if (!demo.rows.length) throw new AppError(404, 'NO_ENCONTRADO', 'La demo ya no está disponible. Recargá la página.');
 
       // Bloquear las creaciones simultáneas
       // para este usuario y esta demostración.
