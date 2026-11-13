@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="/css/ondas.css">
+<section class="ondas-lab" data-ondas aria-labelledby="ondas-titulo">
+  <div class="ondas-intro"><div><p class="eyebrow">REFLECTION / EXPERIMENTOS EN MOVIMIENTO</p><h2 id="ondas-titulo">Encontrá tu frecuencia<span>.</span></h2><p>Mové las fuentes y descubrí cómo las ondas se refuerzan o se cancelan.</p></div><span class="ondas-insignia">∿ <span>LABORATORIO DE ONDAS</span></span></div>
+  <div class="ondas-layout">
+    <div class="ondas-visual glass">
+      <div class="ondas-visual-barra"><span>CAMPO DE INTERFERENCIA</span><span data-ondas-reloj aria-hidden="true">0.0 s</span></div>
+      <div class="ondas-escenario">
+        <canvas data-ondas-canvas tabindex="0" aria-label="Campo de ondas interactivo. Tocá para agregar un emisor o arrastrá uno existente. Usá las flechas para mover el emisor seleccionado."></canvas>
+        <p data-ondas-sin-canvas hidden>Tu navegador no permite dibujar el experimento. Probá con otro navegador con Canvas habilitado.</p>
+      </div>
+      <div class="ondas-leyenda"><span><i class="ondas-positivo"></i>Cresta</span><span><i class="ondas-neutro"></i>Equilibrio</span><span><i class="ondas-negativo"></i>Valle</span><span data-ondas-cantidad>2 emisores</span></div>
+      <div class="ondas-transporte"><button type="button" class="btn btn-primary" data-ondas-play>Pausar</button><button type="button" class="btn btn-glass" data-ondas-paso>Un paso +0,2 s</button><button type="button" class="btn btn-glass" data-ondas-reiniciar>Reiniciar ↻</button></div>
+      <p class="ondas-ayuda">Tocá un espacio para agregar una fuente. Arrastrá sus círculos para moverla. También podés usar los controles de posición.</p>
+      <p class="ondas-estado" data-ondas-estado role="status" aria-live="polite">Preparando el laboratorio…</p>
+    </div>
+    <aside class="ondas-controles glass" aria-label="Controles del experimento">
+      <p class="eyebrow">DALE FORMA AL MOVIMIENTO</p><h3>Tu experimento.</h3>
+      <div class="ondas-presets" aria-label="Escenarios iniciales"><button type="button" data-ondas-preset="interferencia" aria-pressed="true">Interferencia</button><button type="button" data-ondas-preset="oposicion" aria-pressed="false">En oposición</button><button type="button" data-ondas-preset="una" aria-pressed="false">Una fuente</button><button type="button" data-ondas-preset="seis" aria-pressed="false">Seis fuentes</button></div>
+      <div class="ondas-control"><label for="ondas-frecuencia">Frecuencia <output for="ondas-frecuencia" data-ondas-valor="frecuencia">0,9 Hz</output></label><input id="ondas-frecuencia" data-ondas-param="frecuencia" type="range" min="0.2" max="3" step="0.1" value="0.9"><small>Más frecuencia, más oscilaciones por segundo.</small></div>
+      <div class="ondas-control"><label for="ondas-amplitud">Amplitud <output for="ondas-amplitud" data-ondas-valor="amplitud">75 %</output></label><input id="ondas-amplitud" data-ondas-param="amplitud" type="range" min="0" max="1" step="0.05" value="0.75"><small>Modifica la intensidad del campo.</small></div>
+      <div class="ondas-control"><label for="ondas-velocidad">Propagación <output for="ondas-velocidad" data-ondas-valor="velocidad">30 u/s</output></label><input id="ondas-velocidad" data-ondas-param="velocidad" type="range" min="10" max="70" step="1" value="30"><small>Velocidad en unidades del modelo por segundo.</small></div>
+      <fieldset class="ondas-fuentes"><legend>Emisores <span>Máximo 6</span></legend><div data-ondas-fuentes class="ondas-lista-fuentes" aria-label="Seleccionar emisor"></div><div class="ondas-fuente-acciones"><button class="btn btn-glass" type="button" data-ondas-agregar>Agregar +</button><button class="btn btn-glass" type="button" data-ondas-quitar>Quitar seleccionado</button></div>
+        <div class="ondas-posicion"><div><label for="ondas-x">Posición horizontal</label><input type="range" id="ondas-x" min="5" max="95" value="36"></div><div><label for="ondas-y">Posición vertical</label><input type="range" id="ondas-y" min="5" max="95" value="50"></div></div>
+        <label class="ondas-fase"><input type="checkbox" data-ondas-fase> Invertir fase del emisor <span>180°</span></label>
+      </fieldset>
+    </aside>
+  </div>
+  <div class="ondas-explicacion"><article><span>01 / SUPERPOSICIÓN</span><h3>Las ondas se suman.</h3><p>Dos crestas coincidentes intensifican el color. Una cresta y un valle pueden cancelarse.</p></article><article><span>02 / EXPLORACIÓN</span><h3>Cambiá una cosa.</h3><p>Elegí «En oposición» y observá la zona central. Mové una fuente para romper la simetría.</p></article><article><span>03 / MODELO DIDÁCTICO</span><h3>Una ventana a la física.</h3><p>Fuentes sinusoidales en un medio uniforme, sin rebotes en los bordes. Los cambios del experimento se reinician al salir.</p></article></div>
+  <noscript><p class="alerta alerta-aviso">Habilitá JavaScript para explorar las ondas.</p></noscript>
+</section>
+<script type="module" src="<%= recursoJs %>"></script>

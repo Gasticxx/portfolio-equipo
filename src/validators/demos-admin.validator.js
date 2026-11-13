@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { AppError } from '../middlewares/errors.js';
 
-export const tiposDemo = ['tablero', 'algoritmos', 'calendario'];
+export const tiposDemo = ['tablero', 'algoritmos', 'calendario', 'ondas'];
 const id = z.number().int().positive().max(2147483647);
 const texto = (min, max) => z.string().transform(s => s.normalize('NFC').replace(/\r\n?/g, '\n').trim())
   .refine(s => !s.includes('\0') && Array.from(s).length >= min && Array.from(s).length <= max, `Ingresá entre ${min} y ${max} caracteres.`);

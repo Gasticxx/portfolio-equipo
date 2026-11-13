@@ -26,6 +26,22 @@ const enviar = (method, path, auth, body) => {
   return body === undefined ? r : r.send(body);
 };
 const datos = (proyectoId, extra = {}) => ({ proyectoId, titulo: 'Experiencia de prueba', descripcion: 'Una descripción de la experiencia guardada para estas pruebas.', tipo: 'tablero', publicada: false, orden: 1, ...extra });
+
+test('Ondas: alta administrativa, persistencia, catálogo y ocultamiento al despublicar el proyecto', async () => {
+  const auth = await sesion(), proyectoId = await proyecto();
+  const body = datos(proyectoId, { tipo: 'ondas', titulo: 'Laboratorio de ondas', publicada: true });
+  const creada = (await enviar('post', '/api/admin/demos', auth, body).expect(201)).body.data;
+  assert.equal(creada.tipo, 'ondas');
+  assert.ok((await enviar('get', '/api/admin/demos/catalogos', auth).expect(200)).body.data.tipos.includes('ondas'));
+  const fila = (await pool.query('SELECT tipo,publicada FROM app.demos WHERE id=$1', [creada.id])).rows[0];
+  assert.deepEqual(fila, { tipo: 'ondas', publicada: true });
+  assert.match((await enviar('get', `/demos/${creada.id}`, auth).expect(200)).text, /data-ondas/);
+  const editada = (await enviar('put', `/api/admin/demos/${creada.id}`, auth, { ...body, titulo: 'Ondas e interferencia', orden: 12 }).expect(200)).body.data;
+  assert.equal(editada.titulo, 'Ondas e interferencia'); assert.equal(editada.orden, 12);
+  await pool.query('UPDATE app.proyectos SET publicado=false WHERE id=$1', [proyectoId]);
+  await enviar('get', `/demos/${creada.id}`, auth).expect(404);
+  await enviar('get', `/demos/${creada.id}/recurso.js`, auth).expect(404);
+});
 before(async () => {
   const destino = new URL(env.TEST_DATABASE_URL || env.DATABASE_URL);
   assert.ok(env.IS_TEST && ['localhost', '127.0.0.1', '[::1]'].includes(destino.hostname) && destino.pathname === '/portfolio_test', 'Solo portfolio_test local.'); local = true;

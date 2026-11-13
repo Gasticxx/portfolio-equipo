@@ -10,7 +10,7 @@ after(() => pool.end());
 const firma = createHmac('sha256', env.SESSION_SECRET).update('demo-test').digest('base64').replace(/=+$/, '');
 const cookie = `equipo.sid=${encodeURIComponent(`s:demo-test.${firma}`)}`;
 const demo = { id: 2, titulo: 'Visualizador de algoritmos', descripcion: 'Búsqueda y ordenamiento', proyecto_slug: 'portfolio-equipo' };
-function baseSimulada(t, { rol = 'registrado', publicada = true, fallarDemos = false, nombre = 'Prueba' } = {}) {
+function baseSimulada(t, { rol = 'registrado', publicada = true, fallarDemos = false, nombre = 'Prueba', tipo = 'algoritmos' } = {}) {
   return t.mock.method(pool, 'query', async sql => {
     if (sql.includes('SELECT sess')) return { rows: [{ sess: {
       cookie: { originalMaxAge: 1800000, expires: new Date(Date.now() + 1800000).toISOString(), httpOnly: true, path: '/' },
@@ -22,7 +22,7 @@ function baseSimulada(t, { rol = 'registrado', publicada = true, fallarDemos = f
       if (fallarDemos) throw Object.assign(new Error('conexión de prueba'), { code: 'ECONNREFUSED' });
       assert.match(sql, /publicada = true/);
       if (sql.includes('JOIN')) assert.match(sql, /p.publicado = true/);
-      return { rows: publicada ? [demo] : [] };
+      return { rows: publicada ? [{ ...demo, tipo }] : [] };
     }
     return { rows: [] };
   });
@@ -94,6 +94,24 @@ test('Mi cuenta muestra datos escapados y enlaza al catálogo de demos', async t
   assert.match(res.text, /href="\/demos"/);
   assert.match(res.text, /href="\/css\/cuenta.css"/);
   assert.doesNotMatch(res.text, /href="\/proyectos\/portfolio-equipo"/);
+});
+
+test('Ondas: vista y motor correctos para todos los roles; recurso privado y publicación obligatoria', async t => {
+  await request(app).get('/demos/2').expect(302);
+  await request(app).get('/demos/2/recurso.js').expect(401);
+  await request(app).get('/ui-i3/demos/ondas.js').expect(404);
+  for (const rol of ['registrado', 'operador', 'administrador']) {
+    baseSimulada(t, { rol, tipo: 'ondas' });
+    const pagina = await request(app).get('/demos/2').set('Cookie', cookie).expect(200);
+    assert.match(pagina.text, /data-ondas-canvas/); assert.match(pagina.text, /type="module" src="\/demos\/2\/recurso.js"/);
+    assert.doesNotMatch(pagina.text, /data-visualizador|data-calendario/);
+    const script = await request(app).get('/demos/2/recurso.js').set('Cookie', cookie).expect(200);
+    assert.match(script.text, /export function campoOndas/); assert.equal(script.headers['cache-control'], 'no-store');
+    t.mock.restoreAll();
+  }
+  baseSimulada(t, { tipo: 'ondas', publicada: false });
+  await request(app).get('/demos/2').set('Cookie', cookie).expect(404);
+  await request(app).get('/demos/2/recurso.js').set('Cookie', cookie).expect(404);
 });
 
 test('Catálogo protegido de demos no depende del slug fijo del portfolio', async t => {

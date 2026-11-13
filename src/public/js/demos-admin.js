@@ -3,7 +3,7 @@
   const form = $('#demo-form');
   if (!form) return;
   const campo = nombre => form.elements.namedItem(nombre);
-  const tipos = { tablero: { nombre: 'Tablero de tareas', icono: '▦', ayuda: 'Tareas personales que se conservan en la cuenta de cada usuario.' }, algoritmos: { nombre: 'Algoritmos', icono: '⌘', ayuda: 'Búsqueda lineal y ordenamiento burbuja, paso a paso.' }, calendario: { nombre: 'Calendario', icono: '◷', ayuda: 'Meses, días y años bisiestos en una experiencia interactiva.' } };
+  const tipos = { tablero: { nombre: 'Tablero de tareas', icono: '▦', ayuda: 'Tareas personales que se conservan en la cuenta de cada usuario.' }, algoritmos: { nombre: 'Algoritmos', icono: '⌘', ayuda: 'Búsqueda lineal y ordenamiento burbuja, paso a paso.' }, calendario: { nombre: 'Calendario', icono: '◷', ayuda: 'Meses, días y años bisiestos en una experiencia interactiva.' }, ondas: { nombre: 'Laboratorio de ondas', icono: '∿', ayuda: 'Emisores móviles, interferencia y controles de frecuencia, amplitud y propagación. El experimento se reinicia al salir.' } };
   const etiquetas = { titulo: 'Título', descripcion: 'Descripción', proyectoId: 'Proyecto', tipo: 'Tipo', orden: 'Orden', publicada: 'Publicación', q: 'Búsqueda' };
   let catalogos = null, actual = null, ocupado = false, modificado = false, page = 1, pages = 0, enfocar = false;
   function nodo(tag, contenido, clase) { const el = document.createElement(tag); el.textContent = contenido; if (clase) el.className = clase; return el; }

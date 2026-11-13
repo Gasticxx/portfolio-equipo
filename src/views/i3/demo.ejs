@@ -8,6 +8,8 @@
   <div class="tablero"><% for(const [estado,nombre] of [['pendiente','Pendiente'],['progreso','En progreso'],['completada','Completada']]) { %><section class="columna" aria-label="<%= nombre %>"><h2><%= nombre %></h2><div data-columna="<%= estado %>"></div></section><% } %></div>
   <dialog data-eliminar-dialogo aria-labelledby="eliminar-titulo"><h2 id="eliminar-titulo">¿Eliminar esta tarea?</h2><p data-eliminar-nombre></p><form method="dialog" class="acciones"><button class="btn btn-glass" value="cancelar" autofocus>Cancelar</button><button class="btn btn-danger" value="eliminar">Eliminar</button></form></dialog>
 </section><% if (typeof recursoJs === 'string') { %><script src="/js/tablero.adapter.js" defer></script><script src="<%= recursoJs %>" defer></script><% } else { %><script src="/js/tablero.js" defer></script><% } %>
+<% } else if (vista === 'ondas') { %>
+<%- include('../partials/i3/ondas', { recursoJs }) %>
 <% } else if (vista === "calendario") { %>
 <%- include("../partials/i3/calendario", { recursoJs }) %>
 <% } else { %>
