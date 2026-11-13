@@ -5,7 +5,7 @@ export const integrantes = [
   ['I5', 'Datos y proyectos'], ['I6', 'Contacto y métricas visuales'],
 ].map(([codigo, especialidad]) => ({
   codigo, nombre: `Integrante ${codigo.slice(1)}`, especialidad,
-  foto: '', // Ejemplo: /img/integrantes/i3.webp. Dejar vacío conserva el avatar.
+  foto: ['I1', 'I5'].includes(codigo) ? `/img/integrantes/${codigo.toLowerCase()}.png` : '',
   presentacion: `Mi responsabilidad en este proyecto es ${especialidad.toLowerCase()}.`,
   formacion: 'Formación académica en curso.', tecnologias: [], enlaces: [],
 }));
