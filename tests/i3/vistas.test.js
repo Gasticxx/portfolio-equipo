@@ -26,6 +26,9 @@ test('seis fichas muestran los nombres reales y conservan el respaldo de foto',a
   assert.equal(integrantes.length,6);
   for(const integrante of integrantes) {
     assert.ok(integrante.nombre.trim(), `Falta el nombre de ${integrante.codigo}`);
+    assert.doesNotMatch(integrante.nombre, /^Integrante \d+$/, `Se perdieron los datos reales de ${integrante.codigo}`);
+    assert.ok(integrante.tecnologias.length > 0, `Faltan las tecnologías de ${integrante.codigo}`);
+    assert.equal(integrante.foto, `/media/integrantes/${integrante.codigo.toLowerCase()}.webp`);
     assert.ok(text.includes(ejs.escapeXML(integrante.nombre)), `No se muestra ${integrante.codigo}`);
   }
 });
