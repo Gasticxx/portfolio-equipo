@@ -102,7 +102,7 @@ No existe “marcar respondida” a mano. Con la consulta cerrada no se puede re
 
 ### Responder
 
-El mensaje (10 a 3000 caracteres, texto plano) va al **email guardado en la consulta**; el navegador no puede elegir destinatario. El autor sale de la sesión. Asunto: `[Equipo Seis] Respuesta a consulta #<id>`, con `replyTo` del equipo. Una respuesta enviada no se edita: una corrección es otra respuesta.
+El mensaje (10 a 3000 caracteres, texto plano) va al **email guardado en la consulta**; el navegador no puede elegir destinatario. El autor sale de la sesión. Asunto: `[Reflection Tech] Respuesta a consulta #<id>`, con `replyTo` del equipo. Una respuesta enviada no se edita: una corrección es otra respuesta.
 
 ### Reintentar un envío
 
@@ -178,7 +178,7 @@ Esta guía no contiene claves ni direcciones reales. Los valores se cargan solo 
 |---|---|---|
 | `BREVO_API_KEY` | Clave de producción del paso 3 | Un envío de prueba queda `aceptado` y no `HTTP_401_*` |
 | `MAIL_FROM_EMAIL` | Remitente verificado del paso 2 | Figura como verificado en *Senders*; si no, Brevo responde `HTTP_400_*` |
-| `MAIL_FROM_NAME` | `Equipo Seis` | Nombre visible en el correo recibido |
+| `MAIL_FROM_NAME` | `Reflection Tech` | Nombre visible en el correo recibido |
 | `CONTACT_TO_EMAIL` | Casilla del equipo que recibe las notificaciones | Llega la notificación de la consulta de prueba |
 
 Con `NODE_ENV=production`, `src/config/env.js` exige las cuatro y el servidor no arranca si falta alguna. En desarrollo pueden quedar vacías (ver §2).
