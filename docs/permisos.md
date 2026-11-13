@@ -294,6 +294,9 @@ implementan en el sprint 2.
   `404`. El acceso implementado es por páginas y recursos bajo `/proyectos/:slug`
   y `/demos/:id`.
 - Cuando I5 publique la demo, probar proyecto, demo y `recurso.js` con y sin sesión.
+- Revisión del tablero integrado del 12/11/2026 (`d0f2db3`): persistencia,
+  aislamiento, CSRF y revocación comprobados; quedan tres defectos de publicación,
+  recursos y catálogo. Ver [evidencia y responsables](i4-validacion-tablero.md).
 - Repetir la evidencia en la versión integrada y registrar el SHA revisado.
 
 ### Evidencia local registrada
