@@ -1,29 +1,63 @@
 <%- include('../partials/i3/cabecera') %>
-<section class="encabezado-pagina">
-  <a class="regreso" href="/admin">← Volver a administración</a>
-  <p class="eyebrow">ADMINISTRACIÓN</p><h1>Demos interactivas<span>.</span></h1>
-  <p>Creá y editá demos de algoritmos o tableros en los proyectos existentes. Solo aparecen en el catálogo si la demo y su proyecto están publicados.</p>
-</section>
-<section class="seccion admin-demos-layout">
-  <div class="glass formulario">
-    <h2 id="demo-form-titulo">Nueva demo</h2>
-    <form id="demo-form">
-      <div class="campo"><label for="demo-proyecto">Proyecto</label><select id="demo-proyecto" name="proyecto_id" class="form-select" required></select></div>
-      <div class="campo"><label for="demo-tipo">Tipo</label><select id="demo-tipo" name="tipo" class="form-select"><option value="algoritmos">Visualizador de algoritmos</option><option value="tablero">Tablero de tareas</option></select></div>
-      <div class="campo"><label for="demo-titulo">Título</label><input id="demo-titulo" name="titulo" class="form-control" required minlength="3" maxlength="100"></div>
-      <div class="campo"><label for="demo-descripcion">Descripción</label><textarea id="demo-descripcion" name="descripcion" class="form-control" required minlength="3" maxlength="1000" rows="4"></textarea></div>
-      <div class="campo"><label for="demo-orden">Orden</label><input id="demo-orden" name="orden" class="form-control" type="number" min="1" max="100" step="1" value="1" required></div>
-      <div class="campo"><label><input name="publicada" type="checkbox"> Publicada</label></div>
-      <div class="acciones"><button type="submit" class="btn btn-primary">Guardar demo</button><button type="button" id="demo-nueva" class="btn btn-glass">Nueva / cancelar edición</button></div>
+<link rel="stylesheet" href="/css/demos-admin.css">
+<div class="demo-admin">
+  <section class="demo-hero">
+    <div class="demo-hero-texto">
+      <a class="regreso" href="/admin">← Volver a administración</a>
+      <p class="eyebrow">ESTUDIO INTERACTIVO / ADMINISTRACIÓN</p>
+      <h1>Laboratorio<br>de <span>demos.</span></h1>
+      <p class="demo-bajada">Dale forma a lo que el equipo construye. Editá, organizá y publicá experiencias que se pueden probar.</p>
+      <div class="acciones"><button class="btn btn-primary" id="demo-nueva" type="button">Nueva demo <span aria-hidden="true">+</span></button><a class="btn btn-glass" href="/demos">Ver catálogo <span aria-hidden="true">↗</span></a></div>
+      <p class="demo-nota"><span class="demo-punto" aria-hidden="true"></span>Los cambios se guardan en la base del portfolio.</p>
+    </div>
+    <div class="demo-escena" aria-hidden="true">
+      <div class="demo-orbita demo-orbita-uno"></div><div class="demo-orbita demo-orbita-dos"></div>
+      <div class="demo-ventana demo-ventana-fondo"><span>01 / CONSTRUIR</span><div class="demo-mini-tablero"><i></i><i></i><i></i></div></div>
+      <div class="demo-ventana demo-ventana-frente"><div class="demo-ventana-barra"><span>● ● ●</span><span>REFLECTION LAB</span><span>↗</span></div><div class="demo-onda"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><strong>Del código<br>a la experiencia<span>.</span></strong><div class="demo-ventana-pie"><span>PROBAR. APRENDER. MEJORAR.</span><span>✳</span></div></div>
+      <span class="demo-flotante glass"><span class="demo-punto"></span>Ideas en movimiento</span>
+    </div>
+  </section>
+  <section class="demo-indicadores" aria-label="Resumen de demos">
+    <article class="glass demo-indicador"><span class="demo-indicador-icono" aria-hidden="true">▦</span><div><strong id="demo-total">—</strong><span>Demos guardadas</span></div><small>Todo el laboratorio</small></article>
+    <article class="glass demo-indicador"><span class="demo-indicador-icono" aria-hidden="true">↗</span><div><strong id="demo-publicadas">—</strong><span>Visibles en el catálogo</span></div><small>Demo y proyecto publicados</small></article>
+    <article class="glass demo-indicador"><span class="demo-indicador-icono" aria-hidden="true">✎</span><div><strong id="demo-borradores">—</strong><span>En preparación</span></div><small>Borradores de demo</small></article>
+  </section>
+  <p id="demo-estado" class="demo-notificacion" role="status" aria-live="polite">Cargando el laboratorio…</p>
+  <section class="demo-biblioteca" aria-labelledby="demo-lista-titulo">
+    <div class="demo-seccion-titulo"><div><p class="eyebrow">DEL EQUIPO AL MUNDO</p><h2 id="demo-lista-titulo">Tus experiencias<span>.</span></h2></div><button id="demo-recargar" class="btn btn-glass" type="button">Actualizar listado ↻</button></div>
+    <form id="demo-filtros" class="glass demo-filtros">
+      <div class="campo demo-busqueda"><label for="demo-q">Buscar una demo</label><input id="demo-q" name="q" class="form-control" type="search" minlength="2" maxlength="80" placeholder="Título de la experiencia"></div>
+      <div class="campo"><label for="demo-filtro-proyecto">Proyecto</label><select id="demo-filtro-proyecto" name="proyectoId" class="form-select"><option value="">Todos los proyectos</option></select></div>
+      <div class="campo"><label for="demo-filtro-tipo">Tipo</label><select id="demo-filtro-tipo" name="tipo" class="form-select"><option value="">Todos</option><option value="tablero">Tablero</option><option value="algoritmos">Algoritmos</option><option value="calendario">Calendario</option></select></div>
+      <div class="campo"><label for="demo-filtro-publicada">Publicación</label><select id="demo-filtro-publicada" name="publicada" class="form-select"><option value="">Todas</option><option value="true">Publicadas</option><option value="false">Borradores</option></select></div>
+      <button class="btn btn-primary" type="submit">Buscar →</button>
     </form>
-    <p>El tipo y el proyecto no se cambian al editar. Para retirar una demo, desmarcá «Publicada»; se conservan las tareas de los usuarios.</p>
-  </div>
-  <div class="glass formulario">
-    <h2>Demos del portfolio</h2>
-    <p id="demo-estado" class="alerta" role="status" aria-live="polite">Cargando demos…</p>
-    <div id="demo-listado"></div>
-    <a class="enlace-flecha" href="/demos">Ver catálogo →</a>
-  </div>
-</section>
+    <div class="demo-trabajo">
+      <div class="demo-resultados"><p id="demo-conteo" class="demo-conteo"></p><div id="demo-listado" class="demo-tarjetas" aria-busy="true"></div><nav class="demo-paginacion" aria-label="Paginación de demos"><button id="demo-anterior" class="btn btn-glass" type="button" disabled>← Anterior</button><span id="demo-pagina"></span><button id="demo-siguiente" class="btn btn-glass" type="button" disabled>Siguiente →</button></nav></div>
+      <aside id="demo-editor" class="glass demo-editor" aria-labelledby="demo-form-titulo">
+        <div id="demo-editor-vacio" class="demo-editor-vacio"><span class="demo-editor-simbolo" aria-hidden="true">✳</span><p class="eyebrow">UN ESPACIO PARA CREAR</p><h2>Tu próxima<br>experiencia.</h2><p>Elegí una demo para editarla o empezá algo nuevo.</p><button id="demo-empezar" class="btn btn-glass" type="button">Crear una demo +</button></div>
+        <form id="demo-form" hidden>
+          <div class="demo-editor-cabecera"><div><p id="demo-form-etiqueta" class="eyebrow">NUEVA EXPERIENCIA</p><h2 id="demo-form-titulo">Nueva demo</h2></div><button id="demo-cerrar" class="btn btn-glass" type="button" aria-label="Cerrar editor">×</button></div>
+          <p id="demo-form-info" class="demo-form-info"></p>
+          <fieldset id="demo-campos"><legend class="visually-hidden">Campos editables de la demo</legend>
+            <div class="campo"><label for="demo-titulo">Título</label><input id="demo-titulo" name="titulo" class="form-control" minlength="3" maxlength="100" required placeholder="Un nombre que invite a probar"><div class="demo-campo-pie"><small>De 3 a 100 caracteres</small><span id="demo-titulo-cuenta">0 / 100</span></div></div>
+            <div class="campo"><label for="demo-descripcion">Descripción</label><textarea id="demo-descripcion" name="descripcion" class="form-control" minlength="20" maxlength="1000" rows="4" required placeholder="Contá qué hace y qué se puede explorar."></textarea><div class="demo-campo-pie"><small>De 20 a 1000 caracteres</small><span id="demo-descripcion-cuenta">0 / 1000</span></div></div>
+            <div class="campo"><label for="demo-proyecto">Proyecto asociado</label><select id="demo-proyecto" name="proyectoId" class="form-select" required></select></div>
+            <div class="campo"><label for="demo-tipo">Tipo de experiencia</label><select id="demo-tipo" name="tipo" class="form-select"><option value="tablero">Tablero personal de tareas</option><option value="algoritmos">Visualizador de algoritmos</option><option value="calendario">Calendario interactivo</option></select><small id="demo-tipo-ayuda"></small></div>
+            <p id="demo-datos-aviso" class="demo-aviso" hidden></p>
+            <div class="campo"><label for="demo-orden">Orden dentro del proyecto</label><input id="demo-orden" name="orden" class="form-control" type="number" min="1" max="100" step="1" value="1" required><small>Del 1 al 100. Los valores menores aparecen primero.</small></div>
+            <label class="demo-switch"><span><strong>Publicar demo</strong><small>Disponible cuando su proyecto esté publicado.</small></span><input name="publicada" type="checkbox" role="switch"><span class="demo-switch-pista" aria-hidden="true"></span></label>
+            <p id="demo-publicacion-ayuda" class="demo-form-info"></p>
+            <div class="demo-guardar"><button id="demo-guardar" type="submit" class="btn btn-primary">Guardar demo ↗</button><button id="demo-cancelar" type="button" class="btn btn-glass">Cancelar</button></div>
+          </fieldset>
+          <div id="demo-errores" class="alerta alerta-error" role="alert" hidden></div>
+          <p class="demo-guardado-nota">Despublicar conserva la demo y sus tareas guardadas.</p>
+        </form>
+      </aside>
+    </div>
+  </section>
+  <noscript><p class="alerta alerta-aviso">Habilitá JavaScript para editar las demos del portfolio.</p></noscript>
+</div>
+<dialog id="demo-confirmacion" class="demo-dialogo" aria-labelledby="demo-confirmar-titulo"><form method="dialog"><p class="eyebrow">ANTES DE CONTINUAR</p><h2 id="demo-confirmar-titulo">Confirmar cambios</h2><p id="demo-confirmar-texto"></p><div class="acciones"><button class="btn btn-glass" value="cancelar" autofocus>Cancelar</button><button class="btn btn-primary" value="aceptar">Confirmar</button></div></form></dialog>
 <script src="/js/demos-admin.js" defer></script>
 <%- include('../partials/i3/pie') %>

@@ -56,13 +56,20 @@ async function cargarDemo(req, res, next) {
 
 demosRouter.get('/demos/:id', autorizar, cargarDemo, (req, res) => {
   res.render('i3/demo', {
-    titulo: res.locals.demo.titulo, vista: res.locals.demo.tipo, demoId: res.locals.demo.id, rutaActual: '/proyectos',
+    titulo: res.locals.demo.titulo, descripcionDemo: res.locals.demo.descripcion, vista: res.locals.demo.tipo, demoId: res.locals.demo.id, rutaActual: '/proyectos',
     recursoJs: `/demos/${res.locals.demo.id}/recurso.js`,
     regresoProyecto: `/proyectos/${res.locals.demo.proyecto_slug}`,
   });
 });
 
 demosRouter.get('/demos/:id/recurso.js', autorizar, cargarDemo, async (_req, res) => {
+  if (res.locals.demo.tipo === 'calendario') {
+    const [motor, interfaz] = await Promise.all([
+      readFile(new URL('../ui-i3/demos/calendario-motor.js', import.meta.url), 'utf8'),
+      readFile(new URL('../ui-i3/demos/calendario.js', import.meta.url), 'utf8'),
+    ]);
+    return res.type('application/javascript').send(`${motor}\n${interfaz}`);
+  }
   if (res.locals.demo.tipo === 'tablero') {
     const interfaz = await readFile(new URL('../ui-i3/demos/tablero-integrado.js', import.meta.url), 'utf8');
     return res.type('application/javascript').send(interfaz);
