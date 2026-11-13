@@ -64,7 +64,7 @@ demosRouter.get('/demos/:id', autorizar, cargarDemo, (req, res) => {
 
 demosRouter.get('/demos/:id/recurso.js', autorizar, cargarDemo, async (_req, res) => {
   if (res.locals.demo.tipo === 'tablero') {
-    const interfaz = await readFile(new URL('../public/js/tablero.js', import.meta.url), 'utf8');
+    const interfaz = await readFile(new URL('../ui-i3/demos/tablero-integrado.js', import.meta.url), 'utf8');
     return res.type('application/javascript').send(interfaz);
   }
   const [motor, interfaz] = await Promise.all([

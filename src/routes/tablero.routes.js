@@ -207,7 +207,9 @@ tableroRouter.delete(
 tableroRouter.get(
   '/tablero',
   requerirAutenticacion,
-  (req, res) => {
+  async (req, res) => {
+    const resultado = await pool.query("SELECT d.id FROM app.demos d JOIN app.proyectos p ON p.id=d.proyecto_id WHERE d.id=1 AND d.tipo='tablero' AND d.publicada=true AND p.publicado=true");
+    if (!resultado.rows.length) throw new AppError(404, 'NO_ENCONTRADO', 'La demo no está publicada.');
     return res.redirect('/demos/1');
   }
 );

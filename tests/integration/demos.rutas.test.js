@@ -29,12 +29,25 @@ function baseSimulada(t, { rol = 'registrado', publicada = true, fallarDemos = f
 }
 
 test('Las páginas de proyecto y demo requieren sesión; el recurso privado responde 401', async () => {
+  for (const ruta of ['/js/tablero.js', '/js/tablero.adapter.js']) {
+    await request(app).get(ruta).expect(401);
+  }
+  await request(app).get('/js/%74ablero.js').expect(404);
   for (const ruta of ['/proyectos/portfolio-equipo', '/demos/2']) {
     const res = await request(app).get(ruta).expect(302);
     assert.equal(res.headers.location, `/login?next=${encodeURIComponent(ruta)}`);
   }
   await request(app).get('/demos/2/recurso.js').expect(401);
   await request(app).get('/ui-i3/demos/algoritmos-motor.js').expect(404);
+});
+
+test('scripts del tablero se sirven con sesión y no se cachean', async t => {
+  baseSimulada(t);
+  for (const ruta of ['/js/tablero.js', '/js/tablero.adapter.js']) {
+    const res = await request(app).get(ruta).set('Cookie', cookie).expect(200);
+    assert.match(res.headers['content-type'], /javascript/);
+    assert.equal(res.headers['cache-control'], 'no-store');
+  }
 });
 
 test('Un registrado puede recorrer proyecto, visualizador y motor publicado', async t => {

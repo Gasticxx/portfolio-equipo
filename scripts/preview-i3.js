@@ -13,6 +13,8 @@ export function crearPreview(){
   app.use(helmet({contentSecurityPolicy:{directives:{'upgrade-insecure-requests':null,scriptSrc:["'self'"],styleSrc:["'self'"],imgSrc:["'self'",'data:']}}}));
   app.set('views',path.join(raiz,'src/views'));app.set('view engine','ejs');
   app.use(express.static(path.join(raiz,'src/public')));
+  // El preview solo monta la interfaz con datos de muestra, sin API ni sesión real.
+  app.get('/js/tablero.js',(_req,res)=>res.sendFile(path.join(raiz,'src/ui-i3/demos/tablero-integrado.js')));
   app.use(fotosRouter);
   app.use((_req,res,next)=>{res.locals.usuarioActual=null;res.set('Cache-Control','no-store');next();});
   app.get('/',(_req,res)=>res.redirect('/i3'));

@@ -81,6 +81,7 @@ app.use(
 );
 
 // Paso 3: Archivos estáticos públicos antes de la sesión
+const scriptsTablero = ['/js/tablero.js', '/js/tablero.adapter.js'];
 app.use(express.static(path.join(__dirname, "public")));
 app.use(fotosRouter);
 
@@ -146,6 +147,11 @@ app.use(consultas.paginas);
 
 // Las rutas de autenticación, consultas y servicios se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
+app.get(scriptsTablero, requerirRol('registrado', 'operador', 'administrador'), (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const archivo = req.path.toLowerCase().endsWith('tablero.adapter.js') ? 'tablero-adapter.js' : 'tablero-integrado.js';
+  res.sendFile(path.join(__dirname, 'ui-i3/demos', archivo));
+});
 app.use(demosAdminRouter);
 app.use(tableroRouter);
 app.use(serviciosRouter);

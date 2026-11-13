@@ -197,7 +197,7 @@ test('Tablero: sesiones vencidas por antigüedad o inactividad reciben 401', asy
   }
 });
 
-test('D-I4-TAB-01: demo no publicada no debe entregar tablero ni API', { todo: 'I5: comprobar publicación de demo y proyecto en página y API' }, async () => {
+test('D-I4-TAB-01: demo no publicada no debe entregar tablero ni API', async () => {
   const { rows } = await pool.query('SELECT publicada FROM app.demos WHERE id=1');
   await pool.query('UPDATE app.demos SET publicada=false WHERE id=1');
   try {
@@ -210,13 +210,13 @@ test('D-I4-TAB-01: demo no publicada no debe entregar tablero ni API', { todo: '
   }
 });
 
-test('D-I4-TAB-02: los scripts del tablero integrado deben requerir sesión', { todo: 'I5/I3: servir scripts integrados desde un recurso protegido' }, async () => {
+test('D-I4-TAB-02: los scripts del tablero integrado deben requerir sesión', async () => {
   const interfaz = await request(app).get('/js/tablero.js');
   const adaptador = await request(app).get('/js/tablero.adapter.js');
   assert.deepEqual([interfaz.status, adaptador.status], [401, 401]);
 });
 
-test('D-I4-TAB-03: tablero publicado debe abrir por /demos/:id y ofrecer recurso protegido', { todo: 'I5: integrar tablero en el catálogo y rutas canónicas de demos' }, async () => {
+test('D-I4-TAB-03: tablero publicado debe abrir por /demos/:id y ofrecer recurso protegido', async () => {
   const { rows } = await pool.query('SELECT d.publicada,d.tipo,d.proyecto_id,p.publicado FROM app.demos d JOIN app.proyectos p ON p.id=d.proyecto_id WHERE d.id=1');
   const original = rows[0];
   if (original.tipo !== 'tablero') assert.fail('La ruta fija DEMO_ID=1 no identifica un tablero en esta base.');

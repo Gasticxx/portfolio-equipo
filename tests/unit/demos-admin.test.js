@@ -78,6 +78,7 @@ test('tablero: demo y usuario se incluyen en la consulta de tareas',async t=>{
 test('tablero: una demo despublicada no permite acceder a tareas',async t=>{
   t.mock.method(pool,'query',async()=>({rows:[]}));
   await request(montarPublico()).get('/api/tablero/tareas?demoId=9').set('X-Rol','registrado').expect(404);
+  await request(montarPublico()).get('/tablero').set('X-Rol','registrado').expect(404);
 });
 test('panel demos renderiza con contenido escapado y formulario accesible',async()=>{
   const app=express();app.set('views',path.resolve('src/views'));app.set('view engine','ejs');

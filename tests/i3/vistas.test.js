@@ -4,6 +4,7 @@ import request from 'supertest';
 import ejs from 'ejs';
 import path from 'node:path';
 import { crearPreview } from '../../scripts/preview-i3.js';
+import { integrantes } from '../../src/ui-i3/equipo.js';
 const app=crearPreview();
 const rutas=['/i3','/i3/equipo','/i3/equipo/I1','/i3/equipo/I2','/i3/equipo/I3','/i3/equipo/I4','/i3/equipo/I5','/i3/equipo/I6','/i3/servicios','/i3/proyectos','/i3/detalle','/i3/contacto','/i3/login','/i3/registro','/i3/componentes','/i3/panel','/i3/muestras/tablero','/i3/muestras/algoritmos'];
 test('todos los recorridos renderizan y sus enlaces locales resuelven',async()=>{
@@ -22,15 +23,21 @@ test('todos los recorridos renderizan y sus enlaces locales resuelven',async()=>
 test('seis fichas muestran los nombres reales y conservan el respaldo de foto',async()=>{
   const {text}=await request(app).get('/i3/equipo').expect(200);
   assert.equal((text.match(/Espacio para tu foto/g)||[]).length,6);
-  for(const nombre of ['Ignacio Ucciardello','Gaston Exequiel Lopez Iñigo','Astorga Balbuena Lucas Alberto','Facundo Casal','Mendoza, Mateo Aaron.','Facundo Sánchez Francés'])assert.ok(text.includes(nombre));
+  assert.equal(integrantes.length,6);
+  for(const integrante of integrantes) {
+    assert.ok(integrante.nombre.trim(), `Falta el nombre de ${integrante.codigo}`);
+    assert.ok(text.includes(ejs.escapeXML(integrante.nombre)), `No se muestra ${integrante.codigo}`);
+  }
 });
 
 test('perfil integra presentación, formación, tecnologías y enlaces de la ficha',async()=>{
   const {text}=await request(app).get('/i3/equipo/I3').expect(200);
-  assert.ok(text.includes('el sistema visual, los componentes EJS'));
-  assert.ok(text.includes('Formación académica en curso.'));
-  assert.ok(text.includes('HTML · CSS · JavaScript'));
-  assert.ok(text.includes('https://github.com/lucasastorga05-art'));
+  const integrante=integrantes.find(i=>i.codigo==='I3');
+  for(const valor of [integrante.presentacion, integrante.formacion, integrante.tecnologias.join(' · ')]) {
+    assert.ok(valor.trim(), 'La ficha debe contener presentación, formación y tecnologías');
+    assert.ok(text.includes(ejs.escapeXML(valor)));
+  }
+  for(const enlace of integrante.enlaces)assert.ok(text.includes(ejs.escapeXML(enlace.url)));
   assert.doesNotMatch(text,/href="null"/);
 });
 test('perfiles desconocidos y recursos privados no se exponen',async()=>{
