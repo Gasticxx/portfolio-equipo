@@ -37,7 +37,7 @@ export function asuntoRespuesta(consultaId) {
 
 export function cuerpoNotificacion(consulta, appOrigin) {
   const lineas = [
-    'Nueva consulta recibida en el sitio del Reflection Tech.',
+    'Nueva consulta recibida en el sitio de Reflection Tech.',
     '',
     `Consulta #${consulta.id}`,
     `Tipo: ${NOMBRES_TIPO[consulta.tipo] ?? consulta.tipo}`

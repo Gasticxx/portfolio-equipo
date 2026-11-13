@@ -59,7 +59,7 @@ npm run test:unit                              # solo unitarias, sin base
 | **A27** | Ver contacto como visitante o registrado | 403 sin listado ni historial | **I6** / I4 | OK (automático) | `A27/T08…` |
 | **A30** | Fechas límite y tipo de consulta | Día final incluido; tipo solo cambia consultas | I2 + **I6** / I1 | OK con API real: tipo=asesoria cambia solo Consultas (2→1) y la dona | §6 |
 | **A31** | Rango vacío o inválido | Ceros y estado vacío; 400 en inválidos | I2 + **I6** / I1 | OK con API real: 01–05/10 en ceros con “Sin datos” y sin dona; rango invertido, futuro, tipo inexistente y una sola fecha → 400 | §6 |
-| A32 | Tareas: crear, cambiar, ajena | Persistencia propia; 404 ajena | I5 / I4 · **I6 ejecuta** | BLOQUEADO (2026-11-09, `main` 858d4e4): `demos.routes.js` solo sirve demos `algoritmos` y no existe la API de `app.tareas_demo`. Depende de I5 | §7 |
+| A32 | Tareas: crear, cambiar, ajena | Persistencia propia; 404 ajena | I5 / I4 · **I6 ejecuta** | OK (2026-11-12, `main` cf1b38b): tareas propias persistentes; las de otra cuenta dan 404 (antes BLOQUEADO hasta el PR #41 de I5) | §10 |
 | A34 | Búsqueda y burbuja con duplicados | Resultados correctos; errores claros | I5 / I3 · **I6 prueba errores** | OK (2026-11-09, `main` 858d4e4): 9 casos de resultado y 11 de error · confirmación de I5 PENDIENTE | §7 |
 | A35 | Pausar, avanzar y reiniciar visualizador | Sin timers superpuestos | I3 / I5 · **I6 prueba reinicio** | OK (2026-11-09, `main` 858d4e4) con un defecto menor para I3 (D-I6-05-1) | §7 |
 
@@ -115,7 +115,7 @@ Fecha: 2026-11-09 · Versión: `main` 8ef87f3 · Rol: administrador (cuenta loca
 | h | Vista móvil (375 px) | Sin desbordes; gráficos apilados | Sin desplazamiento horizontal | OK |
 | i | Tema oscuro de I3 | Ejes, leyenda y series legibles | **Defecto encontrado**: ejes y leyenda en tono oscuro sobre fondo oscuro. Corregido en `correccion/I6-08-graficos-tema-oscuro`: colores leídos de `<body>`, paleta oscura validada (#5B8DEF, #DB7036, #1AA996; contraste ≥ 3:1) y repintado con el evento `i3:tema` | OK tras corrección |
 
-La comparación contra SQL directa está en §8. Queda pendiente revisar la lectura de las cifras con I1 e I3.
+La comparación contra SQL directa está en §8. La vista móvil se revisó en la fila h.
 
 ## 7. Recorrido de demos (I6 05)
 
@@ -215,3 +215,46 @@ Fecha: 2026-11-10, 00:05 · Versión: `main` 858d4e4 · Rol: visitante · Base: 
 Resultado: **OK**. Con esto, los cinco casos de R02 (A20–A24) están en OK.
 
 Observación para I2: con la base caída, `/health` responde 503 con la página HTML de error y no con `{"ok":false}`, como dice `docs/despliegue.md`. La causa es que la ruta está después de `sessionMiddleware` en `src/app.js`, y la sesión falla primero al no poder leer `app.sesiones`. El estado 503 es correcto para el chequeo de Render. Montar `/health` antes de la sesión devolvería el JSON documentado y evitaría leer la sesión en cada chequeo.
+
+## 10. Panel con cuenta de rol operador (I6 06) y tablero de tareas (A32)
+
+Fecha: 2026-11-12 · Versión: `main` cf1b38b · Cuenta operador creada con `npm run cuenta:crear` (script de I4, PR #38) · Base: `portfolio_dev`.
+
+### I6 06: lo que puede y no puede hacer el operador
+
+| Prueba | Obtenido | Estado |
+|---|---|---|
+| `/operador/consultas` y su API | 200; 3 consultas, más recientes primero | OK |
+| Filtros `tipo`, `estado`, `notificacionEstado` y `q` | Resultados correctos (por ejemplo, `estado=nueva` → #2 y #1; `q=Prueba` → #3) | OK |
+| Paginación `page=2&pageSize=2` | Devuelve #1 y `totalPages` 2. Una página fuera de rango devuelve lista vacía | OK |
+| Parámetros inválidos (`tipo=otro`, `q` de 1 carácter, `pageSize=0`, parámetro desconocido) | 400 `PARAMETRO_INVALIDO` | OK |
+| Detalle de #2, de una inexistente y de `abc` | 200, 404 `NO_ENCONTRADO` y 400 | OK |
+| Reabrir #3 (cerrada → en proceso), responder y volver a cerrar | Respuesta aceptada por Brevo, con **autor «Operador de Prueba»**; la consulta pasa a respondida y luego a cerrada, sin poder responder | OK |
+| `/admin`, `/admin/metricas`, `/admin/usuarios`, `/admin/servicios` y sus API | 403 en todas | OK |
+| Menú | Muestra «Consultas» y no muestra administración | OK |
+
+### A32: tablero de tareas (`/tablero`, PR #41 de I5 y #42 de I4)
+
+| Prueba | Cuenta | Obtenido | Estado |
+|---|---|---|---|
+| Crear dos tareas | Operador | 201 cada una, en estado pendiente | OK |
+| Título de 2 caracteres | Operador | 400 `TITULO_INVALIDO` | OK |
+| Cambiar a «progreso» y a un estado inexistente | Operador | 200 y 400 `ESTADO_INVALIDO` | OK |
+| Borrar una tarea dos veces | Operador | 200 y luego 404 `TAREA_NO_ENCONTRADA` | OK |
+| Crear sin token CSRF | Operador | 403 | OK |
+| Recargar `/tablero` | Operador | La tarea sigue en «En progreso» | OK |
+| Listar tareas | Administrador | Lista vacía: no ve la tarea del operador | OK |
+| Modificar o borrar la tarea del operador | Administrador | 404 `TAREA_NO_ENCONTRADA` en ambos casos | OK |
+
+## 11. Integración de cotizaciones con el CRUD de servicios de I1
+
+Fecha: 2026-11-12 · Versión: `main` cf1b38b · Cuenta administrador. Se usó un servicio temporal para no modificar los reales.
+
+| Paso | Obtenido | Estado |
+|---|---|---|
+| Crear «Servicio temporal de prueba I6» (activo) | 201 | — |
+| `/contacto?tipo=cotizacion&servicioId=<id>` | Tipo cotización y servicio preseleccionados | OK |
+| Enviar una cotización con ese servicio | 201, consulta #4 con notificación aceptada | OK |
+| Desactivar el servicio | Desaparece de `/api/servicios` y del formulario; una cotización con ese `servicioId` da 422 `VALIDACION` | OK |
+| Borrar el servicio | 204. Una cotización con ese `servicioId` da 422 | OK |
+| Detalle de la consulta #4 después del borrado | Servicio `{ id: null, nombre: «Servicio temporal de prueba I6» }`: se conserva el nombre guardado | OK |
