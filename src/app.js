@@ -25,6 +25,7 @@ import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { interfazRouter } from "./routes/interfaz.routes.js";
 import { demosRouter } from "./routes/demos.routes.js";
+import { archivosRouter } from './routes/archivos.routes.js';
 import { tableroRouter } from "./routes/tablero.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import {
@@ -143,6 +144,7 @@ app.use(consultas.paginas);
 
 // Las rutas de autenticación, consultas y servicios se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
+app.use(archivosRouter);
 app.use(tableroRouter);
 app.use(serviciosRouter);
 app.use(interfazRouter);
