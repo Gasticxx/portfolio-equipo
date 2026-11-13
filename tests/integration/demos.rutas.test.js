@@ -17,7 +17,7 @@ function baseSimulada(t, { rol = 'registrado', publicada = true, fallarDemos = f
       usuarioId: 1, versionSesion: 1, autenticadoEn: Date.now(),
     } }] };
     if (sql.includes('FROM app.usuarios')) return { rows: [{ id: 1, nombre, email: 'prueba@example.com', rol, activo: true, version_sesion: 1 }] };
-    if (sql.includes('FROM app.proyectos')) return { rows: [{ id: 1, titulo: 'Portfolio del equipo', descripcion: 'Proyecto colectivo' }] };
+    if (sql.includes('FROM app.proyectos')) return { rows: [{ id: 1, slug: 'portfolio-equipo', titulo: 'Portfolio del equipo', resumen: 'Proyecto colectivo', descripcion: 'Proyecto colectivo', estado: 'desarrollo', tecnologiaIds: [], aportes: [] }] };
     if (sql.includes('FROM app.demos')) {
       if (fallarDemos) throw Object.assign(new Error('conexión de prueba'), { code: 'ECONNREFUSED' });
       assert.match(sql, /publicada = true/);

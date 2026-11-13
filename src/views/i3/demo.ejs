@@ -1,5 +1,5 @@
 <%- include('../partials/i3/cabecera') %>
-<section class="encabezado-pagina"><a href="<%= typeof regresoProyecto === 'string' ? regresoProyecto : '/i3/detalle' %>">← Volver al proyecto</a><p class="eyebrow">LABORATORIO DE INTERFACES</p><h1><%= titulo %><span>.</span></h1><% if (typeof descripcionDemo === 'string') { %><p><%= descripcionDemo %></p><% } else if (typeof recursoJs === 'string') { %><p><%= vista === 'tablero' ? 'Tus tareas se guardan en tu cuenta. Podés retomarlas cuando vuelvas.' : 'Explorá los algoritmos con tus propios números, paso a paso o en reproducción automática.' %></p><% } else { %><p>Prototipo de I3 · datos de muestra, sin sesión ni persistencia.</p><% } %></section>
+<section class="encabezado-pagina"><a class="regreso" href="<%= typeof regresoProyecto === 'string' ? regresoProyecto : '/i3/detalle' %>">← Volver al proyecto</a><p class="eyebrow">LABORATORIO DE INTERFACES</p><h1><%= titulo %><span>.</span></h1><% if (typeof descripcionDemo === 'string') { %><p><%= descripcionDemo %></p><% } else if (typeof recursoJs === 'string') { %><p><%= vista === 'tablero' ? 'Tus tareas se guardan en tu cuenta. Podés retomarlas cuando vuelvas.' : 'Explorá los algoritmos con tus propios números, paso a paso o en reproducción automática.' %></p><% } else { %><p>Prototipo de I3 · datos de muestra, sin sesión ni persistencia.</p><% } %></section>
 <% if (typeof recursoJs !== 'string') { %><%- include('../partials/i3/alerta',{tipo:'aviso',tituloAlerta:'Entorno de revisión visual',mensaje:'Esta muestra es independiente de las demos finales. I4 protege sus rutas e I5 conecta los datos y algoritmos antes de publicarlas.'}) %><% } %>
 <% if(vista === 'tablero') { %>
 <section class="seccion" data-tablero data-demo-id="<%= typeof demoId === 'number' ? demoId : '' %>" data-modo="<%= typeof recursoJs === 'string' ? 'integrado' : 'muestra' %>">
@@ -13,16 +13,6 @@
 <% } else if (vista === "calendario") { %>
 <%- include("../partials/i3/calendario", { recursoJs }) %>
 <% } else { %>
-<section class="glass servicio seccion" data-visualizador>
-  <% if (typeof recursoJs === 'string') { %><p>Buscá la primera aparición de un valor u ordená la lista de menor a mayor. Podés pausar y avanzar un paso por vez.</p><% } else { %><p>Los controles reproducen secuencias de ejemplo. En la demo integrada, I5 provee los pasos para los valores ingresados.</p><% } %>
-  <div class="controles-demo">
-    <div class="campo"><label for="algoritmo">Algoritmo</label><select id="algoritmo" class="form-select"><option value="lineal">Búsqueda lineal</option><option value="burbuja">Ordenamiento burbuja</option></select></div>
-    <div class="campo"><label for="datos">Datos</label><input id="datos" class="form-control" value="4,2,4" aria-describedby="datos-ayuda datos-error"><small id="datos-ayuda">De 1 a 20 enteros entre -99 y 99, separados por comas.</small><span id="datos-error" class="error-campo"></span></div>
-    <div class="campo" data-objetivo-campo><label for="objetivo">Valor a buscar</label><input id="objetivo" class="form-control" type="number" min="-99" max="99" step="1" value="4" aria-describedby="objetivo-error"><span id="objetivo-error" class="error-campo"></span></div>
-    <div class="campo"><label for="velocidad">Intervalo de pasos</label><select id="velocidad" class="form-select"><option value="200">200 ms · rápido</option><option value="500" selected>500 ms · normal</option><option value="1000">1000 ms · lento</option></select></div>
-  </div>
-  <div class="acciones"><button class="btn btn-primary" data-iniciar>Iniciar</button><button class="btn btn-glass" data-pausar disabled>Pausar</button><button class="btn btn-glass" data-paso>Paso</button><button class="btn btn-glass" data-reiniciar>Reiniciar</button></div>
-  <p class="demo-estado" role="status" aria-live="polite" data-algoritmo-estado>Listo · 0 pasos</p><div class="barras" aria-label="Valores del algoritmo" data-barras></div><p data-comparacion></p><p data-resultado></p>
-</section><% if (typeof recursoJs === 'string') { %><script type="module" src="<%= recursoJs %>"></script><% } else { %><script src="/i3/muestras/recursos/algoritmos.js" defer></script><% } %>
+<%- include('../partials/i3/algoritmos') %>
 <% } %>
 <%- include('../partials/i3/pie') %>

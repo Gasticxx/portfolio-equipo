@@ -1,35 +1,105 @@
 <%- include('../partials/i3/cabecera') %>
-<link rel="stylesheet" href="/css/proyectos.css">
-<section class="encabezado-pagina">
-  <a class="regreso" href="/proyectos">← Volver a proyectos</a>
-  <p class="eyebrow">PROYECTO DEL EQUIPO</p>
-  <h1><%= proyecto.titulo %><span>.</span></h1>
-  <p class="proyecto-detalle-texto"><%= proyecto.descripcion %></p>
-  <% if (proyecto.portadaId) { %><img class="proyecto-detalle-portada" src="/media/<%= proyecto.portadaId %>" alt="Portada de <%= proyecto.titulo %>"><% } %>
-  <% if (typeof tecnologias !== 'undefined') { %>
-    <div class="proyecto-meta"><span class="etiqueta"><%= proyecto.estado === 'terminado' ? 'Terminado' : 'En desarrollo' %></span><% if (proyecto.repositorioUrl) { %><a href="<%= proyecto.repositorioUrl %>" target="_blank" rel="noopener noreferrer">Ver repositorio ↗</a><% } %></div>
-    <div class="etiquetas"><% tecnologias.filter(t => proyecto.tecnologiaIds.includes(t.id)).forEach(t => { %><span><%= t.nombre %></span><% }) %></div>
-  <% } %>
-</section>
-<% if (typeof miembros !== 'undefined') { %><section class="glass proyecto-panel seccion"><p class="eyebrow">TRABAJO COMPARTIDO</p><h2>Participantes y aportes</h2>
-  <% miembros.filter(m => proyecto.aportes.some(a => a.miembroId === m.id)).forEach(m => { %><section class="proyecto-participante"><h3><a href="/equipo/I<%= m.orden %>"><%= m.nombre %></a></h3>
-    <% proyecto.aportes.filter(a => a.miembroId === m.id).forEach(a => { %><article><h4><%= a.titulo %></h4><p class="proyecto-detalle-texto"><%= a.descripcion %></p><p>Estado: <%= ({asignado:'Asignado',desarrollo:'En desarrollo',comprobado:'Comprobado'})[a.estado] %></p><div class="etiquetas"><% tecnologias.filter(t => a.tecnologiaIds.includes(t.id)).forEach(t => { %><span><%= t.nombre %></span><% }) %></div><% if(a.evidenciaUrl) { %><a class="enlace-flecha" href="<%= a.evidenciaUrl %>" target="_blank" rel="noopener noreferrer">Ver evidencia ↗</a><% } %></article><% }) %>
-  </section><% }) %>
-</section><% } %>
-<section class="seccion">
-  <h2>Demos interactivas</h2>
-  <% if (demos.length) { %>
-    <div class="rejilla">
-      <% demos.forEach(demo => { %>
-        <article class="glass servicio">
-          <h3><%= demo.titulo %></h3>
-          <p><%= demo.descripcion %></p>
-          <a class="btn btn-primary" href="/demos/<%= demo.id %>">Abrir demo ↗</a>
-        </article>
+<link rel="stylesheet" href="/css/proyectos-publicos.css">
+<%
+  const participantes = miembros.filter(m => proyecto.aportes.some(a => a.miembroId === m.id));
+  const stack = tecnologias.filter(t => proyecto.tecnologiaIds.includes(t.id));
+  const estados = { asignado: 'Asignado', desarrollo: 'En desarrollo', comprobado: 'Comprobado' };
+  const tiposDemo = { tablero: 'Organización', algoritmos: 'Algoritmos', calendario: 'Calendario', ondas: 'Laboratorio de ondas' };
+%>
+<div class="proyectos-publicos" id="explorar-proyecto">
+  <div class="explorar-regreso"><a class="regreso" href="/proyectos"><span class="regreso-icono" aria-hidden="true">←</span>Volver a proyectos</a></div>
+  <section class="explorar-hero" aria-labelledby="proyecto-titulo">
+    <div class="explorar-presentacion">
+      <div class="explorar-contexto"><p class="eyebrow">PROYECTO DEL EQUIPO</p><span class="explorar-estado"><span aria-hidden="true"></span><%= proyecto.estado === 'terminado' ? 'Terminado' : 'En desarrollo' %></span></div>
+      <h1 id="proyecto-titulo"><%= proyecto.titulo %><span>.</span></h1>
+      <p class="explorar-bajada"><%= proyecto.resumen %></p>
+      <div class="acciones explorar-acciones">
+        <a class="btn btn-primary" href="#proyecto-demos"><%= demos.length ? 'Probar las demos' : 'Ver las demos' %> <span aria-hidden="true">↗</span></a>
+        <% if (proyecto.repositorioUrl) { %><a class="btn btn-glass" href="<%= proyecto.repositorioUrl %>" target="_blank" rel="noopener noreferrer">Ver repositorio <span aria-hidden="true">↗</span></a><% } %>
+      </div>
+    </div>
+    <% if (proyecto.portadaId) { %>
+      <figure class="explorar-portada-marco">
+        <div class="explorar-marco-barra"><span aria-hidden="true">● ● ●</span><span><%= proyecto.slug %></span></div>
+        <img class="explorar-portada" src="/media/<%= proyecto.portadaId %>" alt="Portada de <%= proyecto.titulo %>" fetchpriority="high">
+        <figcaption>Una idea. Muchas formas de construirla.</figcaption>
+      </figure>
+    <% } else { %><%- include('../partials/proyectos-escena') %><% } %>
+  </section>
+  <dl class="explorar-cifras" aria-label="El proyecto en números">
+    <div><dt>Integrantes</dt><dd><%= String(participantes.length).padStart(2, '0') %></dd></div>
+    <div><dt>Aportes del equipo</dt><dd><%= String(proyecto.aportes.length).padStart(2, '0') %></dd></div>
+    <div><dt>Tecnologías</dt><dd><%= String(stack.length).padStart(2, '0') %></dd></div>
+    <div><dt>Demos publicadas</dt><dd><%= String(demos.length).padStart(2, '0') %></dd></div>
+  </dl>
+  <nav class="explorar-indice" aria-label="Secciones del proyecto">
+    <a href="#proyecto-vision"><span>01</span> La idea</a>
+    <a href="#proyecto-stack"><span>02</span> Tecnologías</a>
+    <a href="#proyecto-equipo"><span>03</span> El equipo</a>
+    <a href="#proyecto-demos"><span>04</span> Demos</a>
+  </nav>
+  <div class="explorar-vision-grid explorar-seccion">
+    <section class="explorar-superficie explorar-vision revelar" id="proyecto-vision" aria-labelledby="vision-titulo">
+      <p class="eyebrow">01 / LA IDEA</p>
+      <h2 id="vision-titulo">Detrás del proyecto<span>.</span></h2>
+      <div class="explorar-descripcion"><% proyecto.descripcion.split(/\r?\n\s*\r?\n/).filter(p => p.trim()).forEach(parrafo => { %><p><%= parrafo %></p><% }) %></div>
+    </section>
+    <section class="explorar-superficie explorar-stack revelar" id="proyecto-stack" aria-labelledby="stack-titulo">
+      <span class="explorar-icono" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="m4 11 12-7 12 7-12 7L4 11Zm0 6 12 7 12-7M4 23l12 7 12-7"/></svg></span>
+      <p class="eyebrow">02 / TECNOLOGÍAS</p>
+      <h2 id="stack-titulo">Con qué lo hicimos</h2>
+      <p>Las herramientas que dan forma a esta experiencia.</p>
+      <div class="explorar-chips" aria-label="Tecnologías del proyecto"><% stack.forEach(t => { %><span><%= t.nombre %></span><% }) %></div>
+    </section>
+  </div>
+  <section class="explorar-seccion" id="proyecto-equipo" aria-labelledby="equipo-titulo">
+    <div class="explorar-titulo-seccion">
+      <div><p class="eyebrow">03 / TRABAJO COMPARTIDO</p><h2 id="equipo-titulo">Las personas. Sus aportes<span>.</span></h2><p>Cada parte tiene una historia. Elegí un integrante para conocer su trabajo.</p></div>
+      <span class="explorar-contador"><%= participantes.length %> <%= participantes.length === 1 ? 'integrante' : 'integrantes' %></span>
+    </div>
+    <div class="explorar-integrantes">
+      <% participantes.forEach(m => { const aportes = proyecto.aportes.filter(a => a.miembroId === m.id); %>
+        <details class="explorar-integrante" name="aportes-equipo">
+          <summary>
+            <span class="explorar-avatar" aria-hidden="true">I<%= m.orden %></span>
+            <span class="explorar-integrante-nombre"><strong><%= m.nombre %></strong><span><%= aportes.length %> <%= aportes.length === 1 ? 'aporte al proyecto' : 'aportes al proyecto' %></span></span>
+            <span class="explorar-integrante-accion"><span class="explorar-abrir">Ver aportes</span><span class="explorar-cerrar">Ocultar aportes</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12m-6-6v12"/></svg></span>
+          </summary>
+          <div class="explorar-integrante-contenido">
+            <div class="explorar-aportes">
+              <% aportes.forEach(a => { %>
+                <article class="explorar-aporte">
+                  <span class="explorar-aporte-estado explorar-aporte-<%= a.estado %>"><%= estados[a.estado] %></span>
+                  <h3><%= a.titulo %></h3>
+                  <p class="explorar-texto"><%= a.descripcion %></p>
+                  <div class="explorar-chips" aria-label="Tecnologías del aporte"><% tecnologias.filter(t => a.tecnologiaIds.includes(t.id)).forEach(t => { %><span><%= t.nombre %></span><% }) %></div>
+                  <% if (a.evidenciaUrl) { %><a class="enlace-flecha explorar-evidencia" href="<%= a.evidenciaUrl %>" target="_blank" rel="noopener noreferrer">Ver evidencia <span aria-hidden="true">↗</span></a><% } %>
+                </article>
+              <% }) %>
+            </div>
+            <a class="enlace-flecha explorar-perfil" href="/equipo/I<%= m.orden %>">Conocer a <%= m.nombre %> <span aria-hidden="true">↗</span></a>
+          </div>
+        </details>
       <% }) %>
     </div>
-  <% } else { %>
-    <p>Todavía no hay demos publicadas para este proyecto.</p>
-  <% } %>
-</section>
+    <% if (!participantes.length) { %><p class="explorar-vacio">Todavía no hay aportes de integrantes para mostrar.</p><% } %>
+  </section>
+  <section class="explorar-seccion" id="proyecto-demos" aria-labelledby="demos-titulo">
+    <div class="explorar-titulo-seccion"><div><p class="eyebrow">04 / IDEAS EN ACCIÓN</p><h2 id="demos-titulo">Mirar está bien. Probar, mejor<span>.</span></h2><p>Explorá las demos interactivas de este proyecto.</p></div><span class="explorar-contador"><%= demos.length %> <%= demos.length === 1 ? 'demo publicada' : 'demos publicadas' %></span></div>
+    <% if (demos.length) { %>
+      <div class="explorar-demos">
+        <% demos.forEach((demo, i) => { %>
+          <article class="explorar-demo explorar-superficie revelar">
+            <div class="explorar-demo-cabecera"><span class="explorar-demo-numero"><%= String(i + 1).padStart(2, '0') %></span><span class="explorar-demo-tipo"><%= tiposDemo[demo.tipo] || 'Demo interactiva' %></span><span class="explorar-demo-senal" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
+            <h3><%= demo.titulo %></h3>
+            <p class="explorar-texto"><%= demo.descripcion %></p>
+            <a class="btn btn-glass" href="/demos/<%= demo.id %>">Abrir demo <span aria-hidden="true">↗</span></a>
+          </article>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="explorar-vacio explorar-superficie"><span class="explorar-vacio-icono" aria-hidden="true">▷</span><h3>Lo próximo se está construyendo.</h3><p>Todavía no hay demos publicadas para este proyecto.</p><a class="enlace-flecha" href="/demos">Explorar otras demos <span aria-hidden="true">↗</span></a></div>
+    <% } %>
+  </section>
+</div>
 <%- include('../partials/i3/pie') %>

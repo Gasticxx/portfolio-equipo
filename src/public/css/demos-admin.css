@@ -1,6 +1,6 @@
 .demo-admin{--demo-acento:#7468da;--demo-cian:#248997;--demo-cristal:rgba(255,255,255,.48);padding-bottom:48px}
 .demo-hero{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:40px;padding:45px 0 30px;min-height:460px}
-.demo-hero .regreso{display:inline-block;margin-bottom:28px}
+.demo-hero .regreso{margin-bottom:28px}
 .demo-hero h1{font-size:clamp(48px,5.4vw,76px);line-height:1.02;letter-spacing:-3.5px;margin:14px 0 22px}
 .demo-hero h1>span{background:linear-gradient(115deg,var(--color-primario),#7563bc 65%,#248997);background-clip:text;-webkit-background-clip:text;color:transparent}
 .demo-bajada{max-width:480px;font-size:17px;line-height:1.7}
