@@ -87,3 +87,16 @@ test('panel demos renderiza con contenido escapado y formulario accesible',async
   const r=await request(app).get('/admin/demos').expect(200);
   assert.ok(r.text.includes('id="demo-form"'));assert.ok(r.text.includes('role="status"'));assert.ok(r.text.includes('</html>'));
 });
+
+test('calendario: aparece en gestión y tiene recurso protegido para cuentas con sesión',async t=>{
+  const app=montarPublico();
+  t.mock.method(pool,'query',async()=>({rows:[{id:11,tipo:'calendario',titulo:'Calendario interactivo',proyecto_slug:'ejemplo'}]}));
+  await request(app).get('/demos/11/recurso.js').expect(401);
+  const pagina=await request(app).get('/demos/11').set('X-Rol','registrado').expect(200);
+  assert.ok(pagina.text.includes('data-calendario'));
+  assert.ok(pagina.text.includes('type="module" src="/demos/11/recurso.js"'));
+  const recurso=await request(app).get('/demos/11/recurso.js').set('X-Rol','registrado').expect(200);
+  assert.ok(recurso.text.includes('export function calcularMes'));
+  const admin=montar({query:async()=>({rows:[{id:11}]})});
+  await escribir(admin,'post','/api/admin/demos',{...datos,tipo:'calendario'}).expect(201);
+});

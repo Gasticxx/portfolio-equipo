@@ -10,7 +10,7 @@ export const demoSchema = z.object({
   proyecto_id: id,
   titulo: z.string().trim().min(3).max(100),
   descripcion: z.string().trim().min(3).max(1000),
-  tipo: z.enum(['algoritmos', 'tablero']),
+  tipo: z.enum(['algoritmos', 'tablero', 'calendario']),
   publicada: z.boolean(),
   orden: z.number().int().min(1).max(100),
 }).strict();
@@ -45,6 +45,7 @@ export function crearDemosAdminRouter(db = pool) {
     } catch (error) {
       if (error.code === '23505') return next(new AppError(409, 'DEMO_DUPLICADA', 'Ya existe una demo de ese tipo en el proyecto. Editá la existente.'));
       if (error.code === '23503') return next(new AppError(422, 'PROYECTO_INVALIDO', 'Seleccioná un proyecto existente.'));
+      if (error.code === '23514' && d.tipo === 'calendario') return next(new AppError(503, 'MIGRACION_PENDIENTE', 'Falta aplicar la migración 004_calendario.sql en la base de datos. Pedile al responsable de datos que la ejecute.'));
       next(error);
     }
   };

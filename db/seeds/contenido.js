@@ -62,6 +62,12 @@ export const PROYECTO = {
 // Ambas demos nacen sin publicar: se publican al pasar sus pruebas.
 export const DEMOS = [
   {
+    tipo: 'calendario',
+    titulo: 'Calendario interactivo',
+    descripcion: 'Explorá meses y años y descubrí paso a paso cómo se calculan los días y los años bisiestos.',
+    orden: 3,
+  },
+  {
     tipo: 'tablero',
     titulo: 'Tablero personal de tareas',
     descripcion:

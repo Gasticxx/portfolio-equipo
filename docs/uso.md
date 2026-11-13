@@ -67,14 +67,24 @@ Incluye todas las funciones anteriores y habilita las capacidades de promoción 
    - Los gráficos se adaptan al tema claro u oscuro de la interfaz.
 ## Administración de demos
 
-En `/admin/demos`, un administrador puede crear, editar y publicar demos de tipo `tablero` o `algoritmos` vinculadas a proyectos existentes. Ya no es necesario cargar estos datos mediante SQL.
+En `/admin/demos`, un administrador puede crear, editar y publicar demos de tipo `tablero`, `algoritmos` o `calendario` vinculadas a proyectos existentes. Ya no es necesario cargar estos datos mediante SQL.
 
 - Se admite una demo por tipo y proyecto, según la restricción de la base.
 - La demo y el proyecto deben estar publicados para aparecer en `/demos`.
 - El proyecto y el tipo se conservan al editar para proteger las tareas existentes.
 - Para retirar una demo, desmarcar «Publicada». No se borran tareas de usuarios.
-- No se admite cargar JavaScript arbitrario: se utilizan las dos experiencias implementadas.
+- No se admite cargar JavaScript arbitrario: se utilizan las tres experiencias implementadas.
 - El tablero envía el ID de demo a la API y conserva el aislamiento de tareas por usuario.
 - Las escrituras requieren sesión de administrador y token CSRF.
 
 El formulario de Contacto requiere PostgreSQL disponible. Brevo se configura por separado mediante `BREVO_API_KEY`, `MAIL_FROM_EMAIL`, `MAIL_FROM_NAME` y `CONTACT_TO_EMAIL`: sin ellas no se envían correos.
+
+### Calendario interactivo
+
+Requiere aplicar `004_calendario.sql` con la conexión del propietario en `MIGRATION_DATABASE_URL`:
+
+    node --env-file=.env scripts/migrate.js
+
+La migración amplía los tipos admitidos y agrega un calendario publicado al primer proyecto publicado, si existe. No altera las otras demos. Si la base todavía no tiene proyectos, el administrador puede crear el calendario en Gestión de demos después de cargar un proyecto.
+
+El calendario permite recorrer meses entre 1900 y 2400, seleccionar fechas y animar el cálculo día por día, pausarlo o avanzar manualmente. Explica los años bisiestos y cómo se obtiene el primer día del mes. No guarda datos personales ni eventos. Las demos y sus recursos requieren iniciar sesión; el menú Demos solo aparece para cuentas autenticadas.

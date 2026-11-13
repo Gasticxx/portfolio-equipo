@@ -2,14 +2,14 @@
 <section class="encabezado-pagina">
   <a class="regreso" href="/admin">← Volver a administración</a>
   <p class="eyebrow">ADMINISTRACIÓN</p><h1>Demos interactivas<span>.</span></h1>
-  <p>Creá y editá demos de algoritmos o tableros en los proyectos existentes. Solo aparecen en el catálogo si la demo y su proyecto están publicados.</p>
+  <p>Creá y editá calendarios, visualizadores de algoritmos o tableros en los proyectos existentes. Solo aparecen en el catálogo si la demo y su proyecto están publicados.</p>
 </section>
 <section class="seccion admin-demos-layout">
   <div class="glass formulario">
     <h2 id="demo-form-titulo">Nueva demo</h2>
     <form id="demo-form">
       <div class="campo"><label for="demo-proyecto">Proyecto</label><select id="demo-proyecto" name="proyecto_id" class="form-select" required></select></div>
-      <div class="campo"><label for="demo-tipo">Tipo</label><select id="demo-tipo" name="tipo" class="form-select"><option value="algoritmos">Visualizador de algoritmos</option><option value="tablero">Tablero de tareas</option></select></div>
+      <div class="campo"><label for="demo-tipo">Tipo</label><select id="demo-tipo" name="tipo" class="form-select"><option value="algoritmos">Visualizador de algoritmos</option><option value="tablero">Tablero de tareas</option><option value="calendario">Calendario interactivo</option></select></div>
       <div class="campo"><label for="demo-titulo">Título</label><input id="demo-titulo" name="titulo" class="form-control" required minlength="3" maxlength="100"></div>
       <div class="campo"><label for="demo-descripcion">Descripción</label><textarea id="demo-descripcion" name="descripcion" class="form-control" required minlength="3" maxlength="1000" rows="4"></textarea></div>
       <div class="campo"><label for="demo-orden">Orden</label><input id="demo-orden" name="orden" class="form-control" type="number" min="1" max="100" step="1" value="1" required></div>

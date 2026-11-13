@@ -73,7 +73,7 @@ h1>span,h2>span{
   outline-offset:5px
 }
 .contenedor{
-  width:min(1200px,calc(100% - 48px));
+  width:calc(100% - clamp(32px,6vw,128px));
   margin-inline:auto
 }
 .ambiente{
@@ -1578,3 +1578,52 @@ dialog::backdrop{
 .admin-demos-layout .acciones { flex-wrap:wrap; }
 @media(max-width:991px) { .admin-demos-layout { grid-template-columns:1fr; } }
 @media(max-width:575px) { .admin-demos-layout .formulario { padding:20px; } }
+
+/* El espacio disponible acompaña el viewport, incluso en 2K y ultrawide. */
+html { min-height:100%; scrollbar-gutter:stable; }
+body.interfaz-i3 { min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; }
+.interfaz-i3 main { flex:1; min-width:0; }
+.interfaz-i3 .barra>.navegacion { min-width:0; flex-wrap:wrap; column-gap:clamp(12px,1.2vw,28px); row-gap:6px; padding-block:12px; }
+@media(min-width:1200px) {
+  .interfaz-i3 .hero { min-height:clamp(620px,72vh,1040px); grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(32px,5vw,128px); }
+  .interfaz-i3 .hero h1 { font-size:clamp(44px,3.2vw,82px); }
+  .interfaz-i3 .hero-descripcion { font-size:clamp(16px,1vw,22px); max-width:55ch; }
+  .interfaz-i3 .hero-arte { width:100%; max-width:760px; justify-self:center; }
+}
+@media(min-width:992px) and (max-width:1399px) {
+  .interfaz-i3 .barra { grid-template-columns:1fr 44px; padding-block:16px; }
+  .interfaz-i3 .barra>.tema-boton { grid-column:2; }
+  .interfaz-i3 .barra>.navegacion { grid-column:1/-1; grid-row:2; justify-content:center; }
+}
+@keyframes entrar-panel { from { transform:translateY(8px); } to { transform:none; } }
+.interfaz-i3 main.pagina-privada { animation:entrar-panel .3s ease-out; }
+.interfaz-i3.movimiento-pausado main { animation:none; }
+.interfaz-i3 .regreso { margin-block:16px; }
+
+/* Calendario: siete columnas estables sin desbordar el móvil. */
+.calendario-demo { padding:clamp(20px,3vw,48px); }
+.calendario-cabecera { display:flex; align-items:start; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.calendario-cabecera>div { max-width:65ch; }
+.calendario-controles { display:flex; gap:16px; flex-wrap:wrap; align-items:end; margin-block:24px; }
+.calendario-controles .campo { margin:0; flex:1 1 140px; }
+.calendario-layout { display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:clamp(24px,4vw,64px); }
+.calendario-layout>* { min-width:0; }
+.calendario-navegacion { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; }
+.calendario-navegacion h3 { margin:0; text-transform:capitalize; font-size:clamp(18px,1.7vw,28px); text-align:center; }
+.calendario-tabla { width:100%; table-layout:fixed; border-collapse:separate; border-spacing:4px; }
+.calendario-tabla th { padding-block:10px; color:var(--color-secundario); text-align:center; font-size:14px; }
+.calendario-tabla td { padding:0; }
+.calendario-dia { width:100%; min-height:48px; aspect-ratio:1.2; border:1px solid var(--color-borde); border-radius:10px; background:var(--vidrio); color:var(--color-texto); transition:background-color .15s,transform .15s; }
+.calendario-dia:not(:disabled):hover { background:var(--color-superficie); transform:translateY(-2px); }
+.calendario-dia[aria-current=date] { outline:2px solid var(--color-primario); outline-offset:-3px; font-weight:700; }
+.calendario-dia[aria-pressed=true] { background:var(--color-primario); color:var(--color-fondo); }
+.calendario-dia:disabled { opacity:.25; }
+.calendario-algoritmo { padding:24px; border:1px solid var(--color-borde); border-radius:16px; background:var(--vidrio); align-self:start; }
+.calendario-algoritmo ol { padding-left:24px; }
+.calendario-algoritmo li { padding-left:8px; margin-block:18px; color:var(--color-secundario); }
+.calendario-algoritmo .acciones { flex-wrap:wrap; gap:10px; }
+.calendario-algoritmo .nota-i6 { margin:20px 0 0; }
+.calendario-seleccion { margin-top:18px; min-height:3em; }
+@media(max-width:991px) { .calendario-layout { grid-template-columns:1fr; } }
+@media(max-width:575px) { .calendario-dia { min-height:36px; border-radius:6px; } .calendario-tabla { border-spacing:2px; } .calendario-algoritmo { padding:18px; } }
+@media(prefers-reduced-motion:reduce) { .interfaz-i3 main { animation:none!important; } .calendario-dia { transition:none; } }
