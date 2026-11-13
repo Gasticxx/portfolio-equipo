@@ -1,8 +1,26 @@
 <%- include('../partials/i3/cabecera') %>
-<link rel="stylesheet" href="/css/proyectos.css">
-<section class="encabezado-pagina"><p class="eyebrow">03 / PROYECTOS</p><h1>Proyectos con propósito<span>.</span></h1><p>Conocé lo que estamos construyendo, sus tecnologías y los aportes del equipo.</p></section>
-<section class="seccion proyecto-catalogo" aria-label="Proyectos publicados">
-<% if (!disponible) { %><p class="alerta alerta-aviso" role="status">Los proyectos están temporalmente fuera de línea. Volvé a intentar en unos minutos.</p>
-<% } else { %><div class="rejilla"><%- include('../partials/catalogo-proyectos', { proyectos }) %></div><% } %>
-</section>
+<link rel="stylesheet" href="/css/proyectos-publicos.css">
+<div class="proyectos-publicos" id="explorar-proyectos">
+  <section class="explorar-hero explorar-hero-catalogo" aria-labelledby="proyectos-titulo">
+    <div class="explorar-presentacion">
+      <p class="eyebrow">03 / NUESTRO TRABAJO</p>
+      <h1 id="proyectos-titulo">Proyectos con<br><span>propósito.</span></h1>
+      <p class="explorar-bajada">De una idea a una experiencia. Descubrí qué construimos, cómo lo hicimos y las personas detrás de cada proyecto.</p>
+      <a class="btn btn-primary" href="#coleccion">Explorar proyectos <span aria-hidden="true">↓</span></a>
+      <p class="explorar-nota">Diseño, desarrollo y aprendizaje compartido.</p>
+    </div>
+    <%- include('../partials/proyectos-escena') %>
+  </section>
+  <section class="explorar-seccion explorar-catalogo" id="coleccion" aria-labelledby="coleccion-titulo">
+    <div class="explorar-titulo-seccion">
+      <div><p class="eyebrow">DEL EQUIPO AL MUNDO</p><h2 id="coleccion-titulo">Lo que estamos creando<span>.</span></h2></div>
+      <% if (disponible) { %><span class="explorar-contador"><%= proyectos.length %> <%= proyectos.length === 1 ? 'proyecto publicado' : 'proyectos publicados' %></span><% } %>
+    </div>
+    <% if (!disponible) { %>
+      <p class="alerta alerta-aviso" role="status">Los proyectos están temporalmente fuera de línea. Volvé a intentar en unos minutos.</p>
+    <% } else { %>
+      <div class="explorar-coleccion"><%- include('../partials/catalogo-proyectos', { proyectos }) %></div>
+    <% } %>
+  </section>
+</div>
 <%- include('../partials/i3/pie') %>

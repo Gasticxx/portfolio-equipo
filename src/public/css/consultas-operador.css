@@ -1,6 +1,6 @@
 .operador-ui {padding-bottom:36px;min-width:0}
 .operador-hero {display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:48px;padding:40px 0 20px}
-.operador-hero .regreso {display:inline-block;margin-bottom:26px}
+.operador-hero .regreso {margin-bottom:26px}
 .operador-hero .eyebrow {font-size:10px;letter-spacing:1.8px;margin:14px 0}
 .operador-hero h1 {font-size:clamp(40px,4.6vw,64px);line-height:1.1;letter-spacing:-2.5px;margin-bottom:22px}
 .operador-hero h1>span {background:linear-gradient(115deg,var(--color-primario),#7c68bf 65%,#248997);background-clip:text;-webkit-background-clip:text;color:transparent}

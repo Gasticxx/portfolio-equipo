@@ -656,13 +656,14 @@ h1>span,h2>span{
   font-size:14px
 }
 .interfaz-i3 .regreso {
-  display:inline-flex; align-items:center; gap:12px; min-height:48px;
-  padding:8px 18px 8px 8px; border:1px solid var(--color-borde);
+  display:inline-flex; align-items:center; justify-content:center; gap:12px; min-height:48px;
+  max-width:100%; padding:8px 16px; line-height:1.4; text-align:center; vertical-align:middle;
+  border:1px solid var(--color-borde);
   border-radius:28px; background:var(--vidrio); color:var(--color-texto);
   text-decoration:none; font-weight:600; box-shadow:var(--sombra);
 }
 .regreso-icono {
-  display:grid; place-items:center; width:32px; height:32px; border-radius:50%;
+  display:grid; place-items:center; flex:0 0 32px; width:32px; height:32px; line-height:1; border-radius:50%;
   background:#b3c9f33b; color:var(--color-primario); font-size:22px;
   transition:transform .2s ease,background-color .2s ease;
 }

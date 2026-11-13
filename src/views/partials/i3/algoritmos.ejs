@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="/css/algoritmos.css">
+<% const integrado = typeof recursoJs === 'string'; %>
+<section class="alg-lab" data-visualizador aria-labelledby="alg-titulo">
+  <div class="alg-intro">
+    <div><p class="eyebrow">REFLECTION / LÓGICA EN MOVIMIENTO</p><h2 id="alg-titulo">Cada paso cuenta<span>.</span></h2><p>Compará, intercambiá y descubrí cómo los números encuentran su lugar.</p></div>
+    <div class="alg-firma" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><span>EXPLORAR · ENTENDER · ORDENAR</span></div>
+  </div>
+  <div class="alg-layout">
+    <aside class="alg-config alg-cristal" aria-labelledby="alg-config-titulo">
+      <div class="alg-panel-titulo"><span class="alg-seccion-numero">01</span><div><p class="eyebrow">TU EXPERIMENTO</p><h3 id="alg-config-titulo">Prepará la secuencia</h3></div></div>
+      <div class="campo"><label for="algoritmo">Algoritmo</label><select id="algoritmo" class="form-select"><option value="burbuja" <%= integrado ? 'selected' : '' %>>Ordenamiento burbuja</option><option value="lineal" <%= !integrado ? 'selected' : '' %>>Búsqueda lineal</option></select></div>
+      <p class="alg-explicacion" data-alg-explicacion></p>
+      <div class="campo"><label for="datos">Tu lista de números</label><textarea id="datos" class="form-control" rows="3" aria-describedby="datos-ayuda datos-error" spellcheck="false"><%= integrado ? '38,12,65,27,48,19,54,33' : '4,2,4' %></textarea><small id="datos-ayuda">De 1 a 20 enteros entre -99 y 99, separados por comas.</small><span id="datos-error" class="error-campo"></span></div>
+      <% if (integrado) { %><button class="alg-mezclar" type="button" data-mezclar><span aria-hidden="true">⤨</span> Probar otra lista</button><% } %>
+      <div class="campo" data-objetivo-campo <%= integrado ? 'hidden' : '' %>><label for="objetivo">Valor a buscar</label><input id="objetivo" class="form-control" type="number" min="-99" max="99" step="1" value="4" aria-describedby="objetivo-error"><span id="objetivo-error" class="error-campo"></span></div>
+      <div class="campo alg-velocidad"><label for="velocidad">Ritmo de los pasos</label><select id="velocidad" class="form-select"><option value="200">Rápido · 200 ms</option><option value="500" selected>Normal · 500 ms</option><option value="1000">Tranquilo · 1000 ms</option></select><small>Podés cambiar el ritmo mientras se ejecuta.</small></div>
+      <div class="alg-consejo"><span aria-hidden="true">↳</span><p data-alg-consejo>Pausá para mirar una comparación o avanzá un paso a la vez.</p></div>
+    </aside>
+    <div class="alg-experimento alg-cristal">
+      <div class="alg-escena-cabecera"><div><p class="eyebrow">02 / EN VIVO</p><h3 data-alg-nombre>Ordenamiento burbuja</h3></div><span class="alg-estado" role="status" aria-live="polite" data-algoritmo-estado>Listo</span></div>
+      <dl class="alg-metricas"><div><dt>Elementos</dt><dd data-alg-cantidad>0</dd></div><div><dt>Comparaciones</dt><dd data-alg-comparaciones>0</dd></div><div><dt>Intercambios</dt><dd data-alg-intercambios>0</dd></div></dl>
+      <div class="alg-grafico" tabindex="0" role="region" aria-label="Visualización de la secuencia. Si la lista es larga, desplazate horizontalmente." aria-describedby="alg-grafico-ayuda">
+        <div class="alg-cuadricula" aria-hidden="true"></div>
+        <div class="alg-barras" role="list" aria-label="Valores del algoritmo" data-barras></div>
+      </div>
+      <div class="alg-leyenda"><span><i></i>En espera</span><span><i class="alg-leyenda-actual"></i>Comparación</span><span><i class="alg-leyenda-final"></i>Completado</span></div>
+      <p class="alg-ayuda" id="alg-grafico-ayuda">La altura representa la magnitud; el signo y el valor se muestran sobre cada barra. Debajo, su posición.</p>
+      <div class="alg-comparacion"><span aria-hidden="true">↔</span><p data-comparacion>Elegí tus números y dale movimiento a la secuencia.</p></div>
+      <div class="alg-progreso"><progress data-alg-progreso value="0" max="1" aria-label="Progreso de la secuencia"></progress><span data-alg-pasos>0 pasos</span></div>
+      <div class="alg-transporte"><button type="button" class="btn btn-primary" data-iniciar><span aria-hidden="true">▶</span><span data-alg-play-texto>Iniciar</span></button><button type="button" class="btn btn-glass" data-pausar disabled><span aria-hidden="true">Ⅱ</span>Pausar</button><button type="button" class="btn btn-glass" data-paso><span aria-hidden="true">→</span>Un paso</button><button type="button" class="btn btn-glass" data-reiniciar><span aria-hidden="true">↻</span>Reiniciar</button></div>
+      <div class="alg-resultado" data-alg-resultado-caja><span class="alg-resultado-icono" aria-hidden="true" data-alg-resultado-icono>⌁</span><div><h4 data-alg-resultado-titulo>El siguiente paso es tuyo.</h4><p role="status" aria-live="polite" aria-atomic="true" data-resultado>Al terminar vas a encontrar el resultado acá.</p></div></div>
+    </div>
+  </div>
+  <noscript><p class="alerta alerta-aviso">Habilitá JavaScript para usar el visualizador.</p></noscript>
+</section>
+<% if (integrado) { %><script type="module" src="<%= recursoJs %>"></script><% } else { %><script src="/i3/muestras/recursos/algoritmos.js" defer></script><% } %>
