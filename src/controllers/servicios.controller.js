@@ -46,7 +46,7 @@ export const serviciosController = {
       const csrfToken = obtenerTokenCsrf(req.session);
       return res.render('servicios/admin', {
         titulo: 'Administración de Servicios',
-        tituloPagina: 'Administración de Servicios - Equipo Seis',
+        tituloPagina: 'Administración de Servicios - Reflection Tech',
         rutaActual: '/admin/servicios',
         csrfToken,
         servicios: resultado.data,

@@ -1,6 +1,6 @@
 # Registro de Decisiones Técnicas y Acuerdos del Equipo
 
-Este documento registra los acuerdos operativos y las decisiones técnicas del **Equipo Seis**, indicando motivo, consumidores afectados y verificación.
+Este documento registra los acuerdos operativos y las decisiones técnicas de **Reflection Tech**, indicando motivo, consumidores afectados y verificación.
 
 ---
 

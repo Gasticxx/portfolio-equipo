@@ -1,4 +1,4 @@
-# Manual de Uso — Portfolio Equipo Seis
+# Manual de Uso — Portfolio Reflection Tech
 
 Este documento describe los recorridos funcionales de la aplicación según los cuatro niveles de acceso definidos en la especificación (`visitante`, `registrado`, `operador` y `administrador`).
 
@@ -6,7 +6,7 @@ Este documento describe los recorridos funcionales de la aplicación según los 
 
 ## 1. Recorrido como Visitante (Sin sesión iniciada)
 
-1. **Inicio (`/`):** Presenta la propuesta colectiva de **Equipo Seis**, las tarjetas resumidas de los seis integrantes, tres servicios destacados y accesos directos al catálogo de proyectos y al formulario de contacto.
+1. **Inicio (`/`):** Presenta la propuesta colectiva de **Reflection Tech**, las tarjetas resumidas de los seis integrantes, tres servicios destacados y accesos directos al catálogo de proyectos y al formulario de contacto.
 2. **Equipo (`/equipo` y `/equipo/:slug`):**
    - En `/equipo` se visualizan las seis tarjetas con especialidad y stack tecnológico.
    - Al ingresar a `/equipo/:slug`, se consulta la formación académica, enlaces profesionales y los **aportes en estado comprobado** correspondientes a proyectos publicados.

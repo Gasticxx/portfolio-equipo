@@ -1,4 +1,4 @@
-# Contratos de Integración y Puntos de Enganche — Equipo Seis (I2 03)
+# Contratos de Integración y Puntos de Enganche — Reflection Tech (I2 03)
 
 Este documento fija los contratos de integración entre el servidor base (I2) y los módulos de I1, I3, I4, I5 e I6 según la especificación oficial.
 

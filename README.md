@@ -1,6 +1,6 @@
 # Reflection Tech — Portfolio Fullstack
 
-Aplicación web fullstack del **Reflection Tech**, desarrollada con Node.js 24 LTS, Express 5, EJS 3, PostgreSQL 17 y Bootstrap 5.
+Aplicación web fullstack de **Reflection Tech**, desarrollada con Node.js 24 LTS, Express 5, EJS 3, PostgreSQL 17 y Bootstrap 5.
 
 ## Requisitos de entorno
 
