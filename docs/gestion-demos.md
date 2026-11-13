@@ -1,5 +1,10 @@
 # Edición de demos y laboratorio visual
 
+Ampliación: el tipo `ondas` agrega el [Laboratorio de ondas](laboratorio-ondas.md),
+sus controles interactivos y el recurso protegido. Su activación en la base
+requiere la nueva migración `005_ondas.sql`; el editor mantiene la opción
+deshabilitada hasta que la base conectada admita ese tipo.
+
 Fecha: 13/11/2026. Rama: `feature/I4-edicion-demos`, desde `main` `337d328`.
 Referencias: apartados 13 y 13.1 de la especificación, gestión y publicación de demos.
 

@@ -49,6 +49,13 @@ demosRouter.get('/demos/:id', autorizar, cargarDemo, (req, res) => {
 });
 
 demosRouter.get('/demos/:id/recurso.js', autorizar, cargarDemo, async (_req, res) => {
+  if (res.locals.demo.tipo === 'ondas') {
+    const [motor, interfaz] = await Promise.all([
+      readFile(new URL('../ui-i3/demos/ondas-motor.js', import.meta.url), 'utf8'),
+      readFile(new URL('../ui-i3/demos/ondas.js', import.meta.url), 'utf8'),
+    ]);
+    return res.type('application/javascript').send(`${motor}\n${interfaz}`);
+  }
   if (res.locals.demo.tipo === 'calendario') {
     const [motor, interfaz] = await Promise.all([
       readFile(new URL('../ui-i3/demos/calendario-motor.js', import.meta.url), 'utf8'),

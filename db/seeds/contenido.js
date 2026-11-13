@@ -62,6 +62,12 @@ export const PROYECTO = {
 // Ambas demos nacen sin publicar: se publican al pasar sus pruebas.
 export const DEMOS = [
   {
+    tipo: 'ondas',
+    titulo: 'Laboratorio de ondas',
+    descripcion: 'Creá y mové emisores, ajustá frecuencia, amplitud y propagación y descubrí cómo las ondas se refuerzan o se cancelan en tiempo real.',
+    orden: 4,
+  },
+  {
     tipo: 'calendario',
     titulo: 'Calendario interactivo',
     descripcion: 'Explorá meses y años y descubrí paso a paso cómo se calculan los días y los años bisiestos.',
