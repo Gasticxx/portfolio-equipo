@@ -66,6 +66,7 @@
   try { temaGuardado = localStorage.getItem('i3-tema'); } catch {}
   function aplicarTema(oscuro) {
     pagina.classList.toggle('tema-oscuro', oscuro);
+    document.documentElement.style.colorScheme = oscuro ? 'dark' : 'light';
     botonTema?.setAttribute('aria-pressed', String(oscuro));
     if (botonTema) {
       botonTema.innerHTML = iconoTema(oscuro ? luna : sol);
