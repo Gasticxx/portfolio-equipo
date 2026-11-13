@@ -72,6 +72,17 @@
   });
   rueda.querySelector('.equipo-controles').hidden = false;
   rueda.classList.add('equipo-carrusel');
+  // Medir sin transformaciones permite conservar la tarjeta completa al variar
+  // los nombres, las especialidades, las fuentes o el ancho de pantalla.
+  const escena = rueda.querySelector('.equipo-escena');
+  function ajustarAlto() {
+    escena.style.height = `${Math.max(340, ...tarjetas.map(t => t.offsetHeight)) + 90}px`;
+  }
+  ajustarAlto();
+  if ('ResizeObserver' in window) {
+    const medidas = new ResizeObserver(ajustarAlto);
+    tarjetas.forEach(t => medidas.observe(t));
+  }
   dibujar(); mostrar();
   function terminar() {
     detener();
@@ -79,7 +90,7 @@
     frame = 0; fase = actual;
     dibujar(); mostrar();
   }
-  window.addEventListener('resize',()=>{ radio = Math.min(360,rueda.clientWidth*.34); dibujar(); },{passive:true});
+  window.addEventListener('resize',()=>{ radio = Math.min(360,rueda.clientWidth*.34); ajustarAlto(); dibujar(); },{passive:true});
   pagina.addEventListener('i3:movimiento',terminar);
   reducir.addEventListener('change',terminar);
   document.addEventListener('visibilitychange',terminar);

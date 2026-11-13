@@ -1,12 +1,13 @@
 import { Router } from 'express';
-import { integrantes } from '../ui-i3/equipo.js';
+import { obtenerIntegrantes } from '../ui-i3/equipo.js';
 import { pool } from '../config/db.js';
 import { esErrorDeBaseInaccesible } from '../services/consultas.errores.js';
 import { proyectosRepository } from '../repositories/proyectos.repository.js';
 
 export const interfazRouter = Router();
 
-const datos = { baseUi: '', integrantes };
+// Leer las fichas al renderizar evita conservar nombres anteriores en memoria.
+const datos = { baseUi: '', get integrantes() { return obtenerIntegrantes(); } };
 interfazRouter.get('/', async (req, res) => {
   let proyectos = [], contenidoDisponible = true;
   try { proyectos = (await proyectosRepository.listarPublicos()).slice(0, 1); }
@@ -28,7 +29,7 @@ for (const [vista, [titulo, seccion, descripcion]] of Object.entries(paginas)) {
 }
 
 interfazRouter.get('/equipo/:codigo', async (req, res, next) => {
-  const integrante = integrantes.find(item => item.codigo === req.params.codigo);
+  const integrante = datos.integrantes.find(item => item.codigo === req.params.codigo);
   if (!integrante) return next();
   let aportes = [], aportesDisponibles = true;
   try {
