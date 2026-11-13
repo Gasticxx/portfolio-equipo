@@ -6,7 +6,7 @@ import sharp from 'sharp';
 import { app } from '../../src/app.js';
 import { pool } from '../../src/config/db.js';
 import { env } from '../../src/config/env.js';
-import { archivosService } from '../../src/services/archivos.service.js';
+import { archivosService, crearArchivosService } from '../../src/services/archivos.service.js';
 import { proyectosRepository } from '../../src/repositories/proyectos.repository.js';
 
 const sufijo = crypto.randomUUID();
@@ -204,6 +204,8 @@ test('Portadas: multipart válido, archivo falso, límite, CSRF y autorización 
   await request(app).post('/api/admin/archivos').set('Cookie', auth.cookie).set('Origin', env.APP_ORIGIN).set('X-CSRF-Token', auth.csrf).attach('imagen', png, 'portada.png').expect(201);
   assert.equal(subidas, 1);
   await request(app).post('/api/admin/archivos').set('Cookie', auth.cookie).attach('imagen', png, 'portada.png').expect(403);
+  const sinImagen = await enviar('post', '/api/admin/archivos', auth).expect(400);
+  assert.equal(sinImagen.body.error.code, 'IMAGEN_REQUERIDA');
   await request(app).post('/api/admin/archivos').set('Cookie', auth.cookie).set('Origin', env.APP_ORIGIN).set('X-CSRF-Token', auth.csrf).attach('imagen', Buffer.alloc(6 * 1024 * 1024), 'grande.png').expect(413);
   await request(app).post('/api/admin/archivos').set('Cookie', auth.cookie).set('Origin', env.APP_ORIGIN).set('X-CSRF-Token', auth.csrf).attach('otro', png, 'portada.png').expect(422);
   assert.equal(subidas, 1);
@@ -212,4 +214,60 @@ test('Portadas: multipart válido, archivo falso, límite, CSRF y autorización 
   const proyecto = await enviar('post', '/api/admin/proyectos', auth, datos({ portadaId: archivo })).expect(201);
   await enviar('delete', `/api/admin/archivos/${archivo}`, auth).expect(409);
   await enviar('put', `/api/admin/proyectos/${proyecto.body.data.id}`, auth, { ...datos(), portadaId: archivo, publicado: true }).expect(200);
+});
+
+test('Portadas integradas con I5: procesamiento, PostgreSQL, visibilidad y borrado usan una sola API', async t => {
+  const anteriores = Object.fromEntries(['SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY'].map(key => [key, process.env[key]]));
+  process.env.SUPABASE_URL = 'https://storage.example.invalid'; process.env.SUPABASE_SERVICE_ROLE_KEY = 'sb_secret_fixture';
+  t.after(() => { for (const [key, value] of Object.entries(anteriores)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; } });
+  const objetos = new Map(), llamadas = [], rutas = [];
+  const http = async (url, options) => {
+    assert.equal(new URL(url).origin, 'https://storage.example.invalid');
+    assert.equal(options.headers.apikey, 'sb_secret_fixture'); assert.equal(options.headers.Authorization, undefined);
+    llamadas.push(options.method);
+    if (options.method === 'DELETE') {
+      for (const ruta of JSON.parse(options.body).prefixes) objetos.delete(ruta);
+      return new Response('{}');
+    }
+    const ruta = new URL(url).pathname.match(/portadas\/[0-9a-f-]+\.webp$/)?.[0];
+    assert.ok(ruta);
+    if (options.method === 'POST') { rutas.push(ruta); objetos.set(ruta, options.body); return new Response('{}'); }
+    return new Response(objetos.get(ruta), { status: objetos.has(ruta) ? 200 : 404 });
+  };
+  const servicio = crearArchivosService(pool, http);
+  for (const operacion of ['crear', 'descargar', 'eliminar']) t.mock.method(archivosService, operacion, (...args) => servicio[operacion](...args));
+  let proyectoId;
+  t.after(async () => {
+    if (proyectoId) await pool.query('DELETE FROM app.proyectos WHERE id=$1', [proyectoId]);
+    await pool.query('DELETE FROM app.archivos WHERE object_path=ANY($1::text[])', [rutas]);
+  });
+  const auth = await sesion('administrador');
+  const png = await sharp({ create: { width: 80, height: 80, channels: 3, background: '#4466aa' } }).png().toBuffer();
+  const subida = await request(app).post('/api/admin/archivos').set('Cookie', auth.cookie).set('Origin', env.APP_ORIGIN)
+    .set('X-CSRF-Token', auth.csrf).attach('imagen', png, 'portada.png').expect(201);
+  const archivo = subida.body.data;
+  assert.deepEqual(Object.keys(archivo).sort(), ['alto', 'ancho', 'bytes', 'id', 'url']);
+  assert.equal(archivo.ancho, 80); assert.equal(archivo.url, `/media/${archivo.id}`);
+  const fila = (await pool.query('SELECT mime,bytes,creado_por FROM app.archivos WHERE id=$1', [archivo.id])).rows[0];
+  assert.equal(fila.mime, 'image/webp'); assert.equal(fila.bytes, archivo.bytes); assert.equal(fila.creado_por, users[0].id);
+  await request(app).get(archivo.url).expect(404);
+  const previa = await enviar('get', archivo.url, auth).expect(200);
+  assert.equal((await sharp(previa.body).metadata()).format, 'webp');
+  assert.equal(previa.headers['cache-control'], 'no-store'); assert.equal(previa.headers['x-content-type-options'], 'nosniff');
+  const ficha = datos({ portadaId: archivo.id });
+  proyectoId = (await enviar('post', '/api/admin/proyectos', auth, ficha).expect(201)).body.data.id;
+  await request(app).get(archivo.url).expect(404);
+  await enviar('put', `/api/admin/proyectos/${proyectoId}`, auth, { ...ficha, publicado: true }).expect(200);
+  await request(app).get(archivo.url).expect(200);
+  await enviar('delete', `/api/admin/archivos/${archivo.id}`, auth).expect(409);
+  assert.ok(!llamadas.includes('DELETE'));
+  await enviar('put', `/api/admin/proyectos/${proyectoId}`, auth, { ...ficha, portadaId: null }).expect(200);
+  await enviar('delete', `/api/admin/archivos/${archivo.id}`, auth).expect(204);
+  await request(app).get(archivo.url).expect(404);
+  assert.equal((await pool.query('SELECT count(*)::int AS n FROM app.archivos WHERE id=$1', [archivo.id])).rows[0].n, 0);
+  assert.equal(objetos.size, 0); assert.deepEqual(llamadas, ['POST', 'GET', 'GET', 'DELETE']);
+  for (const id of ['1e2', '1.0', '2147483648']) {
+    await request(app).get(`/media/${id}`).expect(400);
+    await enviar('delete', `/api/admin/archivos/${id}`, auth).expect(400);
+  }
 });

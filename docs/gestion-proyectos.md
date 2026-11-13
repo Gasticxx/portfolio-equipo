@@ -5,6 +5,16 @@ desde `45ce514`, con la edición de demos y la gestión completa de proyectos.
 Se recuperó la implementación anterior del stash `b7cd26e`, que se conserva
 como respaldo, y se mantuvo el editor actual de demos al integrar las rutas.
 
+Integración con `origin/main` (`a0b4051`): se resolvieron los conflictos de
+contratos, editor de demos y archivos. `app.js` monta un único router de archivos.
+Las rutas usan el controlador de I5 y el servicio de portadas comparte su
+repositorio, procesador de imágenes y cliente de Storage. Se conservan CSRF,
+límite de subidas, formatos y dimensiones, claves `sb_secret_`/JWT, compensación
+si falla PostgreSQL y bloqueo transaccional al eliminar archivos. Las portadas
+no publicadas siguen devolviendo 404 salvo en la vista previa de administrador.
+Se mantiene la eliminación explícita de demos, su confirmación y el manejo de
+respuestas 204 sin intentar leer JSON.
+
 La pantalla de proyectos tiene una ilustración propia: una carpeta de cristal
 con un avance animado entre Idea, Construcción y Entrega, y conexiones con
 Equipo, Tecnologías y Aportes. Usa SVG y CSS locales y no depende de los estilos
@@ -25,7 +35,7 @@ El editor mantiene los campos completos y el guardado transaccional en PostgreSQ
 La eliminación explícita de demos se integró en el panel nuevo para poder
 retirarlas antes de eliminar un proyecto, con confirmación de pérdida de tareas.
 
-Regresión de esta integración: **159 pruebas aprobadas, 0 fallidas, 0 omitidas y
+Regresión de esta integración: **161 pruebas aprobadas, 0 fallidas, 0 omitidas y
 0 TODO**. Se repitió el recorrido de navegador con creación, edición, recarga,
 cancelación y confirmación de borrado, y se revisaron ambos temas y móvil.
 
@@ -152,12 +162,18 @@ estado terminado y evidencia, borrado con demos sin cambios parciales y
 eliminación explícita de demo con sus tareas. También validación real de imagen,
 redimensión, límite de tamaño, multipart y compensación de Storage mediante doble.
 Los cambios de publicación se comprueban en catálogo, detalle y perfil.
-Resultado de `npm test`: **159 pruebas aprobadas, 0 fallidas, 0 omitidas
+Resultado de `npm test`: **161 pruebas aprobadas, 0 fallidas, 0 omitidas
 y 0 TODO**. `git diff --check` también pasó.
 
 Los casos de sincronización comprueban que Inicio, catálogo y resumen reflejan el mismo título,
 resumen y publicación, que el portfolio original queda destacado y que no se
 inventa una ficha cuando la base está vacía.
+
+La prueba de integración de portadas recorre el router y controlador, procesamiento
+real de PNG a WebP, escritura de metadatos en PostgreSQL, vista previa de
+administrador, descarga pública tras publicar, rechazo de borrado mientras está
+en uso y eliminación de archivo libre. Solo se sustituye el proveedor de Storage;
+también se verifican claves secretas/JWT, compensación y borrado idempotente.
 
 Se comprobó además la conexión real configurada en `.env`: Supabase responde,
 el proyecto original `portfolio-equipo` existe, conserva su portada y sus demos,
