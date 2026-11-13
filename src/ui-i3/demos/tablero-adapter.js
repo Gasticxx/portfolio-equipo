@@ -4,6 +4,8 @@
 (() => {
   // Realiza solicitudes a la API del tablero.
   async function solicitar(ruta, metodo = 'GET', datos = null) {
+    const demoId = document.querySelector('[data-tablero]')?.dataset.demoId;
+    if (demoId) ruta += `?demoId=${encodeURIComponent(demoId)}`;
     const opciones = {
       method: metodo,
       headers: {},

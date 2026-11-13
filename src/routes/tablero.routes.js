@@ -3,11 +3,11 @@ import { tableroRepository } from '../repositories/tablero.repository.js';
 import { requerirAutenticacion } from '../middlewares/auth.js';
 import { verificarCsrf } from '../middlewares/csrf.js';
 import { AppError } from '../middlewares/errors.js';
+import { pool } from '../config/db.js';
 
 export const tableroRouter = Router();
 
 // ID de la demostración "Tablero personal de tareas".
-const DEMO_ID = 1;
 
 // Estados permitidos por la tabla app.tareas_demo.
 const ESTADOS = ['pendiente', 'progreso', 'completada'];
@@ -59,12 +59,21 @@ function validarEstado(estado) {
 
 // Todas las rutas del tablero requieren iniciar sesión.
 tableroRouter.use('/api/tablero', requerirAutenticacion);
+tableroRouter.use('/api/tablero', async (req, _res, next) => {
+  const valor = req.query.demoId ?? '1';
+  if (typeof valor !== 'string' || !/^[1-9]\d*$/.test(valor)) throw new AppError(400, 'PARAMETRO_INVALIDO', 'Demo inválida.');
+  const demoId = validarId(valor);
+  const resultado = await pool.query("SELECT d.id FROM app.demos d JOIN app.proyectos p ON p.id=d.proyecto_id WHERE d.id=$1 AND d.tipo='tablero' AND d.publicada=true AND p.publicado=true", [demoId]);
+  if (!resultado.rows.length) throw new AppError(404, 'NO_ENCONTRADO', 'La demo no está publicada.');
+  req.demoId = demoId;
+  next();
+});
 
 // GET: listar las tareas del usuario autenticado.
 tableroRouter.get('/api/tablero/tareas', async (req, res, next) => {
   try {
     const tareas = await tableroRepository.listar(
-      DEMO_ID,
+      req.demoId,
       req.user.id
     );
 
@@ -87,7 +96,7 @@ tableroRouter.post(
       const titulo = validarTitulo(req.body?.titulo);
 
       const tareas = await tableroRepository.listar(
-        DEMO_ID,
+        req.demoId,
         req.user.id
       );
 
@@ -100,7 +109,7 @@ tableroRouter.post(
       }
 
       const tarea = await tableroRepository.crear(
-        DEMO_ID,
+        req.demoId,
         req.user.id,
         titulo
       );
@@ -134,7 +143,7 @@ tableroRouter.patch(
       const nuevoEstado = validarEstado(req.body?.estado);
 
       const tarea = await tableroRepository.cambiar(
-        DEMO_ID,
+        req.demoId,
         req.user.id,
         tareaId,
         nuevoEstado
@@ -168,7 +177,7 @@ tableroRouter.delete(
       const tareaId = validarId(req.params.id);
 
       const eliminada = await tableroRepository.eliminar(
-        DEMO_ID,
+        req.demoId,
         req.user.id,
         tareaId
       );
@@ -198,13 +207,9 @@ tableroRouter.delete(
 tableroRouter.get(
   '/tablero',
   requerirAutenticacion,
-  (req, res) => {
-    return res.render('i3/demo', {
-      titulo: 'Tablero personal de tareas',
-      vista: 'tablero',
-      rutaActual: '/tablero',
-      recursoJs: '/js/tablero.js',
-      regresoProyecto: '/proyectos/portfolio-equipo'
-    });
+  async (req, res) => {
+    const resultado = await pool.query("SELECT d.id FROM app.demos d JOIN app.proyectos p ON p.id=d.proyecto_id WHERE d.id=1 AND d.tipo='tablero' AND d.publicada=true AND p.publicado=true");
+    if (!resultado.rows.length) throw new AppError(404, 'NO_ENCONTRADO', 'La demo no está publicada.');
+    return res.redirect('/demos/1');
   }
 );

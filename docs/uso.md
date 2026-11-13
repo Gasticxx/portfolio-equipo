@@ -65,3 +65,16 @@ Incluye todas las funciones anteriores y habilita las capacidades de promoción 
    - **Tipo de consulta:** filtra solo las consultas; visitas, accesos y cuentas no cambian.
    - Sin datos en el rango, muestra ceros y el aviso «Sin datos para este rango».
    - Los gráficos se adaptan al tema claro u oscuro de la interfaz.
+## Administración de demos
+
+En `/admin/demos`, un administrador puede crear, editar y publicar demos de tipo `tablero` o `algoritmos` vinculadas a proyectos existentes. Ya no es necesario cargar estos datos mediante SQL.
+
+- Se admite una demo por tipo y proyecto, según la restricción de la base.
+- La demo y el proyecto deben estar publicados para aparecer en `/demos`.
+- El proyecto y el tipo se conservan al editar para proteger las tareas existentes.
+- Para retirar una demo, desmarcar «Publicada». No se borran tareas de usuarios.
+- No se admite cargar JavaScript arbitrario: se utilizan las dos experiencias implementadas.
+- El tablero envía el ID de demo a la API y conserva el aislamiento de tareas por usuario.
+- Las escrituras requieren sesión de administrador y token CSRF.
+
+El formulario de Contacto requiere PostgreSQL disponible. Brevo se configura por separado mediante `BREVO_API_KEY`, `MAIL_FROM_EMAIL`, `MAIL_FROM_NAME` y `CONTACT_TO_EMAIL`: sin ellas no se envían correos.
