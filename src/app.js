@@ -25,6 +25,7 @@ import { crearModuloConsultas } from "./routes/consultas.routes.js";
 import { metricasRouter } from "./routes/metricas.routes.js";
 import { interfazRouter } from "./routes/interfaz.routes.js";
 import { demosRouter } from "./routes/demos.routes.js";
+import { tableroRouter } from "./routes/tablero.routes.js";
 import authRouter from "./routes/auth.routes.js";
 import {
   obtenerCsrf,
@@ -140,11 +141,11 @@ const consultas = crearModuloConsultas({
 app.use("/api", consultas.api);
 app.use(consultas.paginas);
 
-// Las rutas de autenticación y consultas se resuelven antes que la interfaz de I3.
+// Las rutas de autenticación, consultas y servicios se resuelven antes que la interfaz de I3.
 app.use(demosRouter);
-app.use(interfazRouter);
-// Servicios aporta las APIs y su panel administrativo; I3 conserva la vista pública.
+app.use(tableroRouter);
 app.use(serviciosRouter);
+app.use(interfazRouter);
 
 // Paso 10: Recurso inexistente (404)
 app.use(notFoundHandler);
